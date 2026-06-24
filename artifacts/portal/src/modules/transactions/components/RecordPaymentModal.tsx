@@ -243,7 +243,7 @@ export default function RecordPaymentModal({ open, onClose }: RecordPaymentModal
                   mode="single"
                   selected={date}
                   onSelect={(d) => { if (d) { setDate(d); setCalendarOpen(false); } }}
-                  className="rounded-xl"
+                  className="rounded-xl [--cell-size:69px]"
                 />
               </PopoverContent>
             </Popover>
