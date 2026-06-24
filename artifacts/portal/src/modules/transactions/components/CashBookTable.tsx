@@ -98,7 +98,7 @@ export default function CashBookTable({ transactions }: CashBookTableProps) {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full" data-testid={`btn-edit-${tx.id}`}>
                           <Pencil className="h-4 w-4" />
                         </Button>
