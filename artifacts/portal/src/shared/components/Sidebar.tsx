@@ -11,13 +11,11 @@ import {
   ShoppingBag,
   Diamond,
   Hexagon,
-  Search,
   ChevronRight,
   LifeBuoy,
   Settings
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 
 const MAIN_MENU = [
   { name: "Transactions", icon: ArrowLeftRight, path: "/transactions" },
@@ -73,20 +71,6 @@ export default function Sidebar() {
         </div>
       </div>
       
-      <div className="px-4 mb-4 mt-2">
-        <div className="relative w-full">
-          <Search className="absolute left-2.5 top-2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search..."
-            className="w-full pl-9 pr-12 bg-background border-border focus-visible:ring-1 focus-visible:bg-background h-8 shadow-none text-sm rounded-lg"
-          />
-          <div className="absolute right-2 top-1.5 flex items-center justify-center h-5 px-1.5 border border-border bg-card rounded text-[10px] text-muted-foreground font-medium">
-            ⌘K
-          </div>
-        </div>
-      </div>
-
       <div className="flex-1 overflow-y-auto py-2 px-3 no-scrollbar">
         <div className="mb-6">
           <h2 className="text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2 px-3">
