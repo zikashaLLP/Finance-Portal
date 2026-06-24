@@ -8,10 +8,10 @@ export default function TransactionBadge({ type }: TransactionBadgeProps) {
   return (
     <Badge 
       variant="outline" 
-      className={`font-medium px-2 py-0.5 capitalize border-transparent ${
+      className={`font-medium px-2.5 py-0.5 capitalize border-transparent rounded-full ${
         type === "income" 
-          ? "bg-emerald-100/80 text-emerald-700 hover:bg-emerald-100/80" 
-          : "bg-red-100/80 text-red-700 hover:bg-red-100/80"
+          ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-50" 
+          : "bg-rose-50 text-rose-600 hover:bg-rose-50"
       }`}
       data-testid={`badge-${type}`}
     >
