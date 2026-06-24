@@ -15,6 +15,7 @@ const fmt = (n: number) =>
 
 export default function Transactions() {
   const [openingBalanceOpen, setOpeningBalanceOpen] = useState(false);
+  const [fabHovered, setFabHovered] = useState(false);
   const [openingBalances, setOpeningBalances] = useState<OpeningBalances>({
     cash: 425000,
     hdfc: 0,
@@ -167,14 +168,20 @@ export default function Transactions() {
       </Tabs>
 
       {/* Floating Record Payment button */}
-      <div className="fixed bottom-6 right-6 z-50 group flex items-center justify-end">
-        <button className="flex items-center justify-center gap-0 h-12 w-12 group-hover:w-auto group-hover:px-5 group-hover:gap-2.5 rounded-full bg-foreground text-background shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out overflow-hidden">
-          <Receipt className="h-5 w-5 shrink-0" />
-          <span className="text-sm font-semibold whitespace-nowrap max-w-0 group-hover:max-w-xs overflow-hidden transition-all duration-300 ease-in-out">
-            Record Payment
-          </span>
-        </button>
-      </div>
+      <button
+        onMouseEnter={() => setFabHovered(true)}
+        onMouseLeave={() => setFabHovered(false)}
+        className="fixed bottom-6 right-6 z-50 flex items-center justify-center h-12 rounded-full bg-foreground text-background shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out overflow-hidden"
+        style={{ width: fabHovered ? "auto" : "3rem", paddingLeft: fabHovered ? "1.25rem" : "0", paddingRight: fabHovered ? "1.25rem" : "0", gap: fabHovered ? "0.625rem" : "0" }}
+      >
+        <Receipt className="h-5 w-5 shrink-0" />
+        <span
+          className="text-sm font-semibold whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out"
+          style={{ maxWidth: fabHovered ? "10rem" : "0", opacity: fabHovered ? 1 : 0 }}
+        >
+          Record Payment
+        </span>
+      </button>
 
       {/* Opening Balance Modal */}
       <OpeningBalanceModal
