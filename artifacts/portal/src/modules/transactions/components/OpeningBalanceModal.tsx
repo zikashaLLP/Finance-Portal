@@ -154,7 +154,7 @@ export default function OpeningBalanceModal({
                   type="number"
                   value={values[key]}
                   onChange={(e) => setValues((prev) => ({ ...prev, [key]: e.target.value }))}
-                  className="pl-7 h-9 rounded-[8px] bg-background border-border text-foreground font-semibold text-sm focus-visible:ring-1 focus-visible:ring-foreground/20"
+                  className="pl-7 h-9 rounded-[8px] bg-white border border-border shadow-sm text-foreground font-semibold text-sm focus-visible:ring-1 focus-visible:ring-foreground/30"
                   placeholder="0"
                 />
               </div>
