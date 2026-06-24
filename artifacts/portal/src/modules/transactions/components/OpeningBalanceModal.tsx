@@ -31,6 +31,7 @@ const ACCOUNTS = [
     color: "text-amber-600",
     bg: "bg-amber-50",
     dot: "bg-amber-400",
+    border: "border-amber-300",
   },
   {
     key: "hdfc" as const,
@@ -40,6 +41,7 @@ const ACCOUNTS = [
     color: "text-blue-600",
     bg: "bg-blue-50",
     dot: "bg-blue-500",
+    border: "border-blue-300",
   },
   {
     key: "sbi" as const,
@@ -49,6 +51,7 @@ const ACCOUNTS = [
     color: "text-violet-600",
     bg: "bg-violet-50",
     dot: "bg-violet-500",
+    border: "border-violet-300",
   },
 ];
 
@@ -128,10 +131,10 @@ export default function OpeningBalanceModal({
 
         {/* Account rows */}
         <div className="px-6 pt-4 pb-2 bg-background space-y-3">
-          {ACCOUNTS.map(({ key, label, subtitle, icon: Icon, color, bg, dot }) => (
+          {ACCOUNTS.map(({ key, label, subtitle, icon: Icon, color, bg, dot, border }) => (
             <div
               key={key}
-              className="flex items-center gap-4 p-3.5 rounded-[10px] border border-border bg-muted/30"
+              className={`flex items-center gap-4 p-3.5 rounded-[10px] border ${border} bg-muted/30`}
             >
               {/* Icon */}
               <div className={`h-9 w-9 rounded-lg ${bg} ${color} flex items-center justify-center shrink-0`}>
