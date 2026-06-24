@@ -95,7 +95,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <div className="px-3 pb-4">
+      <div className="px-3 pb-1">
         <div className="border-t border-border mb-2 pt-2">
           <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors cursor-pointer mb-0.5">
             <LifeBuoy className="h-4 w-4" />
