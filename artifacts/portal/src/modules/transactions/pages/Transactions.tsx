@@ -1,4 +1,4 @@
-import { Wallet, Landmark, TrendingUp, TrendingDown } from "lucide-react";
+import { Wallet, Landmark, TrendingUp, TrendingDown, Bell } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockTransactions } from "../data/mockTransactions";
 import MetricCard from "../components/MetricCard";
@@ -41,46 +41,60 @@ export default function Transactions() {
   ];
 
   return (
-    <div className="p-8 w-full" data-testid="page-transactions">
+    <div className="w-full flex flex-col" data-testid="page-transactions">
       <Tabs defaultValue="daily" className="w-full">
-        <div className="mb-6">
-          <TabsList className="bg-transparent p-0 h-auto gap-6 w-full justify-start rounded-none">
-            <TabsTrigger 
-              value="daily" 
-              className="rounded-none border-b-[3px] border-transparent data-[state=active]:border-foreground data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2 px-1 font-medium text-muted-foreground hover:text-foreground transition-colors"
-              data-testid="tab-daily"
-            >
-              Daily Cash Reconciliation
-            </TabsTrigger>
-            <TabsTrigger 
-              value="ledger" 
-              className="rounded-none border-b-[3px] border-transparent data-[state=active]:border-foreground data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2 px-1 font-medium text-muted-foreground hover:text-foreground transition-colors"
-              data-testid="tab-ledger"
-            >
-              Cash Book
-            </TabsTrigger>
-          </TabsList>
+
+        {/* Page header: heading + tagline + tabs + bell */}
+        <div className="px-8 pt-6 border-b border-border flex items-start justify-between shrink-0">
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground tracking-tight mb-0.5">
+              Transactions
+            </h1>
+            <p className="text-sm text-muted-foreground mb-4">
+              Manage cashbook &amp; daily reconciliation
+            </p>
+            <TabsList className="bg-transparent p-0 h-auto gap-6 justify-start rounded-none">
+              <TabsTrigger
+                value="daily"
+                className="rounded-none border-b-[3px] border-transparent data-[state=active]:border-foreground data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2 px-1 font-medium text-muted-foreground hover:text-foreground transition-colors"
+                data-testid="tab-daily"
+              >
+                Daily Cash Reconciliation
+              </TabsTrigger>
+              <TabsTrigger
+                value="ledger"
+                className="rounded-none border-b-[3px] border-transparent data-[state=active]:border-foreground data-[state=active]:text-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-2 px-1 font-medium text-muted-foreground hover:text-foreground transition-colors"
+                data-testid="tab-ledger"
+              >
+                Cash Book
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <button
+            className="relative h-9 w-9 flex items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors shadow-sm mt-1 shrink-0"
+            data-testid="btn-notifications"
+          >
+            <Bell className="h-4 w-4" />
+            <span className="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
+          </button>
         </div>
 
-        <TabsContent value="daily" className="space-y-6 animate-in fade-in-50 duration-500 mt-0">
+        <TabsContent value="daily" className="space-y-6 animate-in fade-in-50 duration-500 mt-0 p-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {metrics.map((metric, i) => (
               <MetricCard key={metric.title} {...metric} index={i} />
             ))}
           </div>
-          
-          <div>
-            <CashBookTable transactions={mockTransactions} />
-          </div>
+          <CashBookTable transactions={mockTransactions} />
         </TabsContent>
 
-        <TabsContent value="ledger" className="animate-in fade-in-50 duration-500 mt-0 space-y-6">
+        <TabsContent value="ledger" className="animate-in fade-in-50 duration-500 mt-0 space-y-6 p-8">
           <div className="bg-card border border-border rounded-2xl p-6 shadow-sm flex flex-wrap gap-8 items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-foreground mb-1">Cash Book Ledger</h2>
               <p className="text-sm text-muted-foreground">Showing full historical ledger data</p>
             </div>
-            
             <div className="flex flex-wrap gap-8">
               <div>
                 <p className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider mb-1.5">Opening Balance</p>
@@ -100,9 +114,9 @@ export default function Transactions() {
               </div>
             </div>
           </div>
-
           <CashBookTable transactions={mockTransactions} />
         </TabsContent>
+
       </Tabs>
     </div>
   );

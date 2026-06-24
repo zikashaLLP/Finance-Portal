@@ -3,11 +3,12 @@ import { useLocation } from "wouter";
 
 export default function Topbar() {
   const [location] = useLocation();
-  
+
+  if (location.startsWith("/transactions")) {
+    return null;
+  }
+
   const getPageContext = () => {
-    if (location.startsWith("/transactions")) {
-      return { title: "Transactions", subtitle: "Manage cashbook & daily reconciliation" };
-    }
     if (location.startsWith("/ledger")) {
       return { title: "Ledger", subtitle: "View complete ledger" };
     }
@@ -26,8 +27,7 @@ export default function Topbar() {
       <div className="flex items-center gap-4">
         <button className="relative h-9 w-9 flex items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors shadow-sm" data-testid="btn-notifications">
           <Bell className="h-4 w-4" />
-          <span className="absolute top-2 right-2.5 flex h-2 w-2 items-center justify-center rounded-full bg-red-500 ring-2 ring-background">
-          </span>
+          <span className="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
         </button>
       </div>
     </header>
