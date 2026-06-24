@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
-import { X, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { CalendarIcon, X, ArrowUpRight, ArrowDownLeft } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 const PAYMENT_MODES = ["Cash", "HDFC Bank", "SBI Account", "UPI", "Cheque", "NEFT / RTGS"];
 
@@ -48,7 +54,8 @@ export default function RecordPaymentModal({ open, onClose }: RecordPaymentModal
   const [amount, setAmount] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
+  const [date, setDate] = useState<Date>(new Date());
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const handleTabChange = (t: PaymentTab) => {
     setTab(t);
@@ -68,7 +75,8 @@ export default function RecordPaymentModal({ open, onClose }: RecordPaymentModal
     setAmount("");
     setPaymentMode("");
     setDescription("");
-    setDate(format(new Date(), "yyyy-MM-dd"));
+    setDate(new Date());
+    setCalendarOpen(false);
   };
 
   const handleClose = () => {
@@ -219,12 +227,26 @@ export default function RecordPaymentModal({ open, onClose }: RecordPaymentModal
             <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               Transaction Date <span className="text-red-500">*</span>
             </Label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full h-10 px-3 rounded-[10px] bg-muted/50 border border-border text-sm text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-foreground/20 [color-scheme:light]"
-            />
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <button className="w-full flex items-center gap-2.5 h-10 px-3 rounded-[10px] bg-muted/50 border border-border text-sm font-medium text-foreground hover:bg-muted/70 transition-colors focus:outline-none focus:ring-1 focus:ring-foreground/20">
+                  <CalendarIcon className="h-4 w-4 text-muted-foreground shrink-0" />
+                  {format(date, "dd MMM yyyy")}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-auto p-0 rounded-xl border border-border shadow-xl z-[200]"
+                align="start"
+                sideOffset={6}
+              >
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(d) => { if (d) { setDate(d); setCalendarOpen(false); } }}
+                  className="rounded-xl"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
