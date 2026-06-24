@@ -5,6 +5,7 @@ import { mockTransactions } from "../data/mockTransactions";
 import MetricCard from "../components/MetricCard";
 import CashBookTable from "../components/CashBookTable";
 import OpeningBalanceModal, { OpeningBalances } from "../components/OpeningBalanceModal";
+import RecordPaymentModal from "../components/RecordPaymentModal";
 
 const fmt = (n: number) =>
   new Intl.NumberFormat("en-IN", {
@@ -15,6 +16,7 @@ const fmt = (n: number) =>
 
 export default function Transactions() {
   const [openingBalanceOpen, setOpeningBalanceOpen] = useState(false);
+  const [recordPaymentOpen, setRecordPaymentOpen] = useState(false);
   const [fabHovered, setFabHovered] = useState(false);
   const [openingBalances, setOpeningBalances] = useState<OpeningBalances>({
     cash: 425000,
@@ -169,6 +171,7 @@ export default function Transactions() {
 
       {/* Floating Record Payment button */}
       <button
+        onClick={() => setRecordPaymentOpen(true)}
         onMouseEnter={() => setFabHovered(true)}
         onMouseLeave={() => setFabHovered(false)}
         className="fixed bottom-6 right-6 z-50 flex items-center justify-center h-12 rounded-full bg-foreground text-background shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out overflow-hidden"
@@ -182,6 +185,12 @@ export default function Transactions() {
           Record Payment
         </span>
       </button>
+
+      {/* Record Payment Modal */}
+      <RecordPaymentModal
+        open={recordPaymentOpen}
+        onClose={() => setRecordPaymentOpen(false)}
+      />
 
       {/* Opening Balance Modal */}
       <OpeningBalanceModal
