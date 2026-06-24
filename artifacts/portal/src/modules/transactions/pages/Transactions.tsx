@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Wallet, Landmark, TrendingUp, TrendingDown, Bell, SlidersHorizontal } from "lucide-react";
+import { Wallet, Landmark, TrendingUp, TrendingDown, Bell, SlidersHorizontal, Plus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockTransactions } from "../data/mockTransactions";
 import MetricCard from "../components/MetricCard";
@@ -165,6 +165,16 @@ export default function Transactions() {
         </TabsContent>
 
       </Tabs>
+
+      {/* Floating Record Payment button */}
+      <div className="fixed bottom-6 right-6 z-50 group flex items-center justify-end">
+        <button className="flex items-center justify-center gap-0 h-12 w-12 group-hover:w-auto group-hover:px-5 group-hover:gap-2.5 rounded-full bg-foreground text-background shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out overflow-hidden">
+          <Plus className="h-5 w-5 shrink-0" />
+          <span className="text-sm font-semibold whitespace-nowrap max-w-0 group-hover:max-w-xs overflow-hidden transition-all duration-300 ease-in-out">
+            Record Payment
+          </span>
+        </button>
+      </div>
 
       {/* Opening Balance Modal */}
       <OpeningBalanceModal
