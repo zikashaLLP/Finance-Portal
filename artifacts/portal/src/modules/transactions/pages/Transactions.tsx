@@ -93,7 +93,7 @@ export default function Transactions() {
             {/* Opening Balance button */}
             <button
               onClick={() => setOpeningBalanceOpen(true)}
-              className="flex items-center gap-1.5 h-9 px-3.5 rounded-lg border border-border bg-background text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-sm"
+              className="flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors shadow-sm"
               data-testid="btn-opening-balance"
             >
               <SlidersHorizontal className="h-3.5 w-3.5" />
