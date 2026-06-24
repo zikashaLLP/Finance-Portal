@@ -172,7 +172,7 @@ export default function Transactions() {
         onMouseEnter={() => setFabHovered(true)}
         onMouseLeave={() => setFabHovered(false)}
         className="fixed bottom-6 right-6 z-50 flex items-center justify-center h-12 rounded-full bg-foreground text-background shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out overflow-hidden"
-        style={{ width: fabHovered ? "auto" : "3rem", paddingLeft: fabHovered ? "1.25rem" : "0", paddingRight: fabHovered ? "1.25rem" : "0", gap: fabHovered ? "0.625rem" : "0" }}
+        style={{ width: fabHovered ? "11rem" : "3rem", paddingLeft: fabHovered ? "1.25rem" : "0", paddingRight: fabHovered ? "1.25rem" : "0", gap: fabHovered ? "0.625rem" : "0" }}
       >
         <Receipt className="h-5 w-5 shrink-0" />
         <span
