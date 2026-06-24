@@ -75,7 +75,7 @@ export default function EditTransactionModal({
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <DialogContent className="sm:max-w-[480px] p-0 gap-0 rounded-2xl overflow-hidden">
+      <DialogContent className="sm:max-w-[480px] p-0 gap-0 !rounded-3xl overflow-hidden">
         {/* Header */}
         <DialogHeader className="px-6 py-5 border-b border-border">
           <div className="flex items-center gap-3">
