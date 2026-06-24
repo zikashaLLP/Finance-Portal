@@ -61,7 +61,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-[260px] bg-transparent h-full flex flex-col flex-shrink-0" data-testid="sidebar">
+    <aside className="w-[220px] bg-transparent h-full flex flex-col flex-shrink-0" data-testid="sidebar">
       <div className="h-16 flex items-center px-4">
         <div className="flex items-center gap-2 text-foreground">
           <div className="h-8 w-8 bg-foreground rounded-lg flex items-center justify-center">
