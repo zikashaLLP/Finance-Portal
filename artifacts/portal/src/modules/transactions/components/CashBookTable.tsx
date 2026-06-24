@@ -12,14 +12,17 @@ import {
 } from "@/components/ui/select";
 import { Transaction } from "../data/mockTransactions";
 import TransactionBadge from "./TransactionBadge";
+import EditTransactionModal from "./EditTransactionModal";
 
 interface CashBookTableProps {
   transactions: Transaction[];
 }
 
-export default function CashBookTable({ transactions }: CashBookTableProps) {
+export default function CashBookTable({ transactions: initialTransactions }: CashBookTableProps) {
+  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [editingTx, setEditingTx] = useState<Transaction | null>(null);
 
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
   const paginatedTransactions = transactions.slice(
@@ -38,6 +41,10 @@ export default function CashBookTable({ transactions }: CashBookTableProps) {
 
   const getInitials = (name: string) =>
     name.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase();
+
+  const handleSave = (updated: Transaction) => {
+    setTransactions((prev) => prev.map((tx) => (tx.id === updated.id ? updated : tx)));
+  };
 
   return (
     <div className="flex flex-col gap-4" data-testid="cashbook-table">
@@ -68,7 +75,7 @@ export default function CashBookTable({ transactions }: CashBookTableProps) {
             <tbody className="divide-y divide-border">
               {paginatedTransactions.length > 0 ? (
                 paginatedTransactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-muted/30 transition-colors group" data-testid={`row-${tx.id}`}>
+                  <tr key={tx.id} className="hover:bg-muted/30 transition-colors" data-testid={`row-${tx.id}`}>
                     <td className="px-6 py-4 whitespace-nowrap text-muted-foreground">
                       {format(parseISO(tx.dateTime), "dd MMM, hh:mm a")}
                     </td>
@@ -99,7 +106,13 @@ export default function CashBookTable({ transactions }: CashBookTableProps) {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full" data-testid={`btn-edit-${tx.id}`}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full"
+                          onClick={() => setEditingTx(tx)}
+                          data-testid={`btn-edit-${tx.id}`}
+                        >
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-full" data-testid={`btn-delete-${tx.id}`}>
@@ -183,6 +196,13 @@ export default function CashBookTable({ transactions }: CashBookTableProps) {
           </div>
         </div>
       </div>
+
+      <EditTransactionModal
+        transaction={editingTx}
+        open={editingTx !== null}
+        onClose={() => setEditingTx(null)}
+        onSave={handleSave}
+      />
     </div>
   );
 }
