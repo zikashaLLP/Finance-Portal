@@ -235,7 +235,7 @@ export default function RecordPaymentModal({ open, onClose }: RecordPaymentModal
                 </button>
               </PopoverTrigger>
               <PopoverContent
-                className="w-[608px] p-0 rounded-xl border border-border shadow-xl z-[200]"
+                className="w-[460px] p-0 rounded-xl border border-border shadow-xl z-[200]"
                 align="start"
                 sideOffset={6}
               >
@@ -244,7 +244,7 @@ export default function RecordPaymentModal({ open, onClose }: RecordPaymentModal
                   selected={date}
                   onSelect={(d) => { if (d) { setDate(d); setCalendarOpen(false); } }}
                   className="rounded-xl"
-                  style={{ "--cell-size": "80px" } as React.CSSProperties}
+                  classNames={{ root: "w-full" }}
                 />
               </PopoverContent>
             </Popover>
