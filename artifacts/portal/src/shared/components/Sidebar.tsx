@@ -71,7 +71,7 @@ export default function Sidebar() {
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto px-3 no-scrollbar">
+      <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="mb-6">
           <h2 className="text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2 px-3">
             Menu
