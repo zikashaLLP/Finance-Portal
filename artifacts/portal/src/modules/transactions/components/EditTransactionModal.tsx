@@ -96,7 +96,7 @@ export default function EditTransactionModal({
         </DialogHeader>
 
         {/* Body */}
-        <div className="px-6 pt-3 pb-6 space-y-5">
+        <div className="px-6 py-3 space-y-5">
           {/* Amount */}
           <div className="space-y-1.5">
             <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
