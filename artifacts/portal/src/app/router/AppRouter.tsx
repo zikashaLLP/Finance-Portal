@@ -1,7 +1,6 @@
 import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import MainLayout from "../layouts/MainLayout";
 import Transactions from "../../modules/transactions/pages/Transactions";
-import { TransactionTabProvider } from "../../modules/transactions/context/TransactionTabContext";
 import ComingSoon from "../../pages/ComingSoon";
 
 export default function AppRouter() {
@@ -13,11 +12,9 @@ export default function AppRouter() {
         </Route>
         
         <Route path="/transactions">
-          <TransactionTabProvider>
-            <MainLayout>
-              <Transactions />
-            </MainLayout>
-          </TransactionTabProvider>
+          <MainLayout>
+            <Transactions />
+          </MainLayout>
         </Route>
 
         <Route path="/ledger">
