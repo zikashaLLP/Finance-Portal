@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Gem, Coins, CircleDot, Pencil, Trash2 } from "lucide-react";
+import { Gem, Coins, CircleDot, Pencil, Trash2, CalendarDays, Scale, TrendingDown, Hash } from "lucide-react";
 import {
   mockGoldTransactions,
   mockGoldDailyBalance,
@@ -151,6 +151,30 @@ function DailyBalanceTable({ rows }: { rows: GoldDailyBalance[] }) {
 
 export default function PureGoldTab() {
   const [subTab, setSubTab] = useState<SubTab>("transactions");
+  const [selectedDate, setSelectedDate] = useState<string>("all");
+
+  // Unique dates from transactions (sorted desc)
+  const txDates = useMemo(() => {
+    const dates = [...new Set(mockGoldTransactions.map((r) => r.date))].sort((a, b) => b.localeCompare(a));
+    return dates;
+  }, []);
+
+  // Filtered transactions
+  const filteredTx = useMemo(() =>
+    selectedDate === "all"
+      ? mockGoldTransactions
+      : mockGoldTransactions.filter((r) => r.date === selectedDate),
+    [selectedDate]);
+
+  // Opening = sum of openingWeight for selectedDate across all types; Closing = sum of closingWeight
+  const { opening, closing } = useMemo(() => {
+    const rows = selectedDate === "all"
+      ? mockGoldDailyBalance.filter((r) => r.date === txDates[0])   // latest day when "All"
+      : mockGoldDailyBalance.filter((r) => r.date === selectedDate);
+    const opening = rows.reduce((s, r) => s + r.openingWeight, 0);
+    const closing = rows.reduce((s, r) => s + r.closingWeight, 0);
+    return { opening, closing };
+  }, [selectedDate, txDates]);
 
   const pureStock = mockGoldDailyBalance.find((r) => r.date === "2026-06-25" && r.type === "Pure Gold");
   const oldStock  = mockGoldDailyBalance.find((r) => r.date === "2026-06-25" && r.type === "Old Gold");
@@ -206,8 +230,49 @@ export default function PureGoldTab() {
         ))}
       </div>
 
+      {/* Transactions filter bar */}
+      {subTab === "transactions" && (
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Date picker */}
+          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+            <CalendarDays className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <select
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="text-sm font-medium text-foreground bg-transparent outline-none cursor-pointer pr-1"
+            >
+              <option value="all">All Dates</option>
+              {txDates.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Opening */}
+          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+            <Scale className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+            <span className="text-xs text-muted-foreground">Opening</span>
+            <span className="text-sm font-semibold text-foreground">{fmtW(opening)}</span>
+          </div>
+
+          {/* Closing */}
+          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+            <TrendingDown className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+            <span className="text-xs text-muted-foreground">Closing</span>
+            <span className="text-sm font-semibold text-foreground">{fmtW(closing)}</span>
+          </div>
+
+          {/* Count */}
+          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+            <Hash className="h-3.5 w-3.5 text-violet-500 shrink-0" />
+            <span className="text-xs text-muted-foreground">Transactions</span>
+            <span className="text-sm font-semibold text-foreground">{filteredTx.length}</span>
+          </div>
+        </div>
+      )}
+
       {/* Table */}
-      {subTab === "transactions" && <TransactionsTable rows={mockGoldTransactions} />}
+      {subTab === "transactions" && <TransactionsTable rows={filteredTx} />}
       {subTab === "daily"        && <DailyBalanceTable rows={mockGoldDailyBalance} />}
     </div>
   );
