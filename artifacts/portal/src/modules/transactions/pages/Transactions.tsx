@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockTransactions } from "../data/mockTransactions";
 import MetricCard from "../components/MetricCard";
 import CashBookTable from "../components/CashBookTable";
+import DailyReconciliationTable from "../components/DailyReconciliationTable";
 import OpeningBalanceModal, { OpeningBalances } from "../components/OpeningBalanceModal";
 import RecordPaymentModal from "../components/RecordPaymentModal";
 
@@ -120,7 +121,7 @@ export default function Transactions() {
               <MetricCard key={metric.title} {...metric} index={i} />
             ))}
           </div>
-          <CashBookTable transactions={mockTransactions} />
+          <DailyReconciliationTable />
         </TabsContent>
 
         <TabsContent value="ledger" className="animate-in fade-in-50 duration-500 mt-0 space-y-6 p-8">
