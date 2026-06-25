@@ -1,6 +1,7 @@
 import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import MainLayout from "../layouts/MainLayout";
 import Transactions from "../../modules/transactions/pages/Transactions";
+import GoldManagement from "../../modules/gold/pages/GoldManagement";
 import ComingSoon from "../../pages/ComingSoon";
 
 export default function AppRouter() {
@@ -34,7 +35,7 @@ export default function AppRouter() {
         </Route>
         <Route path="/gold">
           <MainLayout>
-            <ComingSoon title="Gold Management" />
+            <GoldManagement />
           </MainLayout>
         </Route>
         <Route path="/karigar">
