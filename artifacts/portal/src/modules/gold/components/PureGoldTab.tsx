@@ -258,7 +258,7 @@ export default function PureGoldTab() {
                 )}
               </button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 z-[200]" align="start">
+            <PopoverContent className="w-auto p-0 z-[200] border-0 shadow-lg" align="start">
               <Calendar
                 mode="single"
                 selected={selectedDate}
