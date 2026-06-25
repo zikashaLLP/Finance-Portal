@@ -20,24 +20,24 @@ export default function GoldManagement() {
           </p>
         </div>
 
-        {/* Tabs — centred between title and bell */}
-        <div className="flex items-center gap-1">
+        {/* Tabs — segmented control */}
+        <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
           <button
             onClick={() => setTab("pure")}
-            className={`px-5 py-2 text-sm font-medium rounded-lg transition-colors ${
+            className={`px-5 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
               tab === "pure"
-                ? "bg-foreground text-background"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Pure Gold
           </button>
           <button
             onClick={() => setTab("old")}
-            className={`px-5 py-2 text-sm font-medium rounded-lg transition-colors ${
+            className={`px-5 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
               tab === "old"
-                ? "bg-foreground text-background"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                ? "bg-card text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Old Gold
