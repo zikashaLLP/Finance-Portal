@@ -21,7 +21,7 @@ export default function GoldManagement() {
         </div>
 
         {/* Tabs — segmented control */}
-        <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
+        <div className="flex items-center gap-1 bg-zinc-100 rounded-xl p-1">
           <button
             onClick={() => setTab("pure")}
             className={`px-5 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
