@@ -21,13 +21,13 @@ export default function GoldManagement() {
         </div>
 
         {/* Tabs — segmented control */}
-        <div className="flex items-center gap-1 bg-zinc-100 rounded-xl p-1">
+        <div className="flex items-center gap-1 bg-zinc-200 rounded-xl p-1">
           <button
             onClick={() => setTab("pure")}
             className={`px-5 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
               tab === "pure"
-                ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-white text-foreground shadow-sm"
+                : "text-zinc-500 hover:text-foreground"
             }`}
           >
             Pure Gold
@@ -36,8 +36,8 @@ export default function GoldManagement() {
             onClick={() => setTab("old")}
             className={`px-5 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
               tab === "old"
-                ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-white text-foreground shadow-sm"
+                : "text-zinc-500 hover:text-foreground"
             }`}
           >
             Old Gold
