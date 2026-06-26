@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Gem, Coins, CircleDot, Pencil, Trash2, Scale, TrendingDown, Hash } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+import { Gem, Coins, CircleDot, Pencil, Trash2, CalendarDays, Scale, TrendingDown, Hash, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
+import { Calendar } from "../../../components/ui/calendar";
 import { format } from "date-fns";
 import {
   mockGoldTransactions,
@@ -154,6 +155,7 @@ function DailyBalanceTable({ rows }: { rows: GoldDailyBalance[] }) {
 export default function PureGoldTab() {
   const [subTab, setSubTab] = useState<SubTab>("transactions");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [calOpen, setCalOpen] = useState(false);
 
   // Latest date in mock data
   const latestDate = useMemo(() => {
@@ -161,6 +163,7 @@ export default function PureGoldTab() {
     return dates[0];
   }, []);
 
+  // String form of selectedDate for filtering
   const selectedDateStr = selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined;
 
   // Filtered transactions
@@ -168,9 +171,9 @@ export default function PureGoldTab() {
     selectedDateStr
       ? mockGoldTransactions.filter((r) => r.date === selectedDateStr)
       : mockGoldTransactions,
-  [selectedDateStr]);
+    [selectedDateStr]);
 
-  // Opening / Closing: for selected date, or latest when none selected
+  // Opening / Closing: sum across all types for the selected date (or latest when none selected)
   const { opening, closing } = useMemo(() => {
     const dateKey = selectedDateStr ?? latestDate;
     const rows = mockGoldDailyBalance.filter((r) => r.date === dateKey);
@@ -235,41 +238,54 @@ export default function PureGoldTab() {
 
       {/* Transactions filter bar */}
       {subTab === "transactions" && (
-        <div className="flex gap-5 items-start flex-wrap">
-          {/* Inline Calendar */}
-          <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden shrink-0">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={(d) => setSelectedDate(d === selectedDate ? undefined : d)}
-            />
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Date picker — Popover + Calendar */}
+          <Popover open={calOpen} onOpenChange={setCalOpen}>
+            <PopoverTrigger asChild>
+              <button className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm hover:bg-muted/40 transition-colors">
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <span className="text-sm font-medium text-foreground">
+                  {selectedDate ? format(selectedDate, "dd MMM yyyy") : "Select Date"}
+                </span>
+                {selectedDate && (
+                  <span
+                    role="button"
+                    onClick={(e) => { e.stopPropagation(); setSelectedDate(undefined); }}
+                    className="ml-1 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                  </span>
+                )}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 z-[200] border-0 shadow-lg rounded-2xl overflow-hidden" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(d) => { setSelectedDate(d); setCalOpen(false); }}
+              />
+            </PopoverContent>
+          </Popover>
+
+          {/* Opening */}
+          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+            <Scale className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+            <span className="text-xs text-muted-foreground">Opening</span>
+            <span className="text-sm font-semibold text-foreground">{fmtW(opening)}</span>
           </div>
 
-          {/* Stat chips */}
-          <div className="flex flex-col gap-3 pt-1">
-            <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
-              <Scale className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-              <span className="text-xs text-muted-foreground">Opening</span>
-              <span className="text-sm font-semibold text-foreground">{fmtW(opening)}</span>
-            </div>
-            <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
-              <TrendingDown className="h-3.5 w-3.5 text-blue-500 shrink-0" />
-              <span className="text-xs text-muted-foreground">Closing</span>
-              <span className="text-sm font-semibold text-foreground">{fmtW(closing)}</span>
-            </div>
-            <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
-              <Hash className="h-3.5 w-3.5 text-violet-500 shrink-0" />
-              <span className="text-xs text-muted-foreground">Transactions</span>
-              <span className="text-sm font-semibold text-foreground">{filteredTx.length}</span>
-            </div>
-            {selectedDate && (
-              <button
-                onClick={() => setSelectedDate(undefined)}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors text-left"
-              >
-                ✕ Clear filter
-              </button>
-            )}
+          {/* Closing */}
+          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+            <TrendingDown className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+            <span className="text-xs text-muted-foreground">Closing</span>
+            <span className="text-sm font-semibold text-foreground">{fmtW(closing)}</span>
+          </div>
+
+          {/* Count */}
+          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+            <Hash className="h-3.5 w-3.5 text-violet-500 shrink-0" />
+            <span className="text-xs text-muted-foreground">Transactions</span>
+            <span className="text-sm font-semibold text-foreground">{filteredTx.length}</span>
           </div>
         </div>
       )}
