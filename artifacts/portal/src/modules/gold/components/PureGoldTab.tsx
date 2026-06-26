@@ -1,6 +1,8 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Gem, Coins, CircleDot, Pencil, Trash2, Scale, TrendingDown, Hash } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 import {
   mockGoldTransactions,
   mockGoldDailyBalance,
@@ -151,6 +153,7 @@ function DailyBalanceTable({ rows }: { rows: GoldDailyBalance[] }) {
 
 export default function PureGoldTab() {
   const [subTab, setSubTab] = useState<SubTab>("transactions");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
   // Latest date in mock data
   const latestDate = useMemo(() => {
@@ -158,13 +161,23 @@ export default function PureGoldTab() {
     return dates[0];
   }, []);
 
-  // Opening / Closing: sum across all types for the latest date
+  const selectedDateStr = selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined;
+
+  // Filtered transactions
+  const filteredTx = useMemo(() =>
+    selectedDateStr
+      ? mockGoldTransactions.filter((r) => r.date === selectedDateStr)
+      : mockGoldTransactions,
+  [selectedDateStr]);
+
+  // Opening / Closing: for selected date, or latest when none selected
   const { opening, closing } = useMemo(() => {
-    const rows = mockGoldDailyBalance.filter((r) => r.date === latestDate);
+    const dateKey = selectedDateStr ?? latestDate;
+    const rows = mockGoldDailyBalance.filter((r) => r.date === dateKey);
     const opening = rows.reduce((s, r) => s + r.openingWeight, 0);
     const closing = rows.reduce((s, r) => s + r.closingWeight, 0);
     return { opening, closing };
-  }, [latestDate]);
+  }, [selectedDateStr, latestDate]);
 
   const pureStock = mockGoldDailyBalance.find((r) => r.date === "2026-06-25" && r.type === "Pure Gold");
   const oldStock  = mockGoldDailyBalance.find((r) => r.date === "2026-06-25" && r.type === "Old Gold");
@@ -222,32 +235,47 @@ export default function PureGoldTab() {
 
       {/* Transactions filter bar */}
       {subTab === "transactions" && (
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Opening */}
-          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
-            <Scale className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-            <span className="text-xs text-muted-foreground">Opening</span>
-            <span className="text-sm font-semibold text-foreground">{fmtW(opening)}</span>
+        <div className="flex gap-5 items-start flex-wrap">
+          {/* Inline Calendar */}
+          <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden shrink-0">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={(d) => setSelectedDate(d === selectedDate ? undefined : d)}
+            />
           </div>
 
-          {/* Closing */}
-          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
-            <TrendingDown className="h-3.5 w-3.5 text-blue-500 shrink-0" />
-            <span className="text-xs text-muted-foreground">Closing</span>
-            <span className="text-sm font-semibold text-foreground">{fmtW(closing)}</span>
-          </div>
-
-          {/* Count */}
-          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
-            <Hash className="h-3.5 w-3.5 text-violet-500 shrink-0" />
-            <span className="text-xs text-muted-foreground">Transactions</span>
-            <span className="text-sm font-semibold text-foreground">{mockGoldTransactions.length}</span>
+          {/* Stat chips */}
+          <div className="flex flex-col gap-3 pt-1">
+            <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+              <Scale className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+              <span className="text-xs text-muted-foreground">Opening</span>
+              <span className="text-sm font-semibold text-foreground">{fmtW(opening)}</span>
+            </div>
+            <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+              <TrendingDown className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+              <span className="text-xs text-muted-foreground">Closing</span>
+              <span className="text-sm font-semibold text-foreground">{fmtW(closing)}</span>
+            </div>
+            <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+              <Hash className="h-3.5 w-3.5 text-violet-500 shrink-0" />
+              <span className="text-xs text-muted-foreground">Transactions</span>
+              <span className="text-sm font-semibold text-foreground">{filteredTx.length}</span>
+            </div>
+            {selectedDate && (
+              <button
+                onClick={() => setSelectedDate(undefined)}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors text-left"
+              >
+                ✕ Clear filter
+              </button>
+            )}
           </div>
         </div>
       )}
 
       {/* Table */}
-      {subTab === "transactions" && <TransactionsTable rows={mockGoldTransactions} />}
+      {subTab === "transactions" && <TransactionsTable rows={filteredTx} />}
       {subTab === "daily"        && <DailyBalanceTable rows={mockGoldDailyBalance} />}
     </div>
   );
