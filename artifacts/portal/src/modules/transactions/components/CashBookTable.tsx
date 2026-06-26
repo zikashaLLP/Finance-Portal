@@ -111,14 +111,14 @@ export default function CashBookTable({ transactions: initialTransactions }: Cas
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-full"
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-muted border border-border rounded-md"
                           data-testid={`btn-edit-${tx.id}`}
                           onClick={() => setEditingTx(tx)}
                         >
-                          <Pencil className="h-4 w-4" />
+                          <Pencil className="h-3.5 w-3.5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded-full" data-testid={`btn-delete-${tx.id}`}>
-                          <Trash2 className="h-4 w-4" />
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-red-400 hover:text-red-600 hover:bg-red-50 border border-red-200 rounded-md" data-testid={`btn-delete-${tx.id}`}>
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </td>
