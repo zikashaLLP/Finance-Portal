@@ -28,31 +28,27 @@ interface Props {
 const TYPES: GoldType[] = ["Pure Gold", "Old Gold", "Coins"];
 const CATEGORIES: GoldCategory[] = ["Purchase", "Sale"];
 
-const TYPE_THEME: Record<GoldType, { bg: string; iconBg: string; iconColor: string; badgeBg: string; badgeText: string; icon: React.ReactNode }> = {
-  "Pure Gold": {
-    bg: "bg-amber-50",
-    iconBg: "bg-amber-100",
-    iconColor: "text-amber-600",
-    badgeBg: "bg-amber-100",
-    badgeText: "text-amber-700",
-    icon: <Gem className="h-5 w-5" />,
+const CAT_THEME: Record<GoldCategory, { bg: string; iconBg: string; iconColor: string; badgeBg: string; badgeText: string }> = {
+  Purchase: {
+    bg: "bg-emerald-50",
+    iconBg: "bg-emerald-100",
+    iconColor: "text-emerald-600",
+    badgeBg: "bg-emerald-100",
+    badgeText: "text-emerald-700",
   },
-  "Old Gold": {
-    bg: "bg-orange-50",
-    iconBg: "bg-orange-100",
-    iconColor: "text-orange-600",
-    badgeBg: "bg-orange-100",
-    badgeText: "text-orange-700",
-    icon: <CircleDot className="h-5 w-5" />,
+  Sale: {
+    bg: "bg-red-50",
+    iconBg: "bg-red-100",
+    iconColor: "text-red-500",
+    badgeBg: "bg-red-100",
+    badgeText: "text-red-600",
   },
-  "Coins": {
-    bg: "bg-yellow-50",
-    iconBg: "bg-yellow-100",
-    iconColor: "text-yellow-600",
-    badgeBg: "bg-yellow-100",
-    badgeText: "text-yellow-700",
-    icon: <Coins className="h-5 w-5" />,
-  },
+};
+
+const TYPE_ICON: Record<GoldType, React.ReactNode> = {
+  "Pure Gold": <Gem className="h-5 w-5" />,
+  "Old Gold":  <CircleDot className="h-5 w-5" />,
+  "Coins":     <Coins className="h-5 w-5" />,
 };
 
 export function EditGoldTransactionModal({ transaction, open, onClose, onSave }: Props) {
@@ -64,7 +60,8 @@ export function EditGoldTransactionModal({ transaction, open, onClose, onSave }:
 
   if (!form) return null;
 
-  const theme = TYPE_THEME[form.type];
+  const theme = CAT_THEME[form.category];
+  const icon  = TYPE_ICON[form.type];
   const amount = parseFloat((form.weight * form.rate).toFixed(2));
 
   function set<K extends keyof GoldTransaction>(key: K, value: GoldTransaction[K]) {
@@ -88,7 +85,7 @@ export function EditGoldTransactionModal({ transaction, open, onClose, onSave }:
               <div className="flex items-center gap-3">
                 {/* Icon circle */}
                 <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${theme.iconBg} ${theme.iconColor}`}>
-                  {theme.icon}
+                  {icon}
                 </div>
                 <div>
                   <DialogTitle className="text-[15px] font-semibold leading-tight text-foreground">
@@ -96,7 +93,7 @@ export function EditGoldTransactionModal({ transaction, open, onClose, onSave }:
                   </DialogTitle>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase ${theme.badgeBg} ${theme.badgeText}`}>
-                      {form.type}
+                      {form.category}
                     </span>
                     <span className="text-[11px] text-muted-foreground font-mono">{form.id}</span>
                   </div>
