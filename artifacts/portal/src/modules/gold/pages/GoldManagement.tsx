@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Bell } from "lucide-react";
+import { Bell, Scale } from "lucide-react";
 import PureGoldTab from "../components/PureGoldTab";
+import { GoldOpeningBalanceModal } from "../components/GoldOpeningBalanceModal";
 
 type Tab = "pure" | "old";
 
 export default function GoldManagement() {
   const [tab, setTab] = useState<Tab>("pure");
+  const [openingOpen, setOpeningOpen] = useState(false);
 
   return (
     <div className="w-full flex flex-col h-full">
@@ -45,8 +47,18 @@ export default function GoldManagement() {
           </button>
         </div>
 
-        {/* Bell */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Right actions */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          {/* Opening Balance button */}
+          <button
+            onClick={() => setOpeningOpen(true)}
+            className="flex items-center gap-2 h-9 px-4 rounded-lg border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors text-sm font-medium shadow-sm"
+          >
+            <Scale className="h-3.5 w-3.5" />
+            Opening Balance
+          </button>
+
+          {/* Bell */}
           <button className="relative h-9 w-9 flex items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors shadow-sm">
             <Bell className="h-4 w-4" />
             <span className="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
@@ -63,6 +75,12 @@ export default function GoldManagement() {
           </div>
         )}
       </div>
+
+      <GoldOpeningBalanceModal
+        open={openingOpen}
+        onClose={() => setOpeningOpen(false)}
+        onSave={() => setOpeningOpen(false)}
+      />
     </div>
   );
 }
