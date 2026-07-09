@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "../../../components/ui/dialog";
 import { Label } from "../../../components/ui/label";
 import { Input } from "../../../components/ui/input";
@@ -16,6 +15,7 @@ import {
   SelectValue,
 } from "../../../components/ui/select";
 import { Button } from "../../../components/ui/button";
+import { Gem, Coins, CircleDot, X } from "lucide-react";
 import { GoldTransaction, GoldType, GoldCategory } from "../data/mockPureGold";
 
 interface Props {
@@ -28,6 +28,33 @@ interface Props {
 const TYPES: GoldType[] = ["Pure Gold", "Old Gold", "Coins"];
 const CATEGORIES: GoldCategory[] = ["Purchase", "Sale"];
 
+const TYPE_THEME: Record<GoldType, { bg: string; iconBg: string; iconColor: string; badgeBg: string; badgeText: string; icon: React.ReactNode }> = {
+  "Pure Gold": {
+    bg: "bg-amber-50",
+    iconBg: "bg-amber-100",
+    iconColor: "text-amber-600",
+    badgeBg: "bg-amber-100",
+    badgeText: "text-amber-700",
+    icon: <Gem className="h-5 w-5" />,
+  },
+  "Old Gold": {
+    bg: "bg-orange-50",
+    iconBg: "bg-orange-100",
+    iconColor: "text-orange-600",
+    badgeBg: "bg-orange-100",
+    badgeText: "text-orange-700",
+    icon: <CircleDot className="h-5 w-5" />,
+  },
+  "Coins": {
+    bg: "bg-yellow-50",
+    iconBg: "bg-yellow-100",
+    iconColor: "text-yellow-600",
+    badgeBg: "bg-yellow-100",
+    badgeText: "text-yellow-700",
+    icon: <Coins className="h-5 w-5" />,
+  },
+};
+
 export function EditGoldTransactionModal({ transaction, open, onClose, onSave }: Props) {
   const [form, setForm] = useState<GoldTransaction | null>(null);
 
@@ -37,9 +64,10 @@ export function EditGoldTransactionModal({ transaction, open, onClose, onSave }:
 
   if (!form) return null;
 
+  const theme = TYPE_THEME[form.type];
   const amount = parseFloat((form.weight * form.rate).toFixed(2));
 
-  function handleChange<K extends keyof GoldTransaction>(key: K, value: GoldTransaction[K]) {
+  function set<K extends keyof GoldTransaction>(key: K, value: GoldTransaction[K]) {
     setForm((prev) => prev ? { ...prev, [key]: value } : prev);
   }
 
@@ -51,104 +79,150 @@ export function EditGoldTransactionModal({ transaction, open, onClose, onSave }:
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
-      <DialogContent className="sm:max-w-[520px] rounded-2xl p-0 overflow-hidden gap-0">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
-          <DialogTitle className="text-base font-semibold">Edit Gold Transaction</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-[480px] p-0 gap-0 !rounded-[15px] overflow-hidden border-0 shadow-2xl [&>button]:hidden">
 
-        <div className="px-6 py-5 space-y-4 max-h-[70vh] overflow-y-auto">
+        {/* Coloured header band */}
+        <div className={`px-6 pt-5 pb-4 ${theme.bg}`}>
+          <DialogHeader>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                {/* Icon circle */}
+                <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${theme.iconBg} ${theme.iconColor}`}>
+                  {theme.icon}
+                </div>
+                <div>
+                  <DialogTitle className="text-[15px] font-semibold leading-tight text-foreground">
+                    Edit Gold Transaction
+                  </DialogTitle>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase ${theme.badgeBg} ${theme.badgeText}`}>
+                      {form.type}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground font-mono">{form.id}</span>
+                  </div>
+                </div>
+              </div>
+              {/* Close button */}
+              <button
+                onClick={onClose}
+                className="h-7 w-7 rounded-full flex items-center justify-center text-muted-foreground hover:bg-black/10 transition-colors mt-0.5"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </DialogHeader>
+        </div>
+
+        {/* Body */}
+        <div className="px-6 pt-4 pb-5 space-y-4 bg-background">
+
           {/* Row 1: Date + Type */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-muted-foreground">Date</Label>
+              <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Date <span className="text-red-500">*</span>
+              </Label>
               <Input
                 type="date"
                 value={form.date}
-                onChange={(e) => handleChange("date", e.target.value)}
-                className="h-9 text-sm"
+                onChange={(e) => set("date", e.target.value)}
+                className="h-10 rounded-[10px] bg-muted/50 border-border text-sm focus-visible:ring-1 focus-visible:ring-foreground/20"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-muted-foreground">Type</Label>
-              <Select value={form.type} onValueChange={(v) => handleChange("type", v as GoldType)}>
-                <SelectTrigger className="h-9 text-sm">
+              <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Type <span className="text-red-500">*</span>
+              </Label>
+              <Select value={form.type} onValueChange={(v) => set("type", v as GoldType)}>
+                <SelectTrigger className="h-10 rounded-[10px] bg-muted/50 border-border focus:ring-1 text-sm">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  {TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>{t}</SelectItem>
-                  ))}
+                <SelectContent className="rounded-xl">
+                  {TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           {/* Row 2: Category + Name */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-muted-foreground">Category</Label>
-              <Select value={form.category} onValueChange={(v) => handleChange("category", v as GoldCategory)}>
-                <SelectTrigger className="h-9 text-sm">
+              <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Category <span className="text-red-500">*</span>
+              </Label>
+              <Select value={form.category} onValueChange={(v) => set("category", v as GoldCategory)}>
+                <SelectTrigger className="h-10 rounded-[10px] bg-muted/50 border-border focus:ring-1 text-sm">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map((c) => (
-                    <SelectItem key={c} value={c}>{c}</SelectItem>
-                  ))}
+                <SelectContent className="rounded-xl">
+                  {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-muted-foreground">Name</Label>
+              <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Name <span className="text-red-500">*</span>
+              </Label>
               <Input
                 value={form.name}
-                onChange={(e) => handleChange("name", e.target.value)}
+                onChange={(e) => set("name", e.target.value)}
                 placeholder="Party / customer name"
-                className="h-9 text-sm"
+                className="h-10 rounded-[10px] bg-muted/50 border-border text-sm focus-visible:ring-1 focus-visible:ring-foreground/20"
               />
             </div>
           </div>
 
           {/* Row 3: Weight + Purity */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-muted-foreground">Weight (g)</Label>
+              <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Weight (g) <span className="text-red-500">*</span>
+              </Label>
               <Input
                 type="number"
                 min={0}
                 step={0.01}
                 value={form.weight}
-                onChange={(e) => handleChange("weight", parseFloat(e.target.value) || 0)}
-                className="h-9 text-sm"
+                onChange={(e) => set("weight", parseFloat(e.target.value) || 0)}
+                className="h-10 rounded-[10px] bg-muted/50 border-border text-sm font-semibold focus-visible:ring-1 focus-visible:ring-foreground/20"
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-muted-foreground">Purity</Label>
+              <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Purity
+              </Label>
               <Input
                 value={form.purity}
-                onChange={(e) => handleChange("purity", e.target.value)}
+                onChange={(e) => set("purity", e.target.value)}
                 placeholder="e.g. 24K, 22K"
-                className="h-9 text-sm"
+                className="h-10 rounded-[10px] bg-muted/50 border-border text-sm focus-visible:ring-1 focus-visible:ring-foreground/20"
               />
             </div>
           </div>
 
-          {/* Row 4: Rate + Amount (computed) */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Row 4: Rate + Amount (auto-computed) */}
+          <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-muted-foreground">Rate (₹/g)</Label>
-              <Input
-                type="number"
-                min={0}
-                step={1}
-                value={form.rate}
-                onChange={(e) => handleChange("rate", parseFloat(e.target.value) || 0)}
-                className="h-9 text-sm"
-              />
+              <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Rate (₹/g) <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-semibold select-none">₹</span>
+                <Input
+                  type="number"
+                  min={0}
+                  step={1}
+                  value={form.rate}
+                  onChange={(e) => set("rate", parseFloat(e.target.value) || 0)}
+                  className="pl-7 h-10 rounded-[10px] bg-muted/50 border-border text-sm font-semibold focus-visible:ring-1 focus-visible:ring-foreground/20"
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-muted-foreground">Amount (₹)</Label>
-              <div className="h-9 flex items-center px-3 rounded-md border border-border bg-muted/40 text-sm font-semibold text-foreground tabular-nums">
+              <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Amount
+              </Label>
+              <div className="h-10 flex items-center px-3 rounded-[10px] border border-border bg-muted/30 text-sm font-semibold text-foreground tabular-nums">
                 {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(amount)}
               </div>
             </div>
@@ -156,24 +230,34 @@ export function EditGoldTransactionModal({ transaction, open, onClose, onSave }:
 
           {/* Description */}
           <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-muted-foreground">Description</Label>
+            <Label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+              Description
+            </Label>
             <Input
               value={form.description}
-              onChange={(e) => handleChange("description", e.target.value)}
+              onChange={(e) => set("description", e.target.value)}
               placeholder="Optional note"
-              className="h-9 text-sm"
+              className="h-10 rounded-[10px] bg-muted/50 border-border text-sm focus-visible:ring-1 focus-visible:ring-foreground/20"
             />
           </div>
         </div>
 
-        <DialogFooter className="px-6 py-4 border-t border-border flex items-center justify-end gap-2">
-          <Button variant="outline" size="sm" onClick={onClose} className="h-9 px-4">
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-border flex items-center justify-end gap-2.5 bg-background">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="h-9 px-5 rounded-[10px] text-sm font-medium border-border"
+          >
             Cancel
           </Button>
-          <Button size="sm" onClick={handleSave} className="h-9 px-5 bg-foreground text-background hover:bg-foreground/90">
-            Save changes
+          <Button
+            onClick={handleSave}
+            className="h-9 px-5 rounded-[10px] text-sm font-medium bg-foreground text-background hover:bg-foreground/90"
+          >
+            Save Changes
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
