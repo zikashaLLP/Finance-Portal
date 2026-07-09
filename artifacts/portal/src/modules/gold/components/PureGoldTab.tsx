@@ -10,6 +10,7 @@ import {
   GoldTransaction,
   GoldDailyBalance,
 } from "../data/mockPureGold";
+import { EditGoldTransactionModal } from "./EditGoldTransactionModal";
 
 type SubTab = "transactions" | "daily";
 
@@ -54,7 +55,7 @@ function MetricCard({
   );
 }
 
-function TransactionsTable({ rows }: { rows: GoldTransaction[] }) {
+function TransactionsTable({ rows, onEdit }: { rows: GoldTransaction[]; onEdit: (row: GoldTransaction) => void }) {
   return (
     <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
@@ -91,7 +92,10 @@ function TransactionsTable({ rows }: { rows: GoldTransaction[] }) {
                 <td className="px-4 py-3 text-muted-foreground max-w-[180px] truncate">{row.description}</td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <div className="flex items-center gap-1.5">
-                    <button className="h-7 w-7 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                    <button
+                      className="h-7 w-7 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                      onClick={() => onEdit(row)}
+                    >
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
                     <button className="h-7 w-7 flex items-center justify-center rounded-md border border-red-200 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors">
@@ -156,6 +160,8 @@ export default function PureGoldTab() {
   const [subTab, setSubTab] = useState<SubTab>("transactions");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [calOpen, setCalOpen] = useState(false);
+  const [transactions, setTransactions] = useState(mockGoldTransactions);
+  const [editingRow, setEditingRow] = useState<GoldTransaction | null>(null);
 
   // Latest date in mock data
   const latestDate = useMemo(() => {
@@ -169,9 +175,13 @@ export default function PureGoldTab() {
   // Filtered transactions
   const filteredTx = useMemo(() =>
     selectedDateStr
-      ? mockGoldTransactions.filter((r) => r.date === selectedDateStr)
-      : mockGoldTransactions,
-    [selectedDateStr]);
+      ? transactions.filter((r) => r.date === selectedDateStr)
+      : transactions,
+    [selectedDateStr, transactions]);
+
+  function handleSave(updated: GoldTransaction) {
+    setTransactions((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+  }
 
   // Opening / Closing: sum across all types for the selected date (or latest when none selected)
   const { opening, closing } = useMemo(() => {
@@ -291,8 +301,15 @@ export default function PureGoldTab() {
       )}
 
       {/* Table */}
-      {subTab === "transactions" && <TransactionsTable rows={filteredTx} />}
+      {subTab === "transactions" && <TransactionsTable rows={filteredTx} onEdit={setEditingRow} />}
       {subTab === "daily"        && <DailyBalanceTable rows={mockGoldDailyBalance} />}
+
+      <EditGoldTransactionModal
+        transaction={editingRow}
+        open={editingRow !== null}
+        onClose={() => setEditingRow(null)}
+        onSave={handleSave}
+      />
     </div>
   );
 }
