@@ -1,36 +1,50 @@
-# [Project name]
+# Portal — Accounting
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A frontend accounting web app for a jewellery/gold business. Tracks cash transactions, gold stock, and daily balances.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `pnpm --filter @workspace/portal run dev` — start the portal (served at `/`)
+- `pnpm run typecheck` — typecheck all artifacts
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- React 19 + Vite 7
+- Tailwind CSS v4
+- shadcn/ui component library
+- wouter (client-side routing)
+- framer-motion (animations)
+- All data is mock — no backend or database
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+```
+artifacts/portal/src/
+├── app/               — router (wouter) + MainLayout shell
+├── components/ui/     — shadcn/ui primitives
+├── shared/components/ — Sidebar, Topbar, AppModal (reusable modal shell)
+├── modules/
+│   ├── gold/          — Gold Management page (/gold)
+│   └── transactions/  — Cash Book / Transactions page (/transactions)
+└── pages/             — ComingSoon, NotFound
+```
+
+- Theme: `src/index.css` (Tailwind v4 tokens)
+- Routes: `src/app/router/AppRouter.tsx`
+- Shared modal shell: `src/shared/components/AppModal.tsx`
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Frontend-only — all data lives in `modules/*/data/mock*.ts` files
+- Topbar is suppressed on `/gold` and `/transactions` (those pages own their own header)
+- All modals use the `AppModal` shell for consistent structure
+- Black primary buttons, light sidebar, grey canvas, floating white cards
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Cash Book** (`/transactions`) — income/expense transactions with pagination, edit modal, opening balance, and daily reconciliation
+- **Gold Management** (`/gold`) — pure gold & old gold tabs, metric cards, transactions table (edit modal), daily balance table, opening balance modal
 
 ## User preferences
 
@@ -38,8 +52,6 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- `no-scrollbar` utility is defined in `src/index.css` under `@layer utilities`
+- Calendar uses a custom `MonthCaption` component — do not restore the default Nav/MonthCaption
+- `AppModal` body slot has no padding — each modal adds its own `px-6 pt-4 pb-5` wrapper
