@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Bell, Scale } from "lucide-react";
 import PureGoldTab from "../components/PureGoldTab";
+import OldGoldTab from "../components/OldGoldTab";
 import { GoldOpeningBalanceModal } from "../components/GoldOpeningBalanceModal";
 
 type Tab = "pure" | "old";
@@ -69,11 +70,7 @@ export default function GoldManagement() {
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto no-scrollbar p-8">
         {tab === "pure" && <PureGoldTab />}
-        {tab === "old" && (
-          <div className="h-64 flex items-center justify-center rounded-2xl border border-dashed border-border text-muted-foreground text-sm">
-            Old Gold content coming soon
-          </div>
-        )}
+        {tab === "old" && <OldGoldTab />}
       </div>
 
       <GoldOpeningBalanceModal
