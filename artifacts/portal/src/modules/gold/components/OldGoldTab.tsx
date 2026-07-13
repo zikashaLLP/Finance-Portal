@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Eye, Pencil, Flame, Trash2, Package, Gem, TrendingDown, Percent, Search, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -102,8 +102,12 @@ function OldGoldBoxTable({ search }: { search: string }) {
     );
   }, [search]);
 
+  // Reset to page 1 whenever the search query changes
+  useEffect(() => { setPage(1); }, [search]);
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const rows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const clampedPage = Math.min(page, Math.max(1, totalPages));
+  const rows = filtered.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
 
   return (
     <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
@@ -174,7 +178,7 @@ function OldGoldBoxTable({ search }: { search: string }) {
           </tbody>
         </table>
       </div>
-      <Pagination page={page} total={totalPages} onChange={(p) => { setPage(p); }} />
+      <Pagination page={clampedPage} total={totalPages} onChange={setPage} />
     </div>
   );
 }
@@ -375,6 +379,12 @@ export default function OldGoldTab() {
 
   return (
     <div className="space-y-6">
+      {/* Section header */}
+      <div>
+        <h2 className="text-xl font-semibold text-foreground tracking-tight mb-0.5">Old Gold Management</h2>
+        <p className="text-sm text-muted-foreground">Track old gold items, melting records &amp; daily balances</p>
+      </div>
+
       {/* Metric cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {metrics.map((m) => (
@@ -400,19 +410,13 @@ export default function OldGoldTab() {
             key={t.key}
             onClick={() => { setSubTab(t.key); setSearch(""); }}
             className={cn(
-              "flex items-center gap-1.5 px-5 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
+              "px-5 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
               subTab === t.key
                 ? "border-foreground text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
-            {t.label}
-            <span className={cn(
-              "text-[11px] font-semibold px-1.5 py-0.5 rounded-full",
-              subTab === t.key ? "bg-foreground text-background" : "bg-muted text-muted-foreground",
-            )}>
-              {t.count}
-            </span>
+            {t.label} ({t.count})
           </button>
         ))}
       </div>
