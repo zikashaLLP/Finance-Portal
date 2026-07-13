@@ -2,6 +2,7 @@ import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import MainLayout from "../layouts/MainLayout";
 import Transactions from "../../modules/transactions/pages/Transactions";
 import GoldManagement from "../../modules/gold/pages/GoldManagement";
+import Ledger from "../../modules/ledger/pages/Ledger";
 import ComingSoon from "../../pages/ComingSoon";
 
 export default function AppRouter() {
@@ -20,7 +21,7 @@ export default function AppRouter() {
 
         <Route path="/ledger">
           <MainLayout>
-            <ComingSoon title="Ledger" />
+            <Ledger />
           </MainLayout>
         </Route>
         <Route path="/finance">
