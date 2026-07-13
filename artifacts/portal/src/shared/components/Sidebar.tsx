@@ -40,28 +40,23 @@ type GroupItem= { kind: "group"; name: string; icon: React.ElementType; children
 type MenuItem = FlatItem | GroupItem;
 
 const MAIN_MENU: FlatItem[] = [
-  { kind: "flat", name: "Transactions",     icon: ArrowLeftRight, path: "/transactions" },
-  { kind: "flat", name: "Ledger",           icon: BookOpen,       path: "/ledger"       },
-  { kind: "flat", name: "Finance Planning", icon: TrendingUp,     path: "/finance"      },
-  { kind: "flat", name: "Team Management",  icon: Users,          path: "/team"         },
-  { kind: "flat", name: "Ground Staff",     icon: Truck,          path: "/ground-staff" },
+  { kind: "flat", name: "Transactions",      icon: ArrowLeftRight, path: "/transactions" },
+  { kind: "flat", name: "Ledger",            icon: BookOpen,       path: "/ledger"       },
+  { kind: "flat", name: "Finance Planning",  icon: TrendingUp,     path: "/finance"      },
+  { kind: "flat", name: "Team Management",   icon: Users,          path: "/team"         },
+  { kind: "flat", name: "Ground Staff",      icon: Truck,          path: "/ground-staff" },
 ];
 
 const MANAGEMENT: MenuItem[] = [
-  { kind: "flat", name: "Gold Management", icon: Gem, path: "/gold" },
-  {
-    kind: "group", name: "Silver", icon: Medal,
-    children: [
-      { name: "Silver Management", path: "/silver",         icon: Medal       },
-    ],
-  },
+  { kind: "flat", name: "Gold Management",   icon: Gem,   path: "/gold"   },
+  { kind: "flat", name: "Silver Management", icon: Medal, path: "/silver" },
   {
     kind: "group", name: "Karigar", icon: Hammer,
     children: [
-      { name: "Karigar Section",  path: "/karigar/section", icon: User          },
-      { name: "Karigar Reports",  path: "/karigar/reports", icon: FileText      },
-      { name: "Bulk Management",  path: "/karigar/bulk",    icon: Layers        },
-      { name: "Bulk Order",       path: "/karigar/orders",  icon: Box           },
+      { name: "Karigar Section", path: "/karigar/section", icon: User          },
+      { name: "Karigar Reports", path: "/karigar/reports", icon: FileText      },
+      { name: "Bulk Management", path: "/karigar/bulk",    icon: Layers        },
+      { name: "Bulk Order",      path: "/karigar/orders",  icon: Box           },
     ],
   },
   {
@@ -90,9 +85,9 @@ const MANAGEMENT: MenuItem[] = [
   {
     kind: "group", name: "Diamond Quality", icon: Diamond,
     children: [
-      { name: "Quality Tracking", path: "/diamond/tracking", icon: Sparkles    },
-      { name: "Diamond Orders",   path: "/diamond/orders",   icon: ClipboardList},
-      { name: "Return Workflow",  path: "/diamond/returns",  icon: RefreshCw   },
+      { name: "Quality Tracking", path: "/diamond/tracking", icon: Sparkles     },
+      { name: "Diamond Orders",   path: "/diamond/orders",   icon: ClipboardList },
+      { name: "Return Workflow",  path: "/diamond/returns",  icon: RefreshCw    },
     ],
   },
 ];
@@ -103,10 +98,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
-  const [location]  = useLocation();
-  const [isHovered, setIsHovered] = useState(false);
-
-  const isExpanded = isPinned || isHovered;
+  const [location] = useLocation();
 
   const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
     const init = new Set<string>();
@@ -128,7 +120,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
 
   const labelCls = cn(
     "text-sm whitespace-nowrap overflow-hidden transition-all duration-300",
-    isExpanded ? "opacity-100 max-w-[160px] ml-3" : "opacity-0 max-w-0 ml-0",
+    isPinned ? "opacity-100 max-w-[160px] ml-3" : "opacity-0 max-w-0 ml-0",
   );
 
   const FlatNavItem = ({ item }: { item: FlatItem }) => {
@@ -140,7 +132,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
           data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, "-")}`}
           className={cn(
             "flex items-center px-3 py-2 rounded-lg transition-colors mb-0.5",
-            isExpanded ? "justify-start" : "justify-center",
+            isPinned ? "justify-start" : "justify-center",
             isActive
               ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
               : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
@@ -148,7 +140,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         >
           <Icon className={cn("h-4 w-4 shrink-0", isActive && "stroke-[2.5px]")} />
           <span className={labelCls}>{item.name}</span>
-          {isExpanded && isActive && (
+          {isPinned && isActive && (
             <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto shrink-0" />
           )}
         </div>
@@ -164,10 +156,10 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
     return (
       <div className="mb-0.5">
         <button
-          onClick={() => isExpanded && toggleGroup(item.name)}
+          onClick={() => toggleGroup(item.name)}
           className={cn(
             "w-full flex items-center px-3 py-2 rounded-lg transition-colors",
-            isExpanded ? "justify-start" : "justify-center",
+            isPinned ? "justify-start" : "justify-center",
             hasActive
               ? "text-sidebar-accent-foreground font-medium"
               : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
@@ -175,7 +167,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         >
           <Icon className={cn("h-4 w-4 shrink-0", hasActive && "stroke-[2.5px]")} />
           <span className={labelCls}>{item.name}</span>
-          {isExpanded && (
+          {isPinned && (
             <ChevronRight
               className={cn(
                 "h-3 w-3 text-muted-foreground ml-auto shrink-0 transition-transform duration-200",
@@ -185,11 +177,10 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
           )}
         </button>
 
-        {/* Sub-items */}
         <div
           className={cn(
             "overflow-hidden transition-all duration-300 ease-in-out",
-            isExpanded && isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
+            isPinned && isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
           )}
         >
           <div className="mt-0.5 ml-3 pl-4 border-l border-border space-y-0.5 pb-1">
@@ -222,25 +213,20 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
   };
 
   const sectionLabelCls = cn(
-    "text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2 px-3",
+    "text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider px-3",
     "whitespace-nowrap overflow-hidden transition-all duration-300",
-    isExpanded ? "opacity-100 max-h-6 mb-2" : "opacity-0 max-h-0 mb-0",
+    isPinned ? "opacity-100 max-h-6 mb-2" : "opacity-0 max-h-0 mb-0",
   );
 
   return (
-    /* absolute so it overlays content on hover without shifting layout */
     <aside
       className={cn(
-        "absolute inset-y-0 left-0 z-50",
-        "bg-background flex flex-col",
+        "h-full flex flex-col bg-transparent",
         "transition-all duration-300 ease-in-out overflow-hidden",
-        isExpanded ? "w-[220px]" : "w-[56px]",
-        isExpanded && !isPinned && "shadow-[4px_0_20px_rgba(0,0,0,0.08)]",
+        isPinned ? "w-[220px]" : "w-[56px]",
       )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Logo + pin toggle */}
+      {/* Logo + collapse toggle */}
       <div className="h-16 flex items-center px-3 justify-between shrink-0">
         <div className="flex items-center gap-2 text-foreground min-w-0">
           <div className="h-8 w-8 bg-foreground rounded-lg flex items-center justify-center shrink-0">
@@ -248,7 +234,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
           </div>
           <span className={cn(
             "font-semibold text-lg tracking-tight whitespace-nowrap overflow-hidden transition-all duration-300",
-            isExpanded ? "opacity-100 max-w-[120px] ml-0" : "opacity-0 max-w-0",
+            isPinned ? "opacity-100 max-w-[120px]" : "opacity-0 max-w-0",
           )}>
             Portal
           </span>
@@ -257,12 +243,12 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         <button
           onClick={() => onPinnedChange(!isPinned)}
           className={cn(
-            "shrink-0 h-6 w-6 flex items-center justify-center rounded-md",
+            "shrink-0 h-6 flex items-center justify-center rounded-md",
             "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50",
             "transition-all duration-200",
-            isExpanded ? "opacity-100 ml-1" : "opacity-0 pointer-events-none w-0 ml-0 overflow-hidden",
+            isPinned ? "w-6 opacity-100 ml-1" : "w-6 opacity-100",
           )}
-          title={isPinned ? "Collapse sidebar" : "Pin sidebar"}
+          title={isPinned ? "Collapse sidebar" : "Expand sidebar"}
         >
           {isPinned
             ? <PanelLeftClose className="h-3.5 w-3.5" />
@@ -271,7 +257,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         </button>
       </div>
 
-      {/* Scrollable nav */}
+      {/* Nav */}
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="mb-4">
           <div className={sectionLabelCls}>Menu</div>
@@ -297,7 +283,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         <div className={cn(
           "flex items-center px-3 py-2 rounded-lg text-sidebar-foreground",
           "hover:bg-sidebar-accent/50 transition-colors cursor-pointer mb-0.5",
-          isExpanded ? "justify-start" : "justify-center",
+          isPinned ? "justify-start" : "justify-center",
         )}>
           <LifeBuoy className="h-4 w-4 shrink-0" />
           <span className={labelCls}>Help Center</span>
@@ -305,7 +291,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         <div className={cn(
           "flex items-center px-3 py-2 rounded-lg text-sidebar-foreground",
           "hover:bg-sidebar-accent/50 transition-colors cursor-pointer mb-2",
-          isExpanded ? "justify-start" : "justify-center",
+          isPinned ? "justify-start" : "justify-center",
         )}>
           <Settings className="h-4 w-4 shrink-0" />
           <span className={labelCls}>Settings</span>
@@ -313,19 +299,19 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
 
         <div className={cn(
           "flex items-center px-3 py-2 rounded-lg hover:bg-sidebar-accent/50 transition-colors cursor-pointer",
-          isExpanded ? "justify-start" : "justify-center",
+          isPinned ? "justify-start" : "justify-center",
         )}>
           <Avatar className="h-7 w-7 bg-blue-100 text-blue-700 shrink-0">
             <AvatarFallback className="bg-transparent text-[10px] font-semibold">AU</AvatarFallback>
           </Avatar>
           <div className={cn(
             "flex flex-col overflow-hidden transition-all duration-300",
-            isExpanded ? "opacity-100 max-w-[120px] ml-3" : "opacity-0 max-w-0 ml-0",
+            isPinned ? "opacity-100 max-w-[120px] ml-3" : "opacity-0 max-w-0 ml-0",
           )}>
             <span className="text-sm font-medium text-foreground leading-none mb-1 whitespace-nowrap">Admin User</span>
             <span className="text-[11px] text-muted-foreground leading-none whitespace-nowrap">admin@portal.com</span>
           </div>
-          {isExpanded && <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0" />}
+          {isPinned && <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0" />}
         </div>
       </div>
     </aside>
