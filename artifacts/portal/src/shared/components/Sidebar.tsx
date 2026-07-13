@@ -17,14 +17,8 @@ import {
   Settings,
   Truck,
   Medal,
-  FileText,
-  Layers,
-  Box,
-  BarChart2,
-  UserCheck,
-  RefreshCw,
-  Sparkles,
-  ClipboardList,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -42,7 +36,7 @@ const MAIN_MENU: FlatItem[] = [
 ];
 
 const MANAGEMENT: MenuItem[] = [
-  { kind: "flat",  name: "Gold Management", icon: Gem,         path: "/gold" },
+  { kind: "flat",  name: "Gold Management", icon: Gem, path: "/gold" },
   {
     kind: "group", name: "Silver", icon: Medal,
     children: [
@@ -52,19 +46,19 @@ const MANAGEMENT: MenuItem[] = [
   {
     kind: "group", name: "Karigar", icon: Hammer,
     children: [
-      { name: "Karigar Section",  path: "/karigar/section"  },
-      { name: "Karigar Reports",  path: "/karigar/reports"  },
-      { name: "Bulk Management",  path: "/karigar/bulk"     },
-      { name: "Bulk Order",       path: "/karigar/orders"   },
+      { name: "Karigar Section", path: "/karigar/section" },
+      { name: "Karigar Reports", path: "/karigar/reports" },
+      { name: "Bulk Management", path: "/karigar/bulk"    },
+      { name: "Bulk Order",      path: "/karigar/orders"  },
     ],
   },
   {
     kind: "group", name: "Stock Management", icon: Package,
     children: [
-      { name: "Stock Management",    path: "/stock"                },
-      { name: "Stock Tally Report",  path: "/stock/tally"          },
-      { name: "Summary",             path: "/stock/summary"        },
-      { name: "Material Report",     path: "/stock/material"       },
+      { name: "Stock Management",   path: "/stock"          },
+      { name: "Stock Tally Report", path: "/stock/tally"    },
+      { name: "Summary",            path: "/stock/summary"  },
+      { name: "Material Report",    path: "/stock/material" },
     ],
   },
   {
@@ -84,23 +78,28 @@ const MANAGEMENT: MenuItem[] = [
   {
     kind: "group", name: "Diamond Quality", icon: Diamond,
     children: [
-      { name: "Quality Tracking",    path: "/diamond/tracking" },
-      { name: "Diamond Orders",      path: "/diamond/orders"   },
-      { name: "Return Workflow",     path: "/diamond/returns"  },
+      { name: "Quality Tracking", path: "/diamond/tracking" },
+      { name: "Diamond Orders",   path: "/diamond/orders"   },
+      { name: "Return Workflow",  path: "/diamond/returns"  },
     ],
   },
 ];
 
 export default function Sidebar() {
   const [location] = useLocation();
+  const [isPinned, setIsPinned]   = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const isExpanded = isPinned || isHovered;
+
   const [openGroups, setOpenGroups] = useState<Set<string>>(() => {
-    const initially = new Set<string>();
+    const init = new Set<string>();
     MANAGEMENT.forEach((item) => {
       if (item.kind === "group" && item.children.some((c) => location.startsWith(c.path))) {
-        initially.add(item.name);
+        init.add(item.name);
       }
     });
-    return initially;
+    return init;
   });
 
   function toggleGroup(name: string) {
@@ -111,6 +110,13 @@ export default function Sidebar() {
     });
   }
 
+  /* ── shared label animation ── */
+  const labelCls = cn(
+    "text-sm whitespace-nowrap overflow-hidden transition-all duration-300",
+    isExpanded ? "opacity-100 max-w-[160px] ml-3" : "opacity-0 max-w-0 ml-0",
+  );
+
+  /* ── Flat nav item ── */
   const FlatNavItem = ({ item }: { item: FlatItem }) => {
     const isActive = location.startsWith(item.path);
     const Icon = item.icon;
@@ -119,53 +125,60 @@ export default function Sidebar() {
         <div
           data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, "-")}`}
           className={cn(
-            "flex items-center justify-between px-3 py-2 rounded-lg transition-colors mb-0.5",
+            "flex items-center px-3 py-2 rounded-lg transition-colors mb-0.5",
+            isExpanded ? "justify-start" : "justify-center",
             isActive
               ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
               : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
           )}
         >
-          <div className="flex items-center gap-3">
-            <Icon className={cn("h-4 w-4", isActive && "stroke-[2.5px]")} />
-            <span className="text-sm">{item.name}</span>
-          </div>
-          {isActive && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
+          <Icon className={cn("h-4 w-4 shrink-0", isActive && "stroke-[2.5px]")} />
+          <span className={labelCls}>{item.name}</span>
+          {isExpanded && isActive && (
+            <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto" />
+          )}
         </div>
       </Link>
     );
   };
 
+  /* ── Collapsible group ── */
   const GroupNavItem = ({ item }: { item: GroupItem }) => {
-    const isOpen = openGroups.has(item.name);
-    const hasActive = item.children.some((c) => location.startsWith(c.path));
-    const Icon = item.icon;
+    const isOpen      = openGroups.has(item.name);
+    const hasActive   = item.children.some((c) => location.startsWith(c.path));
+    const Icon        = item.icon;
 
     return (
       <div className="mb-0.5">
-        {/* Parent row */}
         <button
-          onClick={() => toggleGroup(item.name)}
+          onClick={() => isExpanded && toggleGroup(item.name)}
           className={cn(
-            "w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors",
+            "w-full flex items-center px-3 py-2 rounded-lg transition-colors",
+            isExpanded ? "justify-start" : "justify-center",
             hasActive
               ? "text-sidebar-accent-foreground font-medium"
               : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
           )}
         >
-          <div className="flex items-center gap-3">
-            <Icon className={cn("h-4 w-4", hasActive && "stroke-[2.5px]")} />
-            <span className="text-sm">{item.name}</span>
-          </div>
-          <ChevronRight
-            className={cn(
-              "h-3 w-3 text-muted-foreground transition-transform duration-200",
-              isOpen && "rotate-90",
-            )}
-          />
+          <Icon className={cn("h-4 w-4 shrink-0", hasActive && "stroke-[2.5px]")} />
+          <span className={labelCls}>{item.name}</span>
+          {isExpanded && (
+            <ChevronRight
+              className={cn(
+                "h-3 w-3 text-muted-foreground ml-auto shrink-0 transition-transform duration-200",
+                isOpen && "rotate-90",
+              )}
+            />
+          )}
         </button>
 
-        {/* Sub-items */}
-        {isOpen && (
+        {/* Sub-items — only render when expanded */}
+        <div
+          className={cn(
+            "overflow-hidden transition-all duration-300 ease-in-out",
+            isExpanded && isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
+          )}
+        >
           <div className="mt-0.5 ml-3 pl-4 border-l border-border space-y-0.5">
             {item.children.map((child) => {
               const isChildActive = location.startsWith(child.path);
@@ -179,76 +192,126 @@ export default function Sidebar() {
                         : "text-sidebar-foreground/70 hover:bg-sidebar-accent/40 hover:text-sidebar-accent-foreground",
                     )}
                   >
-                    <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", isChildActive ? "bg-foreground" : "bg-muted-foreground/40")} />
+                    <span className={cn(
+                      "h-1.5 w-1.5 rounded-full shrink-0",
+                      isChildActive ? "bg-foreground" : "bg-muted-foreground/40",
+                    )} />
                     {child.name}
                   </div>
                 </Link>
               );
             })}
           </div>
-        )}
+        </div>
       </div>
     );
   };
 
   return (
-    <aside className="w-[220px] bg-transparent h-full flex flex-col flex-shrink-0" data-testid="sidebar">
-      <div className="h-16 flex items-center px-4">
-        <div className="flex items-center gap-2 text-foreground">
-          <div className="h-8 w-8 bg-foreground rounded-lg flex items-center justify-center">
+    <aside
+      className={cn(
+        "bg-transparent h-full flex flex-col flex-shrink-0",
+        "transition-all duration-300 ease-in-out overflow-hidden",
+        isExpanded ? "w-[220px]" : "w-[56px]",
+      )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Logo + pin toggle */}
+      <div className="h-16 flex items-center px-3 justify-between shrink-0">
+        <div className="flex items-center gap-2 text-foreground min-w-0">
+          <div className="h-8 w-8 bg-foreground rounded-lg flex items-center justify-center shrink-0">
             <Hexagon className="h-5 w-5 text-background fill-background" />
           </div>
-          <span className="font-semibold text-lg tracking-tight">Portal</span>
+          <span className={cn(
+            "font-semibold text-lg tracking-tight whitespace-nowrap overflow-hidden transition-all duration-300",
+            isExpanded ? "opacity-100 max-w-[120px]" : "opacity-0 max-w-0",
+          )}>
+            Portal
+          </span>
         </div>
+
+        {/* Pin / unpin button */}
+        <button
+          onClick={() => setIsPinned((p) => !p)}
+          className={cn(
+            "shrink-0 h-6 w-6 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-all duration-200",
+            isExpanded ? "opacity-100 ml-1" : "opacity-0 pointer-events-none w-0 ml-0",
+          )}
+          title={isPinned ? "Unpin sidebar" : "Pin sidebar"}
+        >
+          {isPinned
+            ? <PanelLeftClose className="h-3.5 w-3.5" />
+            : <PanelLeftOpen  className="h-3.5 w-3.5" />
+          }
+        </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar">
-        <div className="mb-6">
-          <h2 className="text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2 px-3">
+      {/* Nav */}
+      <div className="flex-1 overflow-y-auto no-scrollbar px-0">
+        {/* Section label */}
+        <div className="mb-4">
+          <div className={cn(
+            "text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2 px-3 whitespace-nowrap overflow-hidden transition-all duration-300",
+            isExpanded ? "opacity-100 max-h-6" : "opacity-0 max-h-0",
+          )}>
             Menu
-          </h2>
+          </div>
           <nav>
-            {MAIN_MENU.map((item) => (
-              <FlatNavItem key={item.name} item={item} />
-            ))}
+            {MAIN_MENU.map((item) => <FlatNavItem key={item.name} item={item} />)}
           </nav>
         </div>
 
         <div>
-          <h2 className="text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2 px-3">
+          <div className={cn(
+            "text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2 px-3 whitespace-nowrap overflow-hidden transition-all duration-300",
+            isExpanded ? "opacity-100 max-h-6" : "opacity-0 max-h-0",
+          )}>
             Management
-          </h2>
+          </div>
           <nav>
             {MANAGEMENT.map((item) =>
               item.kind === "flat"
-                ? <FlatNavItem key={item.name} item={item} />
+                ? <FlatNavItem  key={item.name} item={item} />
                 : <GroupNavItem key={item.name} item={item} />
             )}
           </nav>
         </div>
       </div>
 
-      <div className="pb-1">
+      {/* Footer */}
+      <div className="pb-1 shrink-0">
         <div className="border-t border-border mb-2 pt-2">
-          <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors cursor-pointer mb-0.5">
-            <LifeBuoy className="h-4 w-4" />
-            <span className="text-sm">Help Center</span>
+          <div className={cn(
+            "flex items-center px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors cursor-pointer mb-0.5",
+            isExpanded ? "justify-start" : "justify-center",
+          )}>
+            <LifeBuoy className="h-4 w-4 shrink-0" />
+            <span className={labelCls}>Help Center</span>
           </div>
-          <div className="flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors cursor-pointer mb-2">
-            <Settings className="h-4 w-4" />
-            <span className="text-sm">Settings</span>
+          <div className={cn(
+            "flex items-center px-3 py-2 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors cursor-pointer mb-2",
+            isExpanded ? "justify-start" : "justify-center",
+          )}>
+            <Settings className="h-4 w-4 shrink-0" />
+            <span className={labelCls}>Settings</span>
           </div>
-          <div className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-sidebar-accent/50 transition-colors cursor-pointer">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8 bg-blue-100 text-blue-700">
-                <AvatarFallback className="bg-transparent text-xs font-semibold">AU</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <span className="text-sm font-medium text-foreground leading-none mb-1">Admin User</span>
-                <span className="text-[11px] text-muted-foreground leading-none">admin@portal.com</span>
-              </div>
+
+          <div className={cn(
+            "flex items-center px-3 py-2 rounded-lg hover:bg-sidebar-accent/50 transition-colors cursor-pointer",
+            isExpanded ? "justify-start" : "justify-center",
+          )}>
+            <Avatar className="h-7 w-7 bg-blue-100 text-blue-700 shrink-0">
+              <AvatarFallback className="bg-transparent text-[10px] font-semibold">AU</AvatarFallback>
+            </Avatar>
+            <div className={cn(
+              "flex flex-col overflow-hidden transition-all duration-300",
+              isExpanded ? "opacity-100 max-w-[120px] ml-3" : "opacity-0 max-w-0 ml-0",
+            )}>
+              <span className="text-sm font-medium text-foreground leading-none mb-1 whitespace-nowrap">Admin User</span>
+              <span className="text-[11px] text-muted-foreground leading-none whitespace-nowrap">admin@portal.com</span>
             </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            {isExpanded && <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0" />}
           </div>
         </div>
       </div>
