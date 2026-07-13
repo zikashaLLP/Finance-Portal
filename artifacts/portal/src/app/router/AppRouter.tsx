@@ -2,6 +2,7 @@ import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import MainLayout from "../layouts/MainLayout";
 import Transactions from "../../modules/transactions/pages/Transactions";
 import GoldManagement from "../../modules/gold/pages/GoldManagement";
+import SilverManagement from "../../modules/silver/pages/SilverManagement";
 import Ledger from "../../modules/ledger/pages/Ledger";
 import ComingSoon from "../../pages/ComingSoon";
 import FinancePlanning from "../../modules/finance/pages/FinancePlanning";
@@ -38,6 +39,11 @@ export default function AppRouter() {
         <Route path="/gold">
           <MainLayout>
             <GoldManagement />
+          </MainLayout>
+        </Route>
+        <Route path="/silver">
+          <MainLayout>
+            <SilverManagement />
           </MainLayout>
         </Route>
         <Route path="/karigar">

@@ -1,0 +1,247 @@
+import { useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { Layers, Gem, ChevronLeft, ChevronRight } from "lucide-react";
+import { mockSilverTransactions, SilverTransaction } from "../data/mockSilver";
+
+const PAGE_SIZE = 10;
+
+const fmt = (n: number) =>
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
+
+const fmtW = (n: number) => `${n.toFixed(2)} g`;
+
+const TYPE_BADGE: Record<string, string> = {
+  "Pure Silver":    "bg-slate-100 text-slate-700 border border-slate-200",
+  "Silver Jewelry": "bg-violet-50 text-violet-700 border border-violet-200",
+};
+
+const CAT_BADGE: Record<string, string> = {
+  Purchase: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  Sale:     "bg-red-50 text-red-600 border border-red-200",
+};
+
+const PAYMENT_BADGE: Record<string, string> = {
+  Cash:            "bg-amber-50 text-amber-700",
+  "Bank Transfer": "bg-blue-50 text-blue-700",
+  UPI:             "bg-purple-50 text-purple-700",
+  Cheque:          "bg-zinc-100 text-zinc-700",
+};
+
+function MetricCard({
+  title,
+  totalPurchases,
+  totalSales,
+  currentStock,
+  icon,
+  accent,
+  index,
+}: {
+  title: string;
+  totalPurchases: number;
+  totalSales: number;
+  currentStock: number;
+  icon: React.ReactNode;
+  accent: string;
+  index: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay: index * 0.08, ease: "easeOut" }}
+      className="bg-card border border-border rounded-[18px] p-6 shadow-sm hover:shadow-md transition-shadow"
+    >
+      <div className="flex items-start justify-between mb-4">
+        <div
+          className="p-2.5 rounded-full inline-flex items-center justify-center"
+          style={{ backgroundColor: accent + "20", color: accent }}
+        >
+          {icon}
+        </div>
+        <span
+          className="text-xs font-semibold px-2.5 py-1 rounded-full"
+          style={{ backgroundColor: accent + "15", color: accent }}
+        >
+          Current Stock
+        </span>
+      </div>
+
+      <p className="text-[13px] font-medium text-muted-foreground mb-1">{title}</p>
+      <h3 className="text-[28px] font-semibold text-foreground tracking-tight mb-4">{fmtW(currentStock)}</h3>
+
+      <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border">
+        <div>
+          <p className="text-[11px] text-muted-foreground mb-0.5">Total Purchases</p>
+          <p className="text-sm font-semibold text-emerald-600">{fmtW(totalPurchases)}</p>
+        </div>
+        <div>
+          <p className="text-[11px] text-muted-foreground mb-0.5">Total Sales</p>
+          <p className="text-sm font-semibold text-red-500">{fmtW(totalSales)}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function TransactionHistoryTable({ rows }: { rows: SilverTransaction[] }) {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  const paged = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  return (
+    <div>
+      <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border bg-muted/40">
+                {["Date", "Type", "Category", "Weight", "Purity", "Rate (₹/g)", "Amount", "Payment", "Vendor", "Description"].map((h) => (
+                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {paged.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="px-4 py-8 text-center text-muted-foreground text-sm">
+                    No transactions found
+                  </td>
+                </tr>
+              ) : (
+                paged.map((row, i) => (
+                  <tr
+                    key={row.id}
+                    className={`border-b border-border last:border-0 hover:bg-muted/20 transition-colors ${i % 2 === 0 ? "" : "bg-muted/10"}`}
+                  >
+                    <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">{row.date}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${TYPE_BADGE[row.type]}`}>{row.type}</span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${CAT_BADGE[row.category]}`}>{row.category}</span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums font-medium">{fmtW(row.weight)}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="text-xs font-semibold bg-zinc-100 text-zinc-700 px-2 py-0.5 rounded">{row.purity}</span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums text-muted-foreground">₹{row.rate.toLocaleString("en-IN")}</td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums font-semibold text-foreground">{fmt(row.amount)}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`text-xs font-medium px-2 py-0.5 rounded ${PAYMENT_BADGE[row.paymentMode]}`}>{row.paymentMode}</span>
+                    </td>
+                    <td className="px-4 py-3 font-medium text-foreground whitespace-nowrap max-w-[140px] truncate">{row.vendor}</td>
+                    <td className="px-4 py-3 text-muted-foreground max-w-[180px] truncate">{row.description}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-3 px-1">
+          <p className="text-xs text-muted-foreground">
+            Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, rows.length)} of {rows.length}
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((p) => p - 1)}
+              className="h-7 w-7 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPage(p)}
+                className={`h-7 min-w-[28px] px-2 text-xs rounded-md border transition-colors ${
+                  p === page
+                    ? "border-foreground bg-foreground text-background font-semibold"
+                    : "border-border text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className="h-7 w-7 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function StockSummaryTab() {
+  const { purePurchases, pureSales, pureStock, jewelryPurchases, jewelrySales, jewelryStock } = useMemo(() => {
+    let purePurchases = 0, pureSales = 0;
+    let jewelryPurchases = 0, jewelrySales = 0;
+
+    for (const tx of mockSilverTransactions) {
+      if (tx.type === "Pure Silver") {
+        if (tx.category === "Purchase") purePurchases += tx.weight;
+        else pureSales += tx.weight;
+      } else {
+        if (tx.category === "Purchase") jewelryPurchases += tx.weight;
+        else jewelrySales += tx.weight;
+      }
+    }
+
+    return {
+      purePurchases,
+      pureSales,
+      pureStock: purePurchases - pureSales,
+      jewelryPurchases,
+      jewelrySales,
+      jewelryStock: jewelryPurchases - jewelrySales,
+    };
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      {/* Metric cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <MetricCard
+          title="Pure Silver Stock"
+          totalPurchases={purePurchases}
+          totalSales={pureSales}
+          currentStock={pureStock}
+          icon={<Gem className="h-4 w-4" />}
+          accent="#64748b"
+          index={0}
+        />
+        <MetricCard
+          title="Silver Jewelry Stock"
+          totalPurchases={jewelryPurchases}
+          totalSales={jewelrySales}
+          currentStock={jewelryStock}
+          icon={<Layers className="h-4 w-4" />}
+          accent="#7c3aed"
+          index={1}
+        />
+      </div>
+
+      {/* Transaction history */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.2, ease: "easeOut" }}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-foreground">Transaction History</h2>
+          <span className="text-xs text-muted-foreground">{mockSilverTransactions.length} entries</span>
+        </div>
+        <TransactionHistoryTable rows={mockSilverTransactions} />
+      </motion.div>
+    </div>
+  );
+}
