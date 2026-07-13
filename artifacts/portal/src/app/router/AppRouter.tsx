@@ -4,6 +4,7 @@ import Transactions from "../../modules/transactions/pages/Transactions";
 import GoldManagement from "../../modules/gold/pages/GoldManagement";
 import Ledger from "../../modules/ledger/pages/Ledger";
 import ComingSoon from "../../pages/ComingSoon";
+import FinancePlanning from "../../modules/finance/pages/FinancePlanning";
 
 export default function AppRouter() {
   return (
@@ -26,7 +27,7 @@ export default function AppRouter() {
         </Route>
         <Route path="/finance">
           <MainLayout>
-            <ComingSoon title="Finance Planning" />
+            <FinancePlanning />
           </MainLayout>
         </Route>
         <Route path="/team">
