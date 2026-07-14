@@ -159,18 +159,18 @@ export default function DiamondOrders() {
                   const pct = order.weightCt > 0 ? Math.round((order.soldCt / order.weightCt) * 100) : 0;
                   return (
                     <tr key={order.id} className="hover:bg-muted/20 transition-colors">
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <span className="text-sm font-bold text-foreground tabular-nums">{order.orderNo}</span>
                       </td>
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <span className="text-sm font-medium text-foreground">{order.client}</span>
                       </td>
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <span className={cn("inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold", QUALITY_COLORS[order.quality] ?? "bg-muted text-foreground")}>
                           {order.quality}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <span className="text-xs font-semibold text-foreground tabular-nums">{order.weightCt.toFixed(3)}</span>
                       </td>
                       <td className="px-4 py-3.5 min-w-[120px]">
@@ -185,24 +185,24 @@ export default function DiamondOrders() {
                         </div>
                         <div className="text-[10px] text-muted-foreground mt-0.5">{pct}% sold</div>
                       </td>
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         {order.estimatedPrice
                           ? <span className="text-xs font-semibold text-foreground tabular-nums">{fmtINR(order.estimatedPrice)}</span>
                           : <span className="text-muted-foreground text-xs">—</span>
                         }
                       </td>
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <span className="text-xs text-muted-foreground whitespace-nowrap">{order.orderDate}</span>
                       </td>
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <span className="text-xs text-muted-foreground">{order.targetDelivery ?? "—"}</span>
                       </td>
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <span className={cn("inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold capitalize", STATUS_STYLE[order.status])}>
                           {order.status === "in-progress" ? "In Progress" : order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <div className="flex items-center gap-1">
                           <button className="h-7 w-7 rounded border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors">
                             <Edit className="h-3.5 w-3.5" />

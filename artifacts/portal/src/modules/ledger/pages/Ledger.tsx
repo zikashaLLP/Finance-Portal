@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Search, Wallet, ArrowDownLeft, ArrowUpRight, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Pagination from "@/shared/components/Pagination";
 import PartyCard from "../components/PartyCard";
 import { getFilteredParties, getSummary, type LedgerFilter } from "../data/mockLedger";
 
@@ -140,11 +141,6 @@ export default function Ledger() {
               : `${filtered.length} ${filtered.length === 1 ? "party" : "parties"}`
             }
           </p>
-          {totalPages > 1 && (
-            <p className="text-sm text-muted-foreground">
-              Page {page} of {totalPages}
-            </p>
-          )}
         </div>
 
         {/* ── Party cards ── */}
@@ -160,41 +156,7 @@ export default function Ledger() {
           </div>
         )}
 
-        {/* ── Pagination ── */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-1 pt-2 pb-4">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="h-8 px-3 rounded-lg border border-border text-sm text-muted-foreground hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              Previous
-            </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-              <button
-                key={n}
-                onClick={() => setPage(n)}
-                className={cn(
-                  "h-8 w-8 rounded-lg text-sm font-medium transition-colors",
-                  n === page
-                    ? "bg-foreground text-background"
-                    : "border border-border text-muted-foreground hover:bg-zinc-50",
-                )}
-              >
-                {n}
-              </button>
-            ))}
-
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="h-8 px-3 rounded-lg border border-border text-sm text-muted-foreground hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              Next
-            </button>
-          </div>
-        )}
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} totalItems={filtered.length} pageSize={PAGE_SIZE} itemLabel="parties" />
 
       </div>
     </div>

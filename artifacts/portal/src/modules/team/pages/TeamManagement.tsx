@@ -266,9 +266,9 @@ export default function TeamManagement() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border bg-muted/40">
+                <tr className="border-b border-border bg-muted/30">
                   {["Member", "Username", "Role", "Email", "Phone", "Joined"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                    <th key={h} className="px-5 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -279,7 +279,7 @@ export default function TeamManagement() {
                   const Icon = ROLE_ICON[m.role];
                   return (
                     <tr key={m.id} className={cn("border-b border-border last:border-0 hover:bg-muted/20 transition-colors", i % 2 !== 0 && "bg-muted/10")}>
-                      <td className="px-5 py-3">
+                      <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2.5">
                           <div className="h-8 w-8 rounded-lg bg-foreground flex items-center justify-center text-xs font-bold text-background shrink-0">
                             {m.fullName.charAt(0).toUpperCase()}
@@ -287,16 +287,16 @@ export default function TeamManagement() {
                           <span className="font-medium text-foreground">{m.fullName}</span>
                         </div>
                       </td>
-                      <td className="px-5 py-3 font-mono text-xs text-muted-foreground">{m.username}</td>
-                      <td className="px-5 py-3">
+                      <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">{m.username}</td>
+                      <td className="px-5 py-3.5">
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-muted text-foreground border border-border">
                           <Icon className="h-3 w-3" />
                           {m.role}
                         </span>
                       </td>
-                      <td className="px-5 py-3 text-muted-foreground">{m.email || <span className="italic text-muted-foreground/50">—</span>}</td>
-                      <td className="px-5 py-3 text-muted-foreground">{m.phone || <span className="italic text-muted-foreground/50">—</span>}</td>
-                      <td className="px-5 py-3 text-muted-foreground whitespace-nowrap">
+                      <td className="px-5 py-3.5 text-muted-foreground">{m.email || <span className="italic text-muted-foreground/50">—</span>}</td>
+                      <td className="px-5 py-3.5 text-muted-foreground">{m.phone || <span className="italic text-muted-foreground/50">—</span>}</td>
+                      <td className="px-5 py-3.5 text-muted-foreground whitespace-nowrap">
                         {new Date(m.joinedAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
                       </td>
                     </tr>

@@ -12,6 +12,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import Pagination from "@/shared/components/Pagination";
 import {
   GOLD_STOCK, DIAMOND_STOCK,
   type StockItem, type StockStatus, type StockSource,
@@ -225,9 +226,9 @@ function StockTable({ items, onView, onDelete }: {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-muted/40">
+            <tr className="border-b border-border bg-muted/30">
               {["Image","Stock ID","Item Name","Specifications","Source / Lot","Value","Status","Comment","Actions"].map((h) => (
-                <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                <th key={h} className="px-5 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                   {h}
                 </th>
               ))}
@@ -242,16 +243,16 @@ function StockTable({ items, onView, onDelete }: {
                   "border-b border-border last:border-0 hover:bg-muted/20 transition-colors group",
                   i % 2 !== 0 && "bg-muted/[0.04]",
                 )}>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3.5">
                     <ImagePlaceholder item={item} />
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3.5">
                     <span className="font-mono text-xs font-bold text-foreground">{item.stockId}</span>
                   </td>
-                  <td className="px-4 py-3 max-w-[180px]">
+                  <td className="px-5 py-3.5 max-w-[180px]">
                     <span className="text-xs font-medium text-foreground leading-snug line-clamp-2">{item.itemName}</span>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3.5">
                     <p className="text-xs text-muted-foreground leading-relaxed whitespace-nowrap">
                       {item.goldWeight.toFixed(3)}g gold{item.karat && ` (${item.karat})`}
                       {item.diamondWeight > 0 && (
@@ -259,23 +260,23 @@ function StockTable({ items, onView, onDelete }: {
                       )}
                     </p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3.5">
                     <span className={cn("inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold border", src.cls)}>
                       {src.label}
                     </span>
                   </td>
-                  <td className="px-4 py-3 tabular-nums text-xs font-semibold text-foreground">
+                  <td className="px-5 py-3.5 tabular-nums text-xs font-semibold text-foreground">
                     {item.value > 0 ? fmtAmt(item.value) : <span className="text-muted-foreground/50">₹0</span>}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3.5">
                     <span className={cn("inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border", sm.cls)}>
                       <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", sm.dot)} />{sm.label}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground">
+                  <td className="px-5 py-3.5 text-xs text-muted-foreground">
                     {item.comment || <span className="text-muted-foreground/30">—</span>}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3.5">
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button onClick={() => onView(item)} title="View"
                         className="h-7 px-2.5 rounded-lg text-[11px] font-medium border border-border text-foreground hover:bg-muted/40 transition-colors">
@@ -311,27 +312,7 @@ function StockTable({ items, onView, onDelete }: {
         </table>
       </div>
 
-      {/* Pagination */}
-      {total > 1 && (
-        <div className="flex items-center justify-between px-5 py-3.5 border-t border-border bg-muted/20">
-          <p className="text-xs text-muted-foreground">
-            Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, items.length)} of {items.length}
-          </p>
-          <div className="flex items-center gap-1">
-            <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
-              className="h-7 px-3 rounded-lg text-xs border border-border disabled:opacity-40 hover:bg-muted/40 transition-colors">Prev</button>
-            {Array.from({ length: total }, (_, i) => i + 1).map((p) => (
-              <button key={p} onClick={() => setPage(p)}
-                className={cn("h-7 w-7 rounded-lg text-xs font-medium transition-colors",
-                  p === page ? "bg-foreground text-background" : "hover:bg-muted/40 text-muted-foreground")}>
-                {p}
-              </button>
-            ))}
-            <button onClick={() => setPage(Math.min(total, page + 1))} disabled={page === total}
-              className="h-7 px-3 rounded-lg text-xs border border-border disabled:opacity-40 hover:bg-muted/40 transition-colors">Next</button>
-          </div>
-        </div>
-      )}
+      <Pagination page={page} totalPages={total} onPageChange={setPage} totalItems={items.length} pageSize={PAGE_SIZE} itemLabel="items" />
     </div>
   );
 }

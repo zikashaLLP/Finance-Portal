@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Bell, ArrowDownLeft, ArrowUpRight, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Pagination from "@/shared/components/Pagination";
 import {
   Select,
   SelectContent,
@@ -255,11 +256,11 @@ export default function FinancePlanning() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-border bg-muted/40">
+                    <tr className="border-b border-border bg-muted/30">
                       {["Name", "Type", "Amount", "Since", "Days Old", "Timeline", "Actions"].map((h) => (
                         <th
                           key={h}
-                          className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap"
+                          className="px-5 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap"
                         >
                           {h}
                         </th>
@@ -282,27 +283,27 @@ export default function FinancePlanning() {
                             i % 2 !== 0 && "bg-muted/10",
                           )}
                         >
-                          <td className="px-4 py-3 font-medium text-foreground whitespace-nowrap">{entry.name}</td>
-                          <td className="px-4 py-3 whitespace-nowrap">
+                          <td className="px-5 py-3.5 font-medium text-foreground whitespace-nowrap">{entry.name}</td>
+                          <td className="px-5 py-3.5 whitespace-nowrap">
                             <span className={cn("text-xs font-medium px-2.5 py-1 rounded-full", TYPE_PILL[entry.type])}>
                               {entry.type}
                             </span>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap tabular-nums font-semibold text-foreground">
+                          <td className="px-5 py-3.5 whitespace-nowrap tabular-nums font-semibold text-foreground">
                             {fmtAmt(entry.amount)}
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
+                          <td className="px-5 py-3.5 whitespace-nowrap text-muted-foreground">
                             {new Date(entry.since).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
+                          <td className="px-5 py-3.5 whitespace-nowrap">
                             <span className={cn("text-xs font-medium px-2.5 py-1 rounded-full", daysOldBadge(entry.daysOld))}>
                               {entry.daysOld}d
                             </span>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-muted-foreground text-[13px] italic">
+                          <td className="px-5 py-3.5 whitespace-nowrap text-muted-foreground text-[13px] italic">
                             {entry.timeline ?? "Not set"}
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
+                          <td className="px-5 py-3.5 whitespace-nowrap">
                             <button className="text-xs font-medium text-foreground underline-offset-2 hover:underline transition-colors opacity-70 hover:opacity-100">
                               Set Timeline
                             </button>
@@ -315,41 +316,7 @@ export default function FinancePlanning() {
               </div>
             </div>
 
-            {/* ── Pagination ── */}
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-1 pt-2 pb-4">
-                <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="h-8 px-3 rounded-lg border border-border text-sm text-muted-foreground hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                >
-                  Previous
-                </button>
-
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                  <button
-                    key={n}
-                    onClick={() => setPage(n)}
-                    className={cn(
-                      "h-8 w-8 rounded-lg text-sm font-medium transition-colors",
-                      n === page
-                        ? "bg-foreground text-background"
-                        : "border border-border text-muted-foreground hover:bg-zinc-50",
-                    )}
-                  >
-                    {n}
-                  </button>
-                ))}
-
-                <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  className="h-8 px-3 rounded-lg border border-border text-sm text-muted-foreground hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                >
-                  Next
-                </button>
-              </div>
-            )}
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} totalItems={displayEntries.length} pageSize={PAGE_SIZE} itemLabel="entries" />
           </>
         )}
       </div>
