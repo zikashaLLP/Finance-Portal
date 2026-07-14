@@ -23,6 +23,9 @@ import SalesManagement from "../../modules/sales/pages/SalesManagement";
 import ClientManagement from "../../modules/sales/pages/ClientManagement";
 import PurchaseManagement from "../../modules/purchase/pages/PurchaseManagement";
 import VendorManagement from "../../modules/purchase/pages/VendorManagement";
+import DiamondQualityTracking from "../../modules/diamond/pages/DiamondQualityTracking";
+import DiamondOrders from "../../modules/diamond/pages/DiamondOrders";
+import DiamondReturnWorkflow from "../../modules/diamond/pages/DiamondReturnWorkflow";
 import GroundStaff from "../../modules/ground-staff/pages/GroundStaff";
 
 export default function AppRouter() {
@@ -150,9 +153,24 @@ export default function AppRouter() {
             <PurchaseManagement />
           </MainLayout>
         </Route>
+        <Route path="/diamond/tracking">
+          <MainLayout>
+            <DiamondQualityTracking />
+          </MainLayout>
+        </Route>
+        <Route path="/diamond/orders">
+          <MainLayout>
+            <DiamondOrders />
+          </MainLayout>
+        </Route>
+        <Route path="/diamond/returns">
+          <MainLayout>
+            <DiamondReturnWorkflow />
+          </MainLayout>
+        </Route>
         <Route path="/diamond">
           <MainLayout>
-            <ComingSoon title="Diamond Management" />
+            <DiamondQualityTracking />
           </MainLayout>
         </Route>
 
