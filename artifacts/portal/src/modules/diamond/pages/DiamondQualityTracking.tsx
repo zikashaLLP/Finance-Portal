@@ -114,17 +114,17 @@ function QualitySection({ q }: { q: Quality }) {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   {["Date","Weight (ct)","Price (₹)","Actions"].map(h => (
-                    <th key={h} className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
+                    <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {q.purchases.map((r, i) => (
                   <tr key={i} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-4 py-2.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
-                    <td className="px-4 py-2.5 text-xs font-semibold text-foreground tabular-nums">{r.weight.toFixed(3)}</td>
-                    <td className="px-4 py-2.5 text-xs text-foreground tabular-nums">{fmtINR(r.price)}</td>
-                    <td className="px-4 py-2.5">
+                    <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
+                    <td className="px-5 py-3.5 text-xs font-semibold text-foreground tabular-nums">{r.weight.toFixed(3)}</td>
+                    <td className="px-5 py-3.5 text-xs text-foreground tabular-nums">{fmtINR(r.price)}</td>
+                    <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1">
                         <button className="h-6 w-6 rounded border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent transition-colors">
                           <Edit className="h-3 w-3" />
@@ -141,7 +141,7 @@ function QualitySection({ q }: { q: Quality }) {
                 )}
               </tbody>
             </table>
-            <div className="px-4 py-2.5 border-t border-border bg-muted/10">
+            <div className="px-5 py-3.5 border-t border-border bg-muted/10">
               <span className="text-xs font-semibold text-foreground">Total Purchased: {totalPurchased.toFixed(3)} ct</span>
             </div>
           </div>
@@ -155,18 +155,18 @@ function QualitySection({ q }: { q: Quality }) {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   {["Date","Weight (ct)","Issued To","Comment","Actions"].map(h => (
-                    <th key={h} className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
+                    <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {q.issues.map((r, i) => (
                   <tr key={i} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-4 py-2.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
-                    <td className="px-4 py-2.5 text-xs font-semibold text-foreground tabular-nums">{r.weight.toFixed(3)}</td>
-                    <td className="px-4 py-2.5 text-xs text-foreground">{r.issuedTo}</td>
-                    <td className="px-4 py-2.5 text-xs text-muted-foreground">{r.comment}</td>
-                    <td className="px-4 py-2.5">
+                    <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
+                    <td className="px-5 py-3.5 text-xs font-semibold text-foreground tabular-nums">{r.weight.toFixed(3)}</td>
+                    <td className="px-5 py-3.5 text-xs text-foreground">{r.issuedTo}</td>
+                    <td className="px-5 py-3.5 text-xs text-muted-foreground">{r.comment}</td>
+                    <td className="px-5 py-3.5">
                       <button className="h-6 w-6 rounded border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent transition-colors">
                         <Edit className="h-3 w-3" />
                       </button>
@@ -178,7 +178,7 @@ function QualitySection({ q }: { q: Quality }) {
                 )}
               </tbody>
             </table>
-            <div className="px-4 py-2.5 border-t border-border bg-muted/10">
+            <div className="px-5 py-3.5 border-t border-border bg-muted/10">
               <span className="text-xs font-semibold text-foreground">Total Issued: {totalIssued.toFixed(3)} ct</span>
             </div>
           </div>

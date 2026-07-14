@@ -173,7 +173,7 @@ export default function DiamondOrders() {
                       <td className="px-5 py-3.5">
                         <span className="text-xs font-semibold text-foreground tabular-nums">{order.weightCt.toFixed(3)}</span>
                       </td>
-                      <td className="px-4 py-3.5 min-w-[120px]">
+                      <td className="px-5 py-3.5 min-w-[120px]">
                         <div className="text-[10px] text-muted-foreground mb-1">
                           {order.soldCt.toFixed(3)} / {order.weightCt.toFixed(3)} ct
                         </div>

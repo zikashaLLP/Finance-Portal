@@ -132,7 +132,7 @@ export default function HarvestManagement() {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   {["Plan Name","Client","Type","Group / Card","Total Value","Monthly","Duration","Total Paid","Status","Actions"].map(h => (
-                    <th key={h} className="text-left px-4 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                    <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -141,13 +141,13 @@ export default function HarvestManagement() {
               <tbody className="divide-y divide-border">
                 {paged.map(plan => (
                   <tr key={plan.id} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-4 py-3.5">
+                    <td className="px-5 py-3.5">
                       <p className="text-xs font-semibold text-foreground whitespace-nowrap">{plan.name}</p>
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-5 py-3.5">
                       <p className="text-xs text-foreground font-medium whitespace-nowrap">{plan.client}</p>
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-5 py-3.5">
                       {plan.type === "diamond"
                         ? <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-semibold">
                             <Gem className="h-2.5 w-2.5" /> Diamond
@@ -157,7 +157,7 @@ export default function HarvestManagement() {
                           </span>
                       }
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-5 py-3.5">
                       {plan.group
                         ? <div>
                             <p className="text-xs text-foreground/70 font-medium">{plan.group}</p>
@@ -166,16 +166,16 @@ export default function HarvestManagement() {
                         : <span className="text-muted-foreground text-xs">—</span>
                       }
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-5 py-3.5">
                       <span className="text-xs font-semibold text-foreground tabular-nums">{fmtINR(plan.totalValue)}</span>
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-5 py-3.5">
                       <span className="text-xs text-foreground tabular-nums">{fmtINR(plan.monthly)}</span>
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-5 py-3.5">
                       <span className="text-xs text-muted-foreground whitespace-nowrap">{plan.duration}</span>
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-5 py-3.5">
                       <div>
                         <span className={cn(
                           "text-xs font-semibold tabular-nums",
@@ -192,7 +192,7 @@ export default function HarvestManagement() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-5 py-3.5">
                       <span className={cn(
                         "inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold",
                         plan.status === "active"   && "bg-emerald-100 text-emerald-700",
@@ -202,7 +202,7 @@ export default function HarvestManagement() {
                         {plan.status.charAt(0).toUpperCase() + plan.status.slice(1)}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1">
                         <button className="flex items-center gap-1 px-2 py-1 rounded text-[10px] font-medium border border-border hover:bg-sidebar-accent transition-colors whitespace-nowrap">
                           <Edit className="h-3 w-3" /> Edit
