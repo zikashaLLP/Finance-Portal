@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 export default function Topbar() {
   const [location] = useLocation();
 
-  if (location.startsWith("/transactions") || location.startsWith("/gold") || location.startsWith("/silver") || location.startsWith("/karigar") || location.startsWith("/stock") || location.startsWith("/dashboard") || location.startsWith("/reports") || location.startsWith("/approvals") || location.startsWith("/harvest")) {
+  if (location.startsWith("/transactions") || location.startsWith("/gold") || location.startsWith("/silver") || location.startsWith("/karigar") || location.startsWith("/stock") || location.startsWith("/dashboard") || location.startsWith("/reports") || location.startsWith("/approvals") || location.startsWith("/harvest") || location.startsWith("/sales")) {
     return null;
   }
 

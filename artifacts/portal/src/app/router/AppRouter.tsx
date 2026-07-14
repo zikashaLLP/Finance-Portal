@@ -19,6 +19,8 @@ import Reports from "../../modules/reports/pages/Reports";
 import Approvals from "../../modules/approvals/pages/Approvals";
 import HarvestManagement from "../../modules/harvest/pages/HarvestManagement";
 import GroupManagement from "../../modules/harvest/pages/GroupManagement";
+import SalesManagement from "../../modules/sales/pages/SalesManagement";
+import ClientManagement from "../../modules/sales/pages/ClientManagement";
 import GroundStaff from "../../modules/ground-staff/pages/GroundStaff";
 
 export default function AppRouter() {
@@ -126,9 +128,14 @@ export default function AppRouter() {
             <Reports />
           </MainLayout>
         </Route>
+        <Route path="/sales/clients">
+          <MainLayout>
+            <ClientManagement />
+          </MainLayout>
+        </Route>
         <Route path="/sales">
           <MainLayout>
-            <ComingSoon title="Sales" />
+            <SalesManagement />
           </MainLayout>
         </Route>
         <Route path="/purchase">
