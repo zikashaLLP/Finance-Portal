@@ -53,7 +53,7 @@ const MANAGEMENT: MenuItem[] = [
   {
     kind: "group", name: "Karigar", icon: Hammer,
     children: [
-      { name: "Karigar Section", path: "/karigar/section", icon: User          },
+      { name: "Karigar Section", path: "/karigar",         icon: User          },
       { name: "Karigar Reports", path: "/karigar/reports", icon: FileText      },
       { name: "Bulk Management", path: "/karigar/bulk",    icon: Layers        },
       { name: "Bulk Order",      path: "/karigar/orders",  icon: Box           },
