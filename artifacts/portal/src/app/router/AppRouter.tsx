@@ -13,6 +13,7 @@ import BulkManagement from "../../modules/karigar/pages/BulkManagement";
 import StockManagement from "../../modules/stock/pages/StockManagement";
 import Dashboard from "../../modules/dashboard/pages/Dashboard";
 import Reports from "../../modules/reports/pages/Reports";
+import Approvals from "../../modules/approvals/pages/Approvals";
 import GroundStaff from "../../modules/ground-staff/pages/GroundStaff";
 
 export default function AppRouter() {
@@ -83,6 +84,11 @@ export default function AppRouter() {
         <Route path="/stock">
           <MainLayout>
             <StockManagement />
+          </MainLayout>
+        </Route>
+        <Route path="/approvals">
+          <MainLayout>
+            <Approvals />
           </MainLayout>
         </Route>
         <Route path="/reports">

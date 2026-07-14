@@ -31,6 +31,7 @@ import {
   Sparkles,
   RefreshCw,
   LayoutDashboard,
+  ClipboardCheck,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -93,7 +94,8 @@ const MANAGEMENT: MenuItem[] = [
       { name: "Return Workflow",  path: "/diamond/returns",  icon: RefreshCw     },
     ],
   },
-  { kind: "flat", name: "Reports", icon: BarChart2, path: "/reports" },
+  { kind: "flat", name: "Approvals", icon: ClipboardCheck, path: "/approvals" },
+  { kind: "flat", name: "Reports",   icon: BarChart2,      path: "/reports"   },
 ];
 
 interface SidebarProps {
