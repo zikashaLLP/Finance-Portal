@@ -119,8 +119,9 @@ interface FlyoutState {
 
 export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
   const [location]  = useLocation();
+  const [isHovered, setIsHovered] = useState(false);
 
-  const isExpanded = isPinned;
+  const isExpanded = isPinned || isHovered;
 
   /* ── scroll preservation ── */
   const navScrollRef  = useRef<HTMLDivElement>(null);
@@ -257,7 +258,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         <div
           className={cn(
             "overflow-hidden transition-all duration-300 ease-in-out",
-            isPinned && isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
+            isExpanded && isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
           )}
         >
           <div className="mt-0.5 ml-3 pl-4 border-l border-border space-y-0.5 pb-1">
@@ -312,51 +313,43 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
           isExpanded
             ? "w-[220px] bg-background"
             : "w-[56px]  bg-background",
-          !isExpanded && "shadow-[4px_0_24px_rgba(0,0,0,0.07)]",
+          isExpanded && !isPinned && "shadow-[4px_0_24px_rgba(0,0,0,0.07)]",
         )}
+        onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => {
+          setIsHovered(false);
           scheduleFlyoutClose();
         }}
       >
         {/* Logo + toggle */}
-        <div className={cn(
-          "h-16 flex items-center px-3 shrink-0",
-          isExpanded ? "justify-between" : "justify-center",
-        )}>
-          {isExpanded ? (
-            <>
-              <div className="flex items-center gap-2 text-foreground min-w-0">
-                <div className="h-8 w-8 bg-foreground rounded-lg flex items-center justify-center shrink-0">
-                  <Hexagon className="h-5 w-5 text-background fill-background" />
-                </div>
-                <span className="font-semibold text-lg tracking-tight whitespace-nowrap overflow-hidden">
-                  Portal
-                </span>
-              </div>
-              <button
-                onClick={() => onPinnedChange(false)}
-                className={cn(
-                  "shrink-0 h-6 w-6 flex items-center justify-center rounded-md ml-1",
-                  "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50",
-                  "transition-all duration-200",
-                )}
-                title="Collapse sidebar"
-              >
-                <PanelLeftClose className="h-3.5 w-3.5" />
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => onPinnedChange(true)}
-              className={cn(
-                "h-8 w-8 flex items-center justify-center rounded-lg",
-                "bg-foreground text-background hover:opacity-80 transition-opacity",
-              )}
-              title="Pin sidebar open"
-            >
-              <Hexagon className="h-5 w-5 fill-background" />
-            </button>
-          )}
+        <div className="h-16 flex items-center px-3 justify-between shrink-0">
+          <div className="flex items-center gap-2 text-foreground min-w-0">
+            <div className="h-8 w-8 bg-foreground rounded-lg flex items-center justify-center shrink-0">
+              <Hexagon className="h-5 w-5 text-background fill-background" />
+            </div>
+            <span className={cn(
+              "font-semibold text-lg tracking-tight whitespace-nowrap overflow-hidden transition-all duration-300",
+              isExpanded ? "opacity-100 max-w-[120px]" : "opacity-0 max-w-0",
+            )}>
+              Portal
+            </span>
+          </div>
+
+          <button
+            onClick={() => onPinnedChange(!isPinned)}
+            className={cn(
+              "shrink-0 h-6 w-6 flex items-center justify-center rounded-md",
+              "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50",
+              "transition-all duration-200",
+              isExpanded ? "opacity-100 ml-1" : "opacity-0 pointer-events-none",
+            )}
+            title={isPinned ? "Collapse sidebar" : "Pin sidebar open"}
+          >
+            {isPinned
+              ? <PanelLeftClose className="h-3.5 w-3.5" />
+              : <PanelLeftOpen  className="h-3.5 w-3.5" />
+            }
+          </button>
         </div>
 
         {/* Scrollable nav */}
