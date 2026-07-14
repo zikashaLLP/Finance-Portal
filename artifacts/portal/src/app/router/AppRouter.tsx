@@ -8,6 +8,7 @@ import ComingSoon from "../../pages/ComingSoon";
 import FinancePlanning from "../../modules/finance/pages/FinancePlanning";
 import TeamManagement from "../../modules/team/pages/TeamManagement";
 import KarigarManagement from "../../modules/karigar/pages/KarigarManagement";
+import KarigarReports from "../../modules/karigar/pages/KarigarReports";
 import GroundStaff from "../../modules/ground-staff/pages/GroundStaff";
 
 export default function AppRouter() {
@@ -52,6 +53,11 @@ export default function AppRouter() {
         <Route path="/silver">
           <MainLayout>
             <SilverManagement />
+          </MainLayout>
+        </Route>
+        <Route path="/karigar/reports">
+          <MainLayout>
+            <KarigarReports />
           </MainLayout>
         </Route>
         <Route path="/karigar">
