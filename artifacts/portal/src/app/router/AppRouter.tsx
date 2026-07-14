@@ -11,6 +11,9 @@ import KarigarManagement from "../../modules/karigar/pages/KarigarManagement";
 import KarigarReports from "../../modules/karigar/pages/KarigarReports";
 import BulkManagement from "../../modules/karigar/pages/BulkManagement";
 import StockManagement from "../../modules/stock/pages/StockManagement";
+import StockTallyReport from "../../modules/stock/pages/StockTallyReport";
+import StockSummary from "../../modules/stock/pages/StockSummary";
+import MaterialReport from "../../modules/stock/pages/MaterialReport";
 import Dashboard from "../../modules/dashboard/pages/Dashboard";
 import Reports from "../../modules/reports/pages/Reports";
 import Approvals from "../../modules/approvals/pages/Approvals";
@@ -81,6 +84,21 @@ export default function AppRouter() {
         <Route path="/karigar">
           <MainLayout>
             <KarigarManagement />
+          </MainLayout>
+        </Route>
+        <Route path="/stock/tally">
+          <MainLayout>
+            <StockTallyReport />
+          </MainLayout>
+        </Route>
+        <Route path="/stock/summary">
+          <MainLayout>
+            <StockSummary />
+          </MainLayout>
+        </Route>
+        <Route path="/stock/material">
+          <MainLayout>
+            <MaterialReport />
           </MainLayout>
         </Route>
         <Route path="/stock">
