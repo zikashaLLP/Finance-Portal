@@ -3,9 +3,9 @@ import {
   Gem, Star, Search, Plus,
   LayoutList, Edit, CreditCard, Wallet,
 } from "lucide-react";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Pagination from "@/shared/components/Pagination";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 
 /* ── MOCK DATA ── */
 type Plan = {
@@ -96,23 +96,8 @@ export default function HarvestManagement() {
             { label:"Active Plans",   value: String(activePlans),   sub:"Currently running",  icon: Star,       iclr:"text-emerald-500"   },
             { label:"Redeemed Plans", value: String(redeemedPlans), sub:"Completed",          icon: Gem,        iclr:"text-foreground/50" },
             { label:"Total Value",    value: fmtINR(totalValue),    sub:"All plans combined", icon: Wallet,     iclr:"text-foreground/50" },
-          ].map(({ label, value, sub, icon: Icon, iclr }, i) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: i * 0.07 }}
-              className="bg-card border border-border rounded-xl p-5 flex items-center justify-between hover:shadow-sm transition-shadow"
-            >
-              <div>
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{label}</p>
-                <p className="text-xl font-bold text-foreground tabular-nums leading-none mb-1">{value}</p>
-                <p className="text-[11px] text-muted-foreground">{sub}</p>
-              </div>
-              <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                <Icon className={cn("h-5 w-5", iclr)} />
-              </div>
-            </motion.div>
+          ].map(({ label, value, sub, icon, iclr }, i) => (
+            <AnimatedMetricCard key={label} label={label} value={value} sub={sub} icon={icon} iconCls={iclr} index={i} />
           ))}
         </div>
 

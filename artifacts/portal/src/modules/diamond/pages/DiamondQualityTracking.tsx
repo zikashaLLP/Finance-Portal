@@ -112,7 +112,7 @@ function QualitySection({ q }: { q: Quality }) {
             </div>
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border bg-muted/20">
+                <tr className="border-b border-border bg-muted/30">
                   {["Date","Weight (ct)","Price (₹)","Actions"].map(h => (
                     <th key={h} className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
                   ))}
@@ -153,7 +153,7 @@ function QualitySection({ q }: { q: Quality }) {
             </div>
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border bg-muted/20">
+                <tr className="border-b border-border bg-muted/30">
                   {["Date","Weight (ct)","Issued To","Comment","Actions"].map(h => (
                     <th key={h} className="text-left px-4 py-2.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
                   ))}

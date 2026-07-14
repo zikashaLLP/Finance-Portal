@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Diamond, Plus, Edit, Trash2, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 
 /* ── DATA ── */
 type OrderStatus = "pending" | "confirmed" | "in-progress" | "ready" | "delivered" | "completed";
@@ -100,34 +100,21 @@ export default function DiamondOrders() {
         <div className="grid grid-cols-6 gap-3">
           {([
             { key:"all",          label:"Total Orders" },
-            { key:"pending",      label:"Pending"      },
-            { key:"confirmed",    label:"Confirmed"    },
+            { key:"pending",      label:"Pending",      valueColor:"text-amber-600"   },
+            { key:"confirmed",    label:"Confirmed",    valueColor:"text-blue-600"    },
             { key:"in-progress",  label:"In Progress"  },
-            { key:"ready",        label:"Ready"        },
+            { key:"ready",        label:"Ready",        valueColor:"text-emerald-600" },
             { key:"delivered",    label:"Delivered"    },
-          ] as { key:Tab; label:string }[]).map(({ key, label }, i) => (
-            <motion.div
+          ] as { key:Tab; label:string; valueColor?:string }[]).map(({ key, label, valueColor }, i) => (
+            <AnimatedMetricCard
               key={key}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: i * 0.07 }}
+              label={label}
+              value={String(counts[key])}
+              index={i}
               onClick={() => setTab(key)}
-              className={cn(
-                "bg-card border rounded-xl px-4 py-4 cursor-pointer hover:shadow-sm transition-shadow",
-                tab === key ? "border-foreground/30 ring-1 ring-foreground/10" : "border-border",
-              )}
-            >
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">{label}</p>
-              <p className={cn(
-                "text-2xl font-bold tabular-nums",
-                key === "pending"   ? "text-amber-600" :
-                key === "confirmed" ? "text-blue-600"  :
-                key === "ready"     ? "text-emerald-600" :
-                "text-foreground",
-              )}>
-                {counts[key]}
-              </p>
-            </motion.div>
+              selected={tab === key}
+              valueColor={valueColor}
+            />
           ))}
         </div>
 

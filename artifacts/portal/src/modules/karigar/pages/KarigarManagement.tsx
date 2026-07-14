@@ -301,9 +301,9 @@ function KarigarsTab({ karigars, onAddClick }: { karigars: Karigar[]; onAddClick
       <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-muted/40">
+            <tr className="border-b border-border bg-muted/30">
               {["Name", "Phone", "Address", "Actions"].map((h) => (
-                <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
+                <th key={h} className="px-5 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
               ))}
             </tr>
           </thead>
@@ -378,7 +378,7 @@ function PendingOrdersTab({ orders }: { orders: KarigarOrder[] }) {
       <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-muted/40">
+            <tr className="border-b border-border bg-muted/30">
               {["Order #", "Karigar", "Item", "Gold (g)", "Diamond", "Status", "Actions"].map((h) => (
                 <th key={h} className="px-4 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
               ))}
@@ -408,7 +408,7 @@ function PendingOrdersTab({ orders }: { orders: KarigarOrder[] }) {
             ))}
           </tbody>
         </table>
-        <SharedPagination page={page} totalPages={totalPages} onPageChange={setPage} />
+        <SharedPagination page={page} totalPages={totalPages} onPageChange={setPage} totalItems={filtered.length} pageSize={PAGE_SIZE} itemLabel="orders" />
       </div>
     </div>
   );
@@ -488,7 +488,7 @@ function ExecutedOrdersTab({ orders }: { orders: KarigarOrder[] }) {
       <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-muted/40">
+            <tr className="border-b border-border bg-muted/30">
               {["Order #", "Karigar", "Client", "Item Type", "Billing Status", "Completion Date", "Actions"].map((h) => (
                 <th key={h} className="px-4 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
               ))}
@@ -520,7 +520,7 @@ function ExecutedOrdersTab({ orders }: { orders: KarigarOrder[] }) {
             ))}
           </tbody>
         </table>
-        <SharedPagination page={page} totalPages={totalPages} onPageChange={setPage} />
+        <SharedPagination page={page} totalPages={totalPages} onPageChange={setPage} totalItems={filtered.length} pageSize={PAGE_SIZE} itemLabel="orders" />
       </div>
     </div>
   );
@@ -565,26 +565,26 @@ function PendingDiamondsTab({ records }: { records: DiamondRecord[] }) {
         <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/40">
+              <tr className="border-b border-border bg-muted/30">
                 {["Karigar", "Order #", "Client", "Quality", "Issue Weight", "Received Weight", "Balance Weight", "Issue Date", "Status"].map((h) => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
+                  <th key={h} className="px-5 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {records.map((r, i) => (
                 <tr key={r.id} className={cn("border-b border-border last:border-0 hover:bg-muted/20 transition-colors", i % 2 !== 0 && "bg-muted/10")}>
-                  <td className="px-4 py-3 font-medium text-foreground">{r.karigarName}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-foreground">{r.orderNumber}</td>
-                  <td className="px-4 py-3 text-muted-foreground max-w-[120px] truncate">{r.client}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3.5 font-medium text-foreground">{r.karigarName}</td>
+                  <td className="px-5 py-3.5 font-mono text-xs text-foreground">{r.orderNumber}</td>
+                  <td className="px-5 py-3.5 text-muted-foreground max-w-[120px] truncate">{r.client}</td>
+                  <td className="px-5 py-3.5">
                     <span className="text-xs font-semibold bg-zinc-100 text-zinc-700 px-2 py-0.5 rounded">{r.quality}</span>
                   </td>
-                  <td className="px-4 py-3 tabular-nums text-foreground">{fmtCt(r.issueWeight)}</td>
-                  <td className="px-4 py-3 tabular-nums text-emerald-700">{fmtCt(r.receivedWeight)}</td>
-                  <td className={cn("px-4 py-3 tabular-nums font-semibold", r.balanceWeight < 0 ? "text-red-600" : "text-amber-700")}>{fmtCt(r.balanceWeight)}</td>
-                  <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{r.issueDate}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3.5 tabular-nums text-foreground">{fmtCt(r.issueWeight)}</td>
+                  <td className="px-5 py-3.5 tabular-nums text-emerald-700">{fmtCt(r.receivedWeight)}</td>
+                  <td className={cn("px-5 py-3.5 tabular-nums font-semibold", r.balanceWeight < 0 ? "text-red-600" : "text-amber-700")}>{fmtCt(r.balanceWeight)}</td>
+                  <td className="px-5 py-3.5 text-muted-foreground whitespace-nowrap">{r.issueDate}</td>
+                  <td className="px-5 py-3.5">
                     <span className={cn("inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold border", statusCls[r.status] ?? "bg-muted text-foreground border-border")}>
                       {r.status}
                     </span>

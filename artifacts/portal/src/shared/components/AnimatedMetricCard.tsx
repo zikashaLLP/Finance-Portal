@@ -10,6 +10,9 @@ interface AnimatedMetricCardProps {
   className?: string;
   icon?: React.ElementType;
   iconCls?: string;
+  valueColor?: string;
+  onClick?: () => void;
+  selected?: boolean;
 }
 
 export default function AnimatedMetricCard({
@@ -21,14 +24,24 @@ export default function AnimatedMetricCard({
   className,
   icon: Icon,
   iconCls,
+  valueColor,
+  onClick,
+  selected = false,
 }: AnimatedMetricCardProps) {
+  const Tag = onClick ? motion.button : motion.div;
+
   return (
-    <motion.div
+    <Tag
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.07 }}
+      onClick={onClick}
       className={cn(
-        "bg-card border border-border rounded-xl px-5 py-4 hover:shadow-sm transition-shadow flex items-center justify-between",
+        "bg-card border rounded-xl px-5 py-4 hover:shadow-sm transition-shadow flex items-center justify-between text-left",
+        selected
+          ? "border-foreground/30 ring-1 ring-foreground/10"
+          : "border-border",
+        onClick && "cursor-pointer",
         className,
       )}
     >
@@ -39,7 +52,7 @@ export default function AnimatedMetricCard({
         <p
           className={cn(
             "text-2xl font-bold tabular-nums leading-none mb-0.5",
-            accent ? "text-emerald-600" : "text-foreground",
+            valueColor ?? (accent ? "text-emerald-600" : "text-foreground"),
           )}
         >
           {value}
@@ -51,6 +64,6 @@ export default function AnimatedMetricCard({
           <Icon className={cn("h-5 w-5", iconCls ?? "text-muted-foreground/60")} />
         </div>
       )}
-    </motion.div>
+    </Tag>
   );
 }
