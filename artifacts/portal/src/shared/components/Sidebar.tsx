@@ -226,13 +226,13 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         <button
           onClick={() => toggleGroup(item.name)}
           onMouseEnter={(e) => {
-            if (!isExpanded) {
+            if (!isPinned) {
               const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
               openFlyout(item.name, rect.top + rect.height / 2);
             }
           }}
           onMouseLeave={() => {
-            if (!isExpanded) scheduleFlyoutClose();
+            if (!isPinned) scheduleFlyoutClose();
           }}
           className={cn(
             "w-full flex items-center px-3 py-2 rounded-lg transition-colors",
@@ -258,7 +258,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         <div
           className={cn(
             "overflow-hidden transition-all duration-300 ease-in-out",
-            isExpanded && isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
+            isPinned && isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
           )}
         >
           <div className="mt-0.5 ml-3 pl-4 border-l border-border space-y-0.5 pb-1">
@@ -442,7 +442,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
       </aside>
 
       {/* Collapsed-mode flyout panel */}
-      {!isExpanded && flyout && flyoutGroup && (
+      {!isPinned && flyout && flyoutGroup && (
         <div
           className="fixed z-[200] bg-background border border-border rounded-xl shadow-lg py-2 min-w-[188px]"
           style={{ top: flyout.y, left: 72, transform: "translateY(-50%)" }}
