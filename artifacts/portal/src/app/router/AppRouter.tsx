@@ -11,6 +11,7 @@ import KarigarManagement from "../../modules/karigar/pages/KarigarManagement";
 import KarigarReports from "../../modules/karigar/pages/KarigarReports";
 import BulkManagement from "../../modules/karigar/pages/BulkManagement";
 import StockManagement from "../../modules/stock/pages/StockManagement";
+import Dashboard from "../../modules/dashboard/pages/Dashboard";
 import GroundStaff from "../../modules/ground-staff/pages/GroundStaff";
 
 export default function AppRouter() {
@@ -18,7 +19,13 @@ export default function AppRouter() {
     <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
       <Switch>
         <Route path="/">
-          <Redirect to="/transactions" />
+          <Redirect to="/dashboard" />
+        </Route>
+
+        <Route path="/dashboard">
+          <MainLayout>
+            <Dashboard />
+          </MainLayout>
         </Route>
         
         <Route path="/transactions">
