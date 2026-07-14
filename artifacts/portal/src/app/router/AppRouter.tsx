@@ -7,6 +7,7 @@ import Ledger from "../../modules/ledger/pages/Ledger";
 import ComingSoon from "../../pages/ComingSoon";
 import FinancePlanning from "../../modules/finance/pages/FinancePlanning";
 import TeamManagement from "../../modules/team/pages/TeamManagement";
+import KarigarManagement from "../../modules/karigar/pages/KarigarManagement";
 import GroundStaff from "../../modules/ground-staff/pages/GroundStaff";
 
 export default function AppRouter() {
@@ -55,7 +56,7 @@ export default function AppRouter() {
         </Route>
         <Route path="/karigar">
           <MainLayout>
-            <ComingSoon title="Karigar" />
+            <KarigarManagement />
           </MainLayout>
         </Route>
         <Route path="/stock">
