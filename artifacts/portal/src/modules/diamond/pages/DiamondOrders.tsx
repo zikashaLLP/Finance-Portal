@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Diamond, Plus, Edit, Trash2, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -98,18 +99,21 @@ export default function DiamondOrders() {
         {/* STATUS METRIC CARDS */}
         <div className="grid grid-cols-6 gap-3">
           {([
-            { key:"all",          label:"Total Orders",  icon:Diamond  },
-            { key:"pending",      label:"Pending",       icon:Diamond  },
-            { key:"confirmed",    label:"Confirmed",     icon:Diamond  },
-            { key:"in-progress",  label:"In Progress",   icon:Diamond  },
-            { key:"ready",        label:"Ready",         icon:Diamond  },
-            { key:"delivered",    label:"Delivered",     icon:Diamond  },
-          ] as { key:Tab; label:string; icon:typeof Diamond }[]).map(({ key, label }) => (
-            <div
+            { key:"all",          label:"Total Orders" },
+            { key:"pending",      label:"Pending"      },
+            { key:"confirmed",    label:"Confirmed"    },
+            { key:"in-progress",  label:"In Progress"  },
+            { key:"ready",        label:"Ready"        },
+            { key:"delivered",    label:"Delivered"    },
+          ] as { key:Tab; label:string }[]).map(({ key, label }, i) => (
+            <motion.div
               key={key}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.07 }}
               onClick={() => setTab(key)}
               className={cn(
-                "bg-card border rounded-xl px-4 py-4 cursor-pointer hover:shadow-sm transition-all",
+                "bg-card border rounded-xl px-4 py-4 cursor-pointer hover:shadow-sm transition-shadow",
                 tab === key ? "border-foreground/30 ring-1 ring-foreground/10" : "border-border",
               )}
             >
@@ -123,7 +127,7 @@ export default function DiamondOrders() {
               )}>
                 {counts[key]}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -159,7 +163,7 @@ export default function DiamondOrders() {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   {["Order Number","Client","Quality","Weight (ct)","Progress","Estimated Price","Order Date","Target Delivery","Status","Actions"].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
+                    <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>

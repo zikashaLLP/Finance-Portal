@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Plus, Filter, Eye, Pencil, Trash2, Search, Printer, Diamond, ChevronDown } from "lucide-react";
+import SharedPagination from "@/shared/components/Pagination";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -275,29 +276,6 @@ function CreateOrderModal({ open, onClose, karigars }: {
 /* ══════════════════════════════════════════════
    PAGINATION
 ══════════════════════════════════════════════ */
-function Pagination({ page, total, onChange }: { page: number; total: number; onChange: (p: number) => void }) {
-  if (total <= 1) return null;
-  return (
-    <div className="flex items-center justify-between px-5 py-3 border-t border-border">
-      <button onClick={() => onChange(Math.max(1, page - 1))} disabled={page === 1}
-        className="h-8 px-3 rounded-lg text-sm border border-border disabled:opacity-40 hover:bg-muted/40 transition-colors">
-        Previous
-      </button>
-      <div className="flex items-center gap-1">
-        {Array.from({ length: total }, (_, i) => i + 1).map((p) => (
-          <button key={p} onClick={() => onChange(p)}
-            className={cn("h-8 w-8 rounded-lg text-sm font-medium transition-colors", p === page ? "bg-foreground text-background" : "hover:bg-muted/40 text-muted-foreground")}>
-            {p}
-          </button>
-        ))}
-      </div>
-      <button onClick={() => onChange(Math.min(total, page + 1))} disabled={page === total}
-        className="h-8 px-3 rounded-lg text-sm border border-border disabled:opacity-40 hover:bg-muted/40 transition-colors">
-        Next
-      </button>
-    </div>
-  );
-}
 
 /* ══════════════════════════════════════════════
    TAB: KARIGARS
@@ -402,7 +380,7 @@ function PendingOrdersTab({ orders }: { orders: KarigarOrder[] }) {
           <thead>
             <tr className="border-b border-border bg-muted/40">
               {["Order #", "Karigar", "Item", "Gold (g)", "Diamond", "Status", "Actions"].map((h) => (
-                <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
+                <th key={h} className="px-4 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
@@ -411,15 +389,15 @@ function PendingOrdersTab({ orders }: { orders: KarigarOrder[] }) {
               <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-muted-foreground">No pending orders match your search.</td></tr>
             ) : rows.map((o, i) => (
               <tr key={o.id} className={cn("border-b border-border last:border-0 hover:bg-muted/20 transition-colors", i % 2 !== 0 && "bg-muted/10")}>
-                <td className="px-4 py-3 font-mono text-xs font-semibold text-foreground">{o.orderNumber}</td>
-                <td className="px-4 py-3 text-foreground">{o.karigarName}</td>
-                <td className="px-4 py-3 text-muted-foreground max-w-[180px] truncate">{o.itemName}</td>
-                <td className="px-4 py-3 tabular-nums text-muted-foreground">{fmtW(o.goldWeight)}</td>
-                <td className="px-4 py-3 tabular-nums text-muted-foreground">{o.diamond > 0 ? fmtCt(o.diamond) : "0ct"}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3.5 font-mono text-xs font-semibold text-foreground">{o.orderNumber}</td>
+                <td className="px-4 py-3.5 text-foreground">{o.karigarName}</td>
+                <td className="px-4 py-3.5 text-muted-foreground max-w-[180px] truncate">{o.itemName}</td>
+                <td className="px-4 py-3.5 tabular-nums text-muted-foreground">{fmtW(o.goldWeight)}</td>
+                <td className="px-4 py-3.5 tabular-nums text-muted-foreground">{o.diamond > 0 ? fmtCt(o.diamond) : "0ct"}</td>
+                <td className="px-4 py-3.5">
                   <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">PENDING</span>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3.5">
                   <div className="flex items-center gap-1">
                     <button className="h-7 w-7 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"><Printer className="h-3.5 w-3.5" /></button>
                     <button className="h-7 w-7 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"><Pencil className="h-3.5 w-3.5" /></button>
@@ -430,7 +408,7 @@ function PendingOrdersTab({ orders }: { orders: KarigarOrder[] }) {
             ))}
           </tbody>
         </table>
-        <Pagination page={page} total={totalPages} onChange={setPage} />
+        <SharedPagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
     </div>
   );
@@ -512,7 +490,7 @@ function ExecutedOrdersTab({ orders }: { orders: KarigarOrder[] }) {
           <thead>
             <tr className="border-b border-border bg-muted/40">
               {["Order #", "Karigar", "Client", "Item Type", "Billing Status", "Completion Date", "Actions"].map((h) => (
-                <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
+                <th key={h} className="px-4 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
@@ -521,17 +499,17 @@ function ExecutedOrdersTab({ orders }: { orders: KarigarOrder[] }) {
               <tr><td colSpan={7} className="px-4 py-10 text-center text-sm text-muted-foreground">No executed orders match your filters.</td></tr>
             ) : rows.map((o, i) => (
               <tr key={o.id} className={cn("border-b border-border last:border-0 hover:bg-muted/20 transition-colors", i % 2 !== 0 && "bg-muted/10")}>
-                <td className="px-4 py-3 font-mono text-xs font-semibold text-foreground">{o.orderNumber}</td>
-                <td className="px-4 py-3 text-foreground">{o.karigarName}</td>
-                <td className="px-4 py-3 text-muted-foreground">{o.client}</td>
-                <td className="px-4 py-3 text-muted-foreground">{o.itemType}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3.5 font-mono text-xs font-semibold text-foreground">{o.orderNumber}</td>
+                <td className="px-4 py-3.5 text-foreground">{o.karigarName}</td>
+                <td className="px-4 py-3.5 text-muted-foreground">{o.client}</td>
+                <td className="px-4 py-3.5 text-muted-foreground">{o.itemType}</td>
+                <td className="px-4 py-3.5">
                   <span className={cn("inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold border", billingBadge[o.billingStatus] ?? "bg-muted text-muted-foreground border-border")}>
                     {o.billingStatus}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{o.completionDate}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3.5 text-muted-foreground whitespace-nowrap">{o.completionDate}</td>
+                <td className="px-4 py-3.5">
                   <div className="flex items-center gap-1">
                     <button className="h-7 w-7 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"><Eye className="h-3.5 w-3.5" /></button>
                     <button className="h-7 w-7 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"><Pencil className="h-3.5 w-3.5" /></button>
@@ -542,7 +520,7 @@ function ExecutedOrdersTab({ orders }: { orders: KarigarOrder[] }) {
             ))}
           </tbody>
         </table>
-        <Pagination page={page} total={totalPages} onChange={setPage} />
+        <SharedPagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
     </div>
   );

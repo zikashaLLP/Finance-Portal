@@ -214,7 +214,7 @@ export default function DiamondReturnWorkflow() {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   {["Date","Quality","Karigar","Returned (ct)","Original (ct)","Notes"].map(h => (
-                    <th key={h} className="text-left px-5 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
+                    <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>

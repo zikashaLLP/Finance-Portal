@@ -128,7 +128,7 @@ export default function GroupManagement() {
                   <tr key={group.id} className="hover:bg-muted/20 transition-colors group cursor-pointer">
 
                     {/* Group name */}
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
                         <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center shrink-0">
                           <Users className="h-3.5 w-3.5 text-foreground/50" />
@@ -141,7 +141,7 @@ export default function GroupManagement() {
                     </td>
 
                     {/* Status */}
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-3.5">
                       <span className={cn(
                         "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide",
                         group.status === "active" ? "bg-emerald-100 text-emerald-700" : "bg-muted text-muted-foreground",
@@ -152,7 +152,7 @@ export default function GroupManagement() {
                     </td>
 
                     {/* Type tag */}
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-3.5">
                       {group.tag
                         ? <span className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-wider bg-muted px-2 py-0.5 rounded">
                             {group.tag}
@@ -162,17 +162,17 @@ export default function GroupManagement() {
                     </td>
 
                     {/* Assigned */}
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-5 py-3.5 text-right">
                       <span className="text-sm font-semibold text-foreground tabular-nums">{group.assigned}</span>
                     </td>
 
                     {/* Active */}
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-5 py-3.5 text-right">
                       <span className="text-sm font-semibold text-emerald-600 tabular-nums">{group.active}</span>
                     </td>
 
                     {/* Available */}
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-5 py-3.5 text-right">
                       <span className={cn(
                         "text-sm font-semibold tabular-nums",
                         isFull ? "text-red-500" : "text-foreground",
@@ -182,7 +182,7 @@ export default function GroupManagement() {
                     </td>
 
                     {/* Capacity bar */}
-                    <td className="px-6 py-4 min-w-[140px]">
+                    <td className="px-5 py-3.5 min-w-[140px]">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                           <div
@@ -200,7 +200,7 @@ export default function GroupManagement() {
                     </td>
 
                     {/* Arrow */}
-                    <td className="px-3 py-4">
+                    <td className="px-3 py-3.5">
                       <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                     </td>
                   </tr>

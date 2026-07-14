@@ -3,8 +3,8 @@ import {
   ClipboardCheck, Clock, CheckCircle2, AlertCircle, FileText,
   Search, ChevronDown, Download, Plus,
 } from "lucide-react";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 
 /* ── MOCK DATA ── */
 type Approval = {
@@ -119,10 +119,10 @@ export default function Approvals() {
 
         {/* METRIC CARDS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard icon={Clock}         label="Given"    value={given}    iconCls="text-foreground/50" index={0} />
-          <MetricCard icon={CheckCircle2}  label="Received" value={received} iconCls="text-emerald-500"  index={1} />
-          <MetricCard icon={AlertCircle}   label="Overdue"  value={overdue}  iconCls="text-red-500"      index={2} />
-          <MetricCard icon={FileText}      label="Total"    value={total}    iconCls="text-foreground/50" index={3} />
+          <AnimatedMetricCard icon={Clock}        label="Given"    value={String(given)}    iconCls="text-foreground/50" index={0} />
+          <AnimatedMetricCard icon={CheckCircle2} label="Received" value={String(received)} iconCls="text-emerald-500"   index={1} />
+          <AnimatedMetricCard icon={AlertCircle}  label="Overdue"  value={String(overdue)}  iconCls="text-red-500"       index={2} />
+          <AnimatedMetricCard icon={FileText}     label="Total"    value={String(total)}    iconCls="text-foreground/50" index={3} />
         </div>
 
         {/* TABLE */}
@@ -137,13 +137,13 @@ export default function Approvals() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/30">
-                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Approval #</th>
-                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Item</th>
-                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Source</th>
-                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Recipient</th>
-                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Value</th>
-                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                  <th className="text-left px-6 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Date Given</th>
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Approval #</th>
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Item</th>
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Source</th>
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Recipient</th>
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Value</th>
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                  <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Date Given</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -151,30 +151,30 @@ export default function Approvals() {
                   const meta = statusMeta[a.status];
                   return (
                     <tr key={a.id} className="hover:bg-muted/20 transition-colors">
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <span className="font-mono text-xs font-semibold text-foreground/70 bg-muted px-2 py-1 rounded">
                           {a.id}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <p className="font-semibold text-foreground text-sm">{a.item}</p>
                         <p className="text-[11px] text-muted-foreground">{a.weight} • {a.kt}</p>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <p className="text-sm text-foreground">{a.source}</p>
                         <p className="text-[11px] text-muted-foreground">{a.sourceRef}</p>
                         <span className="text-[10px] font-semibold text-muted-foreground/60 uppercase">{a.sourceType}</span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <p className="text-sm text-foreground">{a.recipient}</p>
                         <span className="text-[10px] font-semibold text-muted-foreground/60 uppercase">{a.recipientType}</span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <span className="text-sm font-semibold text-foreground tabular-nums">
                           ₹{a.value}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <span className={cn(
                           "inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold",
                           meta.cls,
@@ -182,7 +182,7 @@ export default function Approvals() {
                           {meta.label}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-3.5">
                         <span className="text-sm text-muted-foreground tabular-nums">{a.date}</span>
                       </td>
                     </tr>
@@ -191,7 +191,7 @@ export default function Approvals() {
 
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-sm text-muted-foreground">
+                    <td colSpan={7} className="px-5 py-12 text-center text-sm text-muted-foreground">
                       No approvals match the current filters.
                     </td>
                   </tr>
@@ -207,27 +207,6 @@ export default function Approvals() {
 }
 
 /* ── HELPERS ── */
-function MetricCard({ icon: Icon, label, value, iconCls, index = 0 }: {
-  icon: React.ElementType; label: string; value: number; iconCls: string; index?: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.07 }}
-      className="bg-card border border-border rounded-xl p-5 flex items-center justify-between hover:shadow-sm transition-shadow"
-    >
-      <div>
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">{label}</p>
-        <p className="text-2xl font-bold text-foreground tabular-nums">{value}</p>
-      </div>
-      <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
-        <Icon className={cn("h-5 w-5", iconCls)} />
-      </div>
-    </motion.div>
-  );
-}
-
 function Select({ value, onChange, options }: {
   value: string; onChange: (v: string) => void; options: string[];
 }) {
