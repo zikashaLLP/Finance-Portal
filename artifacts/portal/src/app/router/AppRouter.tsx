@@ -10,6 +10,7 @@ import TeamManagement from "../../modules/team/pages/TeamManagement";
 import KarigarManagement from "../../modules/karigar/pages/KarigarManagement";
 import KarigarReports from "../../modules/karigar/pages/KarigarReports";
 import BulkManagement from "../../modules/karigar/pages/BulkManagement";
+import StockManagement from "../../modules/stock/pages/StockManagement";
 import GroundStaff from "../../modules/ground-staff/pages/GroundStaff";
 
 export default function AppRouter() {
@@ -73,7 +74,7 @@ export default function AppRouter() {
         </Route>
         <Route path="/stock">
           <MainLayout>
-            <ComingSoon title="Stock Management" />
+            <StockManagement />
           </MainLayout>
         </Route>
         <Route path="/sales">
