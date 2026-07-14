@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import Pagination from "@/shared/components/Pagination";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 import {
   GOLD_STOCK, DIAMOND_STOCK,
   type StockItem, type StockStatus, type StockSource,
@@ -477,22 +478,10 @@ export default function StockManagement() {
 
           {/* ── METRIC CARDS ── */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { label:"Total Stock",  value: allStock.length,  icon: Layers,       accent:"text-foreground"  },
-              { label:"In Stock",     value: inStock,           icon: CheckCircle2, accent:"text-emerald-700" },
-              { label:"Sold",         value: sold,              icon: TrendingDown, accent:"text-muted-foreground" },
-              { label:"Diamond Items",value: diamondStock.length,icon: Gem,         accent:"text-violet-700"  },
-            ].map(({ label, value, icon: Icon, accent }) => (
-              <div key={label} className="bg-card border border-border rounded-2xl shadow-sm p-5 flex items-center justify-between hover:shadow-md hover:border-foreground/15 transition-all duration-200">
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">{label}</p>
-                  <p className={cn("text-2xl font-bold tabular-nums", accent)}>{value}</p>
-                </div>
-                <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                  <Icon className="h-5 w-5 text-foreground/60" />
-                </div>
-              </div>
-            ))}
+            <AnimatedMetricCard label="Total Stock"   value={String(allStock.length)}    icon={Layers}       iconCls="text-foreground/60"  index={0} />
+            <AnimatedMetricCard label="In Stock"      value={String(inStock)}            icon={CheckCircle2} iconCls="text-emerald-600"     valueColor="text-emerald-700" index={1} />
+            <AnimatedMetricCard label="Sold"          value={String(sold)}               icon={TrendingDown} iconCls="text-foreground/60"   index={2} />
+            <AnimatedMetricCard label="Diamond Items" value={String(diamondStock.length)} icon={Gem}         iconCls="text-violet-600"      valueColor="text-violet-700"  index={3} />
           </div>
 
           {/* ── SEARCH & FILTERS ── */}

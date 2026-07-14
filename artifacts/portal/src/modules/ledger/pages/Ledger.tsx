@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Search, Wallet, ArrowDownLeft, ArrowUpRight, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 import Pagination from "@/shared/components/Pagination";
 import PartyCard from "../components/PartyCard";
 import { getFilteredParties, getSummary, type LedgerFilter } from "../data/mockLedger";
@@ -84,41 +85,9 @@ export default function Ledger() {
 
         {/* ── Summary metric cards ── */}
         <div className="grid grid-cols-3 gap-4">
-          {/* Cash to Give */}
-          <div className="bg-white rounded-2xl border border-border shadow-[0_1px_4px_rgba(0,0,0,0.04)] px-5 py-4 flex items-center gap-4">
-            <div className="h-10 w-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-              <Wallet className="h-5 w-5 text-amber-600" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[12px] font-medium text-muted-foreground mb-0.5 uppercase tracking-wide">Cash to Give</p>
-              <p className="text-xl font-bold text-foreground leading-none">{fmtAmt(summary.cashToGive)}</p>
-              <p className="text-[12px] text-muted-foreground mt-0.5">Outstanding cash</p>
-            </div>
-          </div>
-
-          {/* Purchase / To Give */}
-          <div className="bg-white rounded-2xl border border-border shadow-[0_1px_4px_rgba(0,0,0,0.04)] px-5 py-4 flex items-center gap-4">
-            <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-              <ArrowDownLeft className="h-5 w-5 text-emerald-600" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[12px] font-medium text-muted-foreground mb-0.5 uppercase tracking-wide">Purchase / To Give</p>
-              <p className="text-xl font-bold text-foreground leading-none">{fmtAmt(summary.purchaseToGiveAmount)}</p>
-              <p className="text-[12px] text-emerald-600 font-medium mt-0.5">{fmtG(summary.purchaseToGiveGrams)}</p>
-            </div>
-          </div>
-
-          {/* Paid / To Receive */}
-          <div className="bg-white rounded-2xl border border-border shadow-[0_1px_4px_rgba(0,0,0,0.04)] px-5 py-4 flex items-center gap-4">
-            <div className="h-10 w-10 rounded-xl bg-red-50 flex items-center justify-center shrink-0">
-              <ArrowUpRight className="h-5 w-5 text-red-500" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[12px] font-medium text-muted-foreground mb-0.5 uppercase tracking-wide">Paid / To Receive</p>
-              <p className="text-xl font-bold text-foreground leading-none">{fmtAmt(summary.paidToReceiveAmount)}</p>
-              <p className="text-[12px] text-red-500 font-medium mt-0.5">{fmtG(summary.paidToReceiveGrams)}</p>
-            </div>
-          </div>
+          <AnimatedMetricCard label="Cash to Give"      value={fmtAmt(summary.cashToGive)}              sub="Outstanding cash"                     icon={Wallet}       iconCls="text-amber-600"   index={0} />
+          <AnimatedMetricCard label="Purchase / To Give" value={fmtAmt(summary.purchaseToGiveAmount)}  sub={fmtG(summary.purchaseToGiveGrams)}    icon={ArrowDownLeft} iconCls="text-emerald-600" index={1} />
+          <AnimatedMetricCard label="Paid / To Receive"  value={fmtAmt(summary.paidToReceiveAmount)}   sub={fmtG(summary.paidToReceiveGrams)}     icon={ArrowUpRight}  iconCls="text-red-500"     index={2} />
         </div>
 
         {/* ── Search ── */}

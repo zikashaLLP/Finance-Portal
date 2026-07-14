@@ -228,7 +228,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
           onMouseEnter={(e) => {
             if (!isExpanded) {
               const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-              openFlyout(item.name, rect.top);
+              openFlyout(item.name, rect.top + rect.height / 2);
             }
           }}
           onMouseLeave={() => {
@@ -445,7 +445,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
       {!isExpanded && flyout && flyoutGroup && (
         <div
           className="fixed z-[200] bg-background border border-border rounded-xl shadow-lg py-2 min-w-[188px]"
-          style={{ top: flyout.y, left: 72 }}
+          style={{ top: flyout.y, left: 72, transform: "translateY(-50%)" }}
           onMouseEnter={cancelFlyoutClose}
           onMouseLeave={scheduleFlyoutClose}
         >
