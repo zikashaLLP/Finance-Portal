@@ -284,8 +284,8 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
               "flex items-center px-3 py-2.5 rounded-xl transition-all duration-200",
               isExpanded ? "justify-start" : "justify-center",
               location.startsWith(DASHBOARD_ITEM.path)
-                ? "bg-foreground text-background shadow-sm"
-                : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
+                ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
             )}>
               <LayoutDashboard className={cn(
                 "h-4 w-4 shrink-0",
