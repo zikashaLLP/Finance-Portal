@@ -3,6 +3,7 @@ import {
   ClipboardCheck, Clock, CheckCircle2, AlertCircle, FileText,
   Search, ChevronDown, Download, Plus,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 /* ── MOCK DATA ── */
@@ -118,10 +119,10 @@ export default function Approvals() {
 
         {/* METRIC CARDS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard icon={Clock}         label="Given"    value={given}    iconCls="text-foreground/50" />
-          <MetricCard icon={CheckCircle2}  label="Received" value={received} iconCls="text-emerald-500"  />
-          <MetricCard icon={AlertCircle}   label="Overdue"  value={overdue}  iconCls="text-red-500"      />
-          <MetricCard icon={FileText}      label="Total"    value={total}    iconCls="text-foreground/50" />
+          <MetricCard icon={Clock}         label="Given"    value={given}    iconCls="text-foreground/50" index={0} />
+          <MetricCard icon={CheckCircle2}  label="Received" value={received} iconCls="text-emerald-500"  index={1} />
+          <MetricCard icon={AlertCircle}   label="Overdue"  value={overdue}  iconCls="text-red-500"      index={2} />
+          <MetricCard icon={FileText}      label="Total"    value={total}    iconCls="text-foreground/50" index={3} />
         </div>
 
         {/* TABLE */}
@@ -206,11 +207,16 @@ export default function Approvals() {
 }
 
 /* ── HELPERS ── */
-function MetricCard({ icon: Icon, label, value, iconCls }: {
-  icon: React.ElementType; label: string; value: number; iconCls: string;
+function MetricCard({ icon: Icon, label, value, iconCls, index = 0 }: {
+  icon: React.ElementType; label: string; value: number; iconCls: string; index?: number;
 }) {
   return (
-    <div className="bg-card border border-border rounded-xl p-5 flex items-center justify-between hover:shadow-sm transition-all">
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.07 }}
+      className="bg-card border border-border rounded-xl p-5 flex items-center justify-between hover:shadow-sm transition-shadow"
+    >
       <div>
         <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">{label}</p>
         <p className="text-2xl font-bold text-foreground tabular-nums">{value}</p>
@@ -218,7 +224,7 @@ function MetricCard({ icon: Icon, label, value, iconCls }: {
       <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
         <Icon className={cn("h-5 w-5", iconCls)} />
       </div>
-    </div>
+    </motion.div>
   );
 }
 

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import {
-  ShoppingBag, Plus, Search, RefreshCw, SlidersHorizontal,
-  Eye, Edit, Trash2, ChevronLeft, ChevronRight, ChevronDown,
+  ShoppingBag, Plus, Search, RefreshCw,
+  Eye, Edit, Trash2, ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
+import Pagination from "@/shared/components/Pagination";
 
 /* ── DATA ── */
 type ItemType = "Loose Diamond" | "Gold Jewellery" | "Diamond Jewellery" | "Pure Gold";
@@ -121,16 +123,12 @@ export default function PurchaseManagement() {
         {/* METRIC STRIP */}
         <div className="grid grid-cols-4 gap-4">
           {[
-            { label:"Total Purchases", value: String(PURCHASES.length), sub:"All records"        },
+            { label:"Total Purchases", value: String(PURCHASES.length), sub:"All records"          },
             { label:"Total Spend",     value: fmtINR(totalSpend),       sub:"Gross purchase value" },
-            { label:"Diamond Orders",  value: String(diamondCount),     sub:"Diamond items"      },
-            { label:"Gold Orders",     value: String(goldCount),        sub:"Gold & jewellery"   },
-          ].map(({ label, value, sub }) => (
-            <div key={label} className="bg-card border border-border rounded-xl px-5 py-4 hover:shadow-sm transition-all">
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
-              <p className="text-xl font-bold text-foreground tabular-nums leading-none mb-0.5">{value}</p>
-              <p className="text-[11px] text-muted-foreground">{sub}</p>
-            </div>
+            { label:"Diamond Orders",  value: String(diamondCount),     sub:"Diamond items"        },
+            { label:"Gold Orders",     value: String(goldCount),        sub:"Gold & jewellery"     },
+          ].map(({ label, value, sub }, i) => (
+            <AnimatedMetricCard key={label} label={label} value={value} sub={sub} index={i} />
           ))}
         </div>
 
@@ -146,7 +144,7 @@ export default function PurchaseManagement() {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   {["Lot Number","Date","Seller","Item Type","Item Name","Gold Weight","Total Amount","Actions"].map(h => (
-                    <th key={h} className="text-left px-5 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                    <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -204,40 +202,14 @@ export default function PurchaseManagement() {
             </table>
           </div>
 
-          {/* PAGINATION */}
-          <div className="px-6 py-3.5 border-t border-border flex items-center justify-between bg-muted/10">
-            <p className="text-xs text-muted-foreground">
-              Showing {filtered.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length} records
-            </p>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={safePage === 1}
-                className="h-7 w-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="h-3.5 w-3.5" />
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
-                <button
-                  key={n}
-                  onClick={() => setPage(n)}
-                  className={cn(
-                    "h-7 w-7 rounded-md text-xs font-medium transition-colors",
-                    n === safePage ? "bg-foreground text-background" : "border border-border text-muted-foreground hover:bg-sidebar-accent",
-                  )}
-                >
-                  {n}
-                </button>
-              ))}
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={safePage === totalPages}
-                className="h-7 w-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          </div>
+          <Pagination
+            page={safePage}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            totalItems={filtered.length}
+            pageSize={PAGE_SIZE}
+            itemLabel="records"
+          />
         </div>
 
       </div>

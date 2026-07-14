@@ -2,9 +2,10 @@ import { useState } from "react";
 import {
   Gem, Star, Search, Plus,
   LayoutList, Edit, CreditCard, Wallet,
-  ChevronLeft, ChevronRight,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Pagination from "@/shared/components/Pagination";
 
 /* ── MOCK DATA ── */
 type Plan = {
@@ -95,17 +96,23 @@ export default function HarvestManagement() {
             { label:"Active Plans",   value: String(activePlans),   sub:"Currently running",  icon: Star,       iclr:"text-emerald-500"   },
             { label:"Redeemed Plans", value: String(redeemedPlans), sub:"Completed",          icon: Gem,        iclr:"text-foreground/50" },
             { label:"Total Value",    value: fmtINR(totalValue),    sub:"All plans combined", icon: Wallet,     iclr:"text-foreground/50" },
-          ].map(({ label, value, sub, icon: Icon, iclr }) => (
-            <div key={label} className="bg-card border border-border rounded-xl p-5 flex items-center justify-between hover:shadow-sm transition-all">
+          ].map(({ label, value, sub, icon: Icon, iclr }, i) => (
+            <motion.div
+              key={label}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.07 }}
+              className="bg-card border border-border rounded-xl p-5 flex items-center justify-between hover:shadow-sm transition-shadow"
+            >
               <div>
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{label}</p>
                 <p className="text-xl font-bold text-foreground tabular-nums leading-none mb-1">{value}</p>
                 <p className="text-[11px] text-muted-foreground">{sub}</p>
               </div>
               <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
-                <Icon className={cn("h-4.5 w-4.5", iclr)} />
+                <Icon className={cn("h-5 w-5", iclr)} />
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -140,7 +147,7 @@ export default function HarvestManagement() {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   {["Plan Name","Client","Type","Group / Card","Total Value","Monthly","Duration","Total Paid","Status","Actions"].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                    <th key={h} className="text-left px-4 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -236,44 +243,14 @@ export default function HarvestManagement() {
             </table>
           </div>
 
-          {/* PAGINATION */}
-          <div className="px-6 py-3.5 border-t border-border flex items-center justify-between bg-muted/10">
-            <p className="text-xs text-muted-foreground">
-              Showing {filtered.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length} plans
-            </p>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={safePage === 1}
-                className="h-7 w-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="h-3.5 w-3.5" />
-              </button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
-                <button
-                  key={n}
-                  onClick={() => setPage(n)}
-                  className={cn(
-                    "h-7 w-7 rounded-md text-xs font-medium transition-colors",
-                    n === safePage
-                      ? "bg-foreground text-background"
-                      : "border border-border text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
-                  )}
-                >
-                  {n}
-                </button>
-              ))}
-
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={safePage === totalPages}
-                className="h-7 w-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          </div>
+          <Pagination
+            page={safePage}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            totalItems={filtered.length}
+            pageSize={PAGE_SIZE}
+            itemLabel="plans"
+          />
         </div>
 
       </div>

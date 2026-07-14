@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Users, Plus, Search, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 
 /* ── MOCK DATA ── */
 type Group = {
@@ -76,12 +77,15 @@ export default function GroupManagement() {
             { label: "Total Assigned",   value: totalAssigned,  sub: "across all groups"               },
             { label: "Total Active",     value: totalActive,    sub: "currently running", em: true     },
             { label: "Total Available",  value: totalAvail,     sub: "slots open"                      },
-          ].map(({ label, value, sub, em }) => (
-            <div key={label} className="bg-card border border-border rounded-xl px-5 py-4 hover:shadow-sm transition-all">
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
-              <p className={cn("text-2xl font-bold tabular-nums leading-none mb-0.5", em ? "text-emerald-600" : "text-foreground")}>{value}</p>
-              <p className="text-[11px] text-muted-foreground">{sub}</p>
-            </div>
+          ].map(({ label, value, sub, em }, i) => (
+            <AnimatedMetricCard
+              key={label}
+              label={label}
+              value={String(value)}
+              sub={sub}
+              index={i}
+              accent={em}
+            />
           ))}
         </div>
 
@@ -105,14 +109,14 @@ export default function GroupManagement() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/30">
-                <th className="text-left px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Group</th>
-                <th className="text-left px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                <th className="text-left px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Type</th>
-                <th className="text-right px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Assigned</th>
-                <th className="text-right px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Active</th>
-                <th className="text-right px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Available</th>
-                <th className="px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Capacity</th>
-                <th className="px-3 py-3" />
+                <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Group</th>
+                <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                <th className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Type</th>
+                <th className="text-right px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Assigned</th>
+                <th className="text-right px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Active</th>
+                <th className="text-right px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Available</th>
+                <th className="px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Capacity</th>
+                <th className="px-3 py-3.5" />
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

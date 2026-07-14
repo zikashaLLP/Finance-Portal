@@ -1,9 +1,11 @@
 import { useState } from "react";
 import {
   Users, Plus, Search, SlidersHorizontal,
-  Edit, Trash2, Crown, ChevronLeft, ChevronRight,
+  Edit, Trash2, Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
+import Pagination from "@/shared/components/Pagination";
 
 /* ── MOCK DATA ── */
 type Client = {
@@ -118,12 +120,8 @@ export default function ClientManagement() {
             { label:"Total Clients",      value: String(CLIENTS.length), sub:"Registered"         },
             { label:"VIP Clients",        value: String(vipCount),       sub:"Priority accounts"  },
             { label:"Recent (30 days)",   value: "20",                   sub:"New registrations"  },
-          ].map(({ label, value, sub }) => (
-            <div key={label} className="bg-card border border-border rounded-xl px-5 py-4 hover:shadow-sm transition-all">
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">{label}</p>
-              <p className="text-2xl font-bold text-foreground tabular-nums leading-none mb-0.5">{value}</p>
-              <p className="text-[11px] text-muted-foreground">{sub}</p>
-            </div>
+          ].map(({ label, value, sub }, i) => (
+            <AnimatedMetricCard key={label} label={label} value={value} sub={sub} index={i} />
           ))}
         </div>
 
@@ -139,7 +137,7 @@ export default function ClientManagement() {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   {["Client","Contact Details","Personal Info","Address","Registration Date","Actions"].map(h => (
-                    <th key={h} className="text-left px-5 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                    <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -218,40 +216,14 @@ export default function ClientManagement() {
             </table>
           </div>
 
-          {/* PAGINATION */}
-          <div className="px-6 py-3.5 border-t border-border flex items-center justify-between bg-muted/10">
-            <p className="text-xs text-muted-foreground">
-              Showing {filtered.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length} clients
-            </p>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={safePage === 1}
-                className="h-7 w-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="h-3.5 w-3.5" />
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
-                <button
-                  key={n}
-                  onClick={() => setPage(n)}
-                  className={cn(
-                    "h-7 w-7 rounded-md text-xs font-medium transition-colors",
-                    n === safePage ? "bg-foreground text-background" : "border border-border text-muted-foreground hover:bg-sidebar-accent",
-                  )}
-                >
-                  {n}
-                </button>
-              ))}
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={safePage === totalPages}
-                className="h-7 w-7 rounded-md border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          </div>
+          <Pagination
+            page={safePage}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            totalItems={filtered.length}
+            pageSize={PAGE_SIZE}
+            itemLabel="clients"
+          />
         </div>
 
       </div>
