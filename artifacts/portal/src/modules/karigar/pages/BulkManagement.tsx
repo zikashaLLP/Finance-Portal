@@ -8,6 +8,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 import { mockKarigars } from "../data/mockKarigar";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
@@ -440,42 +441,10 @@ export default function BulkManagement() {
 
         {/* METRIC CARDS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-card border border-border rounded-2xl shadow-sm p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">Total Lots</p>
-              <p className="text-2xl font-bold text-foreground tabular-nums">{lots.length}</p>
-            </div>
-            <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center">
-              <Layers className="h-5 w-5 text-foreground/60" />
-            </div>
-          </div>
-          <div className="bg-card border border-border rounded-2xl shadow-sm p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">Total Pieces</p>
-              <p className="text-2xl font-bold text-foreground tabular-nums">{totalPieces}</p>
-            </div>
-            <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center">
-              <Package className="h-5 w-5 text-foreground/60" />
-            </div>
-          </div>
-          <div className="bg-card border border-border rounded-2xl shadow-sm p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">Completed</p>
-              <p className="text-2xl font-bold text-emerald-700 tabular-nums">{completed}</p>
-            </div>
-            <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-            </div>
-          </div>
-          <div className="bg-card border border-border rounded-2xl shadow-sm p-5 flex items-center justify-between hover:shadow-md transition-all duration-200">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">Total Value</p>
-              <p className="text-2xl font-bold text-foreground tabular-nums">{fmtAmt(totalCost)}</p>
-            </div>
-            <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center">
-              <IndianRupee className="h-5 w-5 text-foreground/60" />
-            </div>
-          </div>
+          <AnimatedMetricCard label="Total Lots"   value={String(lots.length)}  icon={Layers}       iconCls="text-foreground/60" index={0} />
+          <AnimatedMetricCard label="Total Pieces" value={String(totalPieces)}  icon={Package}      iconCls="text-foreground/60" index={1} />
+          <AnimatedMetricCard label="Completed"    value={String(completed)}    icon={CheckCircle2} iconCls="text-emerald-600" valueColor="text-emerald-700" index={2} />
+          <AnimatedMetricCard label="Total Value"  value={fmtAmt(totalCost)}    icon={IndianRupee}  iconCls="text-foreground/60" index={3} />
         </div>
 
         {/* MANUFACTURING ORDERS TABLE */}
@@ -525,9 +494,9 @@ export default function BulkManagement() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border bg-muted/40">
+                <tr className="border-b border-border bg-muted/30">
                   {["Lot Number","Karigar","Client","Description","Pieces","Total Cost","Status","Actions"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                    <th key={h} className="px-5 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -542,12 +511,12 @@ export default function BulkManagement() {
                       i % 2 !== 0 && "bg-muted/[0.04]",
                     )}>
                       {/* Lot Number */}
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <span className="font-mono text-xs font-bold text-foreground">{lot.lotNumber}</span>
                         <p className="text-[10px] text-muted-foreground mt-0.5">{lot.jewelleryType}</p>
                       </td>
                       {/* Karigar */}
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2">
                           <div className="h-6 w-6 rounded-md bg-foreground flex items-center justify-center text-[10px] font-bold text-background shrink-0">
                             {lot.karigar.charAt(0)}
@@ -556,35 +525,35 @@ export default function BulkManagement() {
                         </div>
                       </td>
                       {/* Client */}
-                      <td className="px-4 py-3.5 text-xs text-muted-foreground max-w-[100px]">
+                      <td className="px-5 py-3.5 text-xs text-muted-foreground max-w-[100px]">
                         <span className="line-clamp-1">{lot.client}</span>
                       </td>
                       {/* Description */}
-                      <td className="px-4 py-3.5 text-xs text-muted-foreground max-w-[180px]">
+                      <td className="px-5 py-3.5 text-xs text-muted-foreground max-w-[180px]">
                         <span className="line-clamp-2 leading-relaxed">{lot.description}</span>
                       </td>
                       {/* Pieces */}
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-muted border border-border text-xs font-semibold text-foreground">
                           <Package className="h-3 w-3 text-muted-foreground" /> {lot.pieces}
                         </div>
                       </td>
                       {/* Cost */}
-                      <td className="px-4 py-3.5 tabular-nums text-xs font-bold text-foreground">
+                      <td className="px-5 py-3.5 tabular-nums text-xs font-bold text-foreground">
                         {fmtAmt(lot.totalCost)}
                         {lot.totalDiamond > 0 && (
                           <p className="text-[10px] text-muted-foreground mt-0.5 font-normal">{lot.totalDiamond.toFixed(2)}ct dia</p>
                         )}
                       </td>
                       {/* Status */}
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <span className={cn("inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border", sm.cls)}>
                           <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", sm.dot)} />
                           {sm.label}
                         </span>
                       </td>
                       {/* Actions */}
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5">
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button onClick={() => setViewLot(lot)}
                             className="h-7 w-7 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors" title="View">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FileBarChart, Download, ChevronDown, Gem, Scale, ClipboardList, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 
 /* ── DATA ── */
 const REPORT_TYPES  = ["Material Summary", "Gold Flow Report", "Diamond Flow Report", "Karigar Performance", "Completion Report"];
@@ -79,35 +80,10 @@ export default function MaterialReport() {
 
         {/* METRIC CARDS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            {
-              title:"Gold Balance", icon: Scale, value:"0.000g",
-              sub:"Issued: 0.000g | Received: 0.000g",
-            },
-            {
-              title:"Diamond Balance", icon: Gem, value:"0.000ct",
-              sub:"Issued: 0.000ct | Received: 0.000ct",
-            },
-            {
-              title:"Active Orders", icon: ClipboardList, value:"8",
-              sub:"Completed: 26",
-            },
-            {
-              title:"Completion Rate", icon: TrendingUp, value:"76.5%",
-              sub:"Total: 34 orders",
-            },
-          ].map(({ title, icon: Icon, value, sub }) => (
-            <div key={title} className="bg-card border border-border rounded-xl p-5 hover:shadow-sm transition-all">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{title}</p>
-                <div className="h-7 w-7 rounded-lg bg-muted flex items-center justify-center">
-                  <Icon className="h-3.5 w-3.5 text-foreground/50" />
-                </div>
-              </div>
-              <p className="text-2xl font-bold text-foreground tabular-nums mb-1">{value}</p>
-              <p className="text-[11px] text-muted-foreground">{sub}</p>
-            </div>
-          ))}
+          <AnimatedMetricCard label="Gold Balance"    value="0.000g"   sub="Issued: 0.000g | Received: 0.000g"   icon={Scale}        iconCls="text-foreground/50" index={0} />
+          <AnimatedMetricCard label="Diamond Balance" value="0.000ct"  sub="Issued: 0.000ct | Received: 0.000ct" icon={Gem}          iconCls="text-foreground/50" index={1} />
+          <AnimatedMetricCard label="Active Orders"   value="8"        sub="Completed: 26"                        icon={ClipboardList} iconCls="text-foreground/50" index={2} />
+          <AnimatedMetricCard label="Completion Rate" value="76.5%"    sub="Total: 34 orders"                    icon={TrendingUp}   iconCls="text-foreground/50" index={3} />
         </div>
 
         {/* MATERIAL FLOW ANALYSIS */}
@@ -162,18 +138,18 @@ export default function MaterialReport() {
             <thead>
               <tr className="border-b border-border bg-muted/30">
                 {["Karigar","Total Orders","Completed","Pending","Completion Rate"].map(h => (
-                  <th key={h} className="text-left px-6 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
+                  <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {PERF_ROWS.map(row => (
                 <tr key={row.karigar} className="hover:bg-muted/20 transition-colors">
-                  <td className="px-6 py-4 text-sm font-medium text-foreground">{row.karigar}</td>
-                  <td className="px-6 py-4 text-sm tabular-nums text-foreground">{row.orders}</td>
-                  <td className="px-6 py-4 text-sm tabular-nums text-emerald-600 font-semibold">{row.completed}</td>
-                  <td className="px-6 py-4 text-sm tabular-nums text-amber-600 font-semibold">{row.pending}</td>
-                  <td className="px-6 py-4">
+                  <td className="px-5 py-3.5 text-sm font-medium text-foreground">{row.karigar}</td>
+                  <td className="px-5 py-3.5 text-sm tabular-nums text-foreground">{row.orders}</td>
+                  <td className="px-5 py-3.5 text-sm tabular-nums text-emerald-600 font-semibold">{row.completed}</td>
+                  <td className="px-5 py-3.5 text-sm tabular-nums text-amber-600 font-semibold">{row.pending}</td>
+                  <td className="px-5 py-3.5">
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden max-w-[100px]">
                         <div

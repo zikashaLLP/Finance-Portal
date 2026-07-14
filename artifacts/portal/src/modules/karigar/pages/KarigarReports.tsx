@@ -3,6 +3,8 @@ import {
   Package, CheckCircle2, Clock, IndianRupee, TrendingUp,
   Download, Eye, SlidersHorizontal,
 } from "lucide-react";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
+import Pagination from "@/shared/components/Pagination";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -123,9 +125,9 @@ function TableCard({ title, headers, children, footer }: {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-muted/40">
+            <tr className="border-b border-border bg-muted/30">
               {headers.map((h) => (
-                <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                <th key={h} className="px-5 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                   {h}
                 </th>
               ))}
@@ -151,24 +153,6 @@ function KarigarAvatar({ name }: { name: string }) {
   );
 }
 
-/* ═══════════════════════════════════════════════
-   METRIC CARD
-═══════════════════════════════════════════════ */
-function MetricCard({ label, value, icon, accent = "text-foreground" }: {
-  label: string; value: string; icon: React.ReactNode; accent?: string;
-}) {
-  return (
-    <div className="bg-card border border-border rounded-2xl shadow-sm p-5 flex items-center justify-between gap-4 hover:shadow-md hover:border-foreground/15 transition-all duration-200">
-      <div>
-        <p className="text-xs font-medium text-muted-foreground mb-1.5 uppercase tracking-wider">{label}</p>
-        <p className={cn("text-2xl font-bold tabular-nums leading-none", accent)}>{value}</p>
-      </div>
-      <div className="h-11 w-11 rounded-xl bg-muted flex items-center justify-center shrink-0">
-        {icon}
-      </div>
-    </div>
-  );
-}
 
 /* ═══════════════════════════════════════════════
    TAB: ORDERS
@@ -179,56 +163,31 @@ function OrdersTable({ rows }: { rows: ReportRow[] }) {
   const total = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
   const slice = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const footer = total > 1 ? (
-    <div className="flex items-center justify-between px-6 py-3.5 border-t border-border bg-muted/20">
-      <p className="text-xs text-muted-foreground">
-        Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, rows.length)} of {rows.length} orders
-      </p>
-      <div className="flex items-center gap-1">
-        <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
-          className="h-7 px-3 rounded-lg text-xs border border-border disabled:opacity-40 hover:bg-muted/40 transition-colors">
-          Previous
-        </button>
-        {Array.from({ length: total }, (_, i) => i + 1).map((p) => (
-          <button key={p} onClick={() => setPage(p)}
-            className={cn("h-7 w-7 rounded-lg text-xs font-medium transition-colors",
-              p === page ? "bg-foreground text-background" : "hover:bg-muted/40 text-muted-foreground")}>
-            {p}
-          </button>
-        ))}
-        <button onClick={() => setPage(Math.min(total, page + 1))} disabled={page === total}
-          className="h-7 px-3 rounded-lg text-xs border border-border disabled:opacity-40 hover:bg-muted/40 transition-colors">
-          Next
-        </button>
-      </div>
-    </div>
-  ) : undefined;
-
   return (
     <TableCard title="Order Details"
       headers={["Order #","Karigar","Client","Item Type","Gold (g)","Labour Quoted","Total Budget","Status","Order Date","Actions"]}
-      footer={footer}>
+      footer={<Pagination page={page} totalPages={total} onPageChange={setPage} totalItems={rows.length} pageSize={PAGE_SIZE} itemLabel="orders" />}>
       {slice.map((r, i) => (
         <tr key={r.id} className={cn(
           "border-b border-border last:border-0 hover:bg-muted/20 transition-colors group",
           i % 2 !== 0 && "bg-muted/[0.04]",
         )}>
-          <td className="px-4 py-3.5">
+          <td className="px-5 py-3.5">
             <span className="font-mono text-xs font-semibold text-foreground">{r.orderNumber}</span>
           </td>
-          <td className="px-4 py-3.5"><KarigarAvatar name={r.karigar} /></td>
-          <td className="px-4 py-3.5 text-xs text-muted-foreground max-w-[120px]">
+          <td className="px-5 py-3.5"><KarigarAvatar name={r.karigar} /></td>
+          <td className="px-5 py-3.5 text-xs text-muted-foreground max-w-[120px]">
             <span className="line-clamp-2 leading-tight">{r.client}</span>
           </td>
-          <td className="px-4 py-3.5">
+          <td className="px-5 py-3.5">
             <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-muted text-[11px] font-medium text-foreground border border-border">
               {r.itemType}
             </span>
           </td>
-          <td className="px-4 py-3.5 tabular-nums text-xs text-muted-foreground">{fmtW(r.goldWeight)}</td>
-          <td className="px-4 py-3.5 tabular-nums text-xs font-medium text-foreground">{fmtAmt(r.labourQuoted)}</td>
-          <td className="px-4 py-3.5 tabular-nums text-xs font-semibold text-foreground">{fmtAmt(r.totalBudget)}</td>
-          <td className="px-4 py-3.5">
+          <td className="px-5 py-3.5 tabular-nums text-xs text-muted-foreground">{fmtW(r.goldWeight)}</td>
+          <td className="px-5 py-3.5 tabular-nums text-xs font-medium text-foreground">{fmtAmt(r.labourQuoted)}</td>
+          <td className="px-5 py-3.5 tabular-nums text-xs font-semibold text-foreground">{fmtAmt(r.totalBudget)}</td>
+          <td className="px-5 py-3.5">
             {r.status === "received" ? (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" /> received
@@ -239,8 +198,8 @@ function OrdersTable({ rows }: { rows: ReportRow[] }) {
               </span>
             )}
           </td>
-          <td className="px-4 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.orderDate}</td>
-          <td className="px-4 py-3.5">
+          <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.orderDate}</td>
+          <td className="px-5 py-3.5">
             <button className="h-7 w-7 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors opacity-0 group-hover:opacity-100">
               <Eye className="h-3.5 w-3.5" />
             </button>
@@ -267,13 +226,13 @@ function MaterialsTab({ karigarFilter }: { karigarFilter: string }) {
           "border-b border-border last:border-0 hover:bg-muted/20 transition-colors",
           i % 2 !== 0 && "bg-muted/[0.04]",
         )}>
-          <td className="px-4 py-3.5"><KarigarAvatar name={r.karigar} /></td>
-          <td className="px-4 py-3.5">
+          <td className="px-5 py-3.5"><KarigarAvatar name={r.karigar} /></td>
+          <td className="px-5 py-3.5">
             <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-muted text-[11px] font-medium text-foreground border border-border">
               {r.materialType}
             </span>
           </td>
-          <td className="px-4 py-3.5">
+          <td className="px-5 py-3.5">
             {r.transactionType === "issue" ? (
               <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold bg-red-500 text-white uppercase tracking-wide">
                 issue
@@ -284,16 +243,16 @@ function MaterialsTab({ karigarFilter }: { karigarFilter: string }) {
               </span>
             )}
           </td>
-          <td className="px-4 py-3.5 tabular-nums text-xs font-semibold text-foreground">
+          <td className="px-5 py-3.5 tabular-nums text-xs font-semibold text-foreground">
             {r.weight.toFixed(3)}{r.weightUnit}
           </td>
-          <td className="px-4 py-3.5">
+          <td className="px-5 py-3.5">
             <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-muted/60 text-[11px] font-medium text-muted-foreground border border-border">
               {r.purityQuality}
             </span>
           </td>
-          <td className="px-4 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
-          <td className="px-4 py-3.5 text-xs text-muted-foreground max-w-[200px]">
+          <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
+          <td className="px-5 py-3.5 text-xs text-muted-foreground max-w-[200px]">
             <span className="line-clamp-1">{r.comment}</span>
           </td>
         </tr>
@@ -321,16 +280,16 @@ function ReceiptsTab({ karigarFilter }: { karigarFilter: string }) {
           "border-b border-border last:border-0 hover:bg-muted/20 transition-colors",
           i % 2 !== 0 && "bg-muted/[0.04]",
         )}>
-          <td className="px-4 py-3.5"><KarigarAvatar name={r.karigar} /></td>
-          <td className="px-4 py-3.5">
+          <td className="px-5 py-3.5"><KarigarAvatar name={r.karigar} /></td>
+          <td className="px-5 py-3.5">
             <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-muted text-[11px] font-medium text-foreground border border-border">
               {r.jewelleryType}
             </span>
           </td>
-          <td className="px-4 py-3.5 tabular-nums text-xs font-semibold text-foreground">{fmtW(r.grossWeight)}</td>
-          <td className="px-4 py-3.5 tabular-nums text-xs text-muted-foreground">{fmtW(r.netWeight)}</td>
-          <td className="px-4 py-3.5 tabular-nums text-xs font-semibold text-foreground">{fmtAmt(r.labourCharges)}</td>
-          <td className="px-4 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.receiptDate}</td>
+          <td className="px-5 py-3.5 tabular-nums text-xs font-semibold text-foreground">{fmtW(r.grossWeight)}</td>
+          <td className="px-5 py-3.5 tabular-nums text-xs text-muted-foreground">{fmtW(r.netWeight)}</td>
+          <td className="px-5 py-3.5 tabular-nums text-xs font-semibold text-foreground">{fmtAmt(r.labourCharges)}</td>
+          <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.receiptDate}</td>
         </tr>
       ))}
       {rows.length === 0 && (
@@ -365,9 +324,9 @@ function PaymentsTab({ karigarFilter }: { karigarFilter: string }) {
             "border-b border-border last:border-0 hover:bg-muted/20 transition-colors",
             i % 2 !== 0 && "bg-muted/[0.04]",
           )}>
-            <td className="px-4 py-3.5"><KarigarAvatar name={r.karigar} /></td>
-            <td className="px-4 py-3.5 tabular-nums text-sm font-bold text-foreground">{fmtAmt(r.amount)}</td>
-            <td className="px-4 py-3.5">
+            <td className="px-5 py-3.5"><KarigarAvatar name={r.karigar} /></td>
+            <td className="px-5 py-3.5 tabular-nums text-sm font-bold text-foreground">{fmtAmt(r.amount)}</td>
+            <td className="px-5 py-3.5">
               <span className={cn(
                 "inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-semibold border",
                 r.paymentMode === "Cash"
@@ -379,8 +338,8 @@ function PaymentsTab({ karigarFilter }: { karigarFilter: string }) {
                 {r.paymentMode}
               </span>
             </td>
-            <td className="px-4 py-3.5 text-xs font-medium text-foreground uppercase tracking-wide">{r.description}</td>
-            <td className="px-4 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
+            <td className="px-5 py-3.5 text-xs font-medium text-foreground uppercase tracking-wide">{r.description}</td>
+            <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
           </tr>
         ))}
         {rows.length === 0 && (
@@ -553,11 +512,11 @@ export default function KarigarReports() {
 
         {/* METRIC CARDS */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <MetricCard label="Total Orders"    value={String(filtered.length)}        icon={<Package      className="h-5 w-5 text-foreground/60" />} />
-          <MetricCard label="Completed"       value={String(completed)}              icon={<CheckCircle2 className="h-5 w-5 text-emerald-600"   />} accent="text-emerald-700" />
-          <MetricCard label="Pending"         value={String(pending)}                icon={<Clock        className="h-5 w-5 text-amber-600"     />} accent="text-amber-700"   />
-          <MetricCard label="Total Budget"    value={fmtAmt(totalBudget)}            icon={<IndianRupee  className="h-5 w-5 text-foreground/60" />} />
-          <MetricCard label="Completion Rate" value={`${completionRate.toFixed(1)}%`} icon={<TrendingUp  className="h-5 w-5 text-foreground/60" />} />
+          <AnimatedMetricCard label="Total Orders"    value={String(filtered.length)}         icon={Package}      iconCls="text-foreground/60" index={0} />
+          <AnimatedMetricCard label="Completed"       value={String(completed)}               icon={CheckCircle2} iconCls="text-emerald-600"   valueColor="text-emerald-700" index={1} />
+          <AnimatedMetricCard label="Pending"         value={String(pending)}                 icon={Clock}        iconCls="text-amber-600"     valueColor="text-amber-700"   index={2} />
+          <AnimatedMetricCard label="Total Budget"    value={fmtAmt(totalBudget)}             icon={IndianRupee}  iconCls="text-foreground/60" index={3} />
+          <AnimatedMetricCard label="Completion Rate" value={`${completionRate.toFixed(1)}%`} icon={TrendingUp}   iconCls="text-foreground/60" index={4} />
         </div>
 
         {/* SUB-TABS */}
