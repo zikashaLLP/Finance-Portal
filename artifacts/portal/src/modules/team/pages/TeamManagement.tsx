@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, Plus, UserX } from "lucide-react";
+import { Users, Plus, UserX, Crown, Calculator, Gem, TrendingUp, type LucideIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import {
@@ -18,6 +18,20 @@ import {
 
 const INPUT_CLS =
   "w-full h-10 px-3 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/30 transition";
+
+const ROLE_ICON: Record<TeamRole, LucideIcon> = {
+  "Owner":         Crown,
+  "Accounts Team": Calculator,
+  "Karigar Team":  Gem,
+  "Sales Team":    TrendingUp,
+};
+
+const ROLE_DESC: Record<TeamRole, string> = {
+  "Owner":         "Full access",
+  "Accounts Team": "Finance & books",
+  "Karigar Team":  "Craft & workshop",
+  "Sales Team":    "Sales & billing",
+};
 
 /* ── ADD MEMBER MODAL ── */
 interface AddMemberModalProps {
@@ -88,7 +102,6 @@ function AddMemberModal({ open, onClose, onAdd }: AddMemberModalProps) {
             <input type="text" placeholder="Enter full name" value={fullName}
               onChange={(e) => setFullName(e.target.value)} className={INPUT_CLS} />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">
               Username <span className="text-red-500">*</span>
@@ -96,7 +109,6 @@ function AddMemberModal({ open, onClose, onAdd }: AddMemberModalProps) {
             <input type="text" placeholder="Enter username (for login)" value={username}
               onChange={(e) => setUsername(e.target.value)} className={INPUT_CLS} />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">
               Password <span className="text-red-500">*</span>
@@ -104,7 +116,6 @@ function AddMemberModal({ open, onClose, onAdd }: AddMemberModalProps) {
             <input type="password" placeholder="Enter password" value={password}
               onChange={(e) => setPassword(e.target.value)} className={INPUT_CLS} />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">
               Team Role <span className="text-red-500">*</span>
@@ -114,13 +125,20 @@ function AddMemberModal({ open, onClose, onAdd }: AddMemberModalProps) {
                 <SelectValue placeholder="Select team role" />
               </SelectTrigger>
               <SelectContent>
-                {ROLES.map((r) => (
-                  <SelectItem key={r} value={r}>{r}</SelectItem>
-                ))}
+                {ROLES.map((r) => {
+                  const Icon = ROLE_ICON[r];
+                  return (
+                    <SelectItem key={r} value={r}>
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                        {r}
+                      </div>
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
-
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">
               Email <span className="text-muted-foreground font-normal">(Optional)</span>
@@ -128,7 +146,6 @@ function AddMemberModal({ open, onClose, onAdd }: AddMemberModalProps) {
             <input type="email" placeholder="Enter email" value={email}
               onChange={(e) => setEmail(e.target.value)} className={INPUT_CLS} />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">
               Phone <span className="text-muted-foreground font-normal">(Optional)</span>
@@ -166,15 +183,20 @@ function AddMemberModal({ open, onClose, onAdd }: AddMemberModalProps) {
 
 /* ── ROLE CARD ── */
 function RoleCard({ role, count }: { role: TeamRole; count: number }) {
-  const initial = role.charAt(0);
+  const Icon = ROLE_ICON[role];
+  const desc = ROLE_DESC[role];
   return (
-    <div className="bg-card border border-border rounded-2xl shadow-sm p-5 flex items-center justify-between gap-4">
+    <div className="bg-card border border-border rounded-2xl shadow-sm p-5 flex items-center justify-between gap-4 group hover:border-foreground/20 hover:shadow-md transition-all duration-200">
       <div>
-        <p className="text-xs text-muted-foreground font-medium mb-1">{role}</p>
-        <p className="text-3xl font-bold text-foreground tabular-nums">{count}</p>
+        <div className="flex items-center gap-1.5 mb-2">
+          <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+          <p className="text-xs text-muted-foreground font-medium">{role}</p>
+        </div>
+        <p className="text-3xl font-bold text-foreground tabular-nums leading-none mb-1">{count}</p>
+        <p className="text-[11px] text-muted-foreground/70">{desc}</p>
       </div>
-      <div className="h-11 w-11 rounded-full bg-muted flex items-center justify-center text-base font-bold text-foreground shrink-0">
-        {initial}
+      <div className="h-12 w-12 rounded-xl bg-muted group-hover:bg-foreground/8 flex items-center justify-center shrink-0 transition-colors duration-200">
+        <Icon className="h-5 w-5 text-foreground/70" />
       </div>
     </div>
   );
@@ -199,8 +221,8 @@ export default function TeamManagement() {
       {/* Page header */}
       <div className="flex items-start justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center shrink-0">
-            <Users className="h-5 w-5 text-foreground" />
+          <div className="h-10 w-10 rounded-xl bg-foreground flex items-center justify-center shrink-0">
+            <Users className="h-5 w-5 text-background" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-foreground tracking-tight leading-tight">Team Management</h1>
@@ -227,12 +249,18 @@ export default function TeamManagement() {
       <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
         {members.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-            <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-4">
-              <UserX className="h-8 w-8 text-muted-foreground/50" />
+            <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
+              <UserX className="h-7 w-7 text-muted-foreground/40" />
             </div>
-            <p className="text-sm text-muted-foreground">
-              No team members yet. Add your first team member to get started.
-            </p>
+            <p className="text-sm font-medium text-foreground mb-1">No team members yet</p>
+            <p className="text-xs text-muted-foreground mb-5">Add your first team member to get started.</p>
+            <button
+              onClick={() => setShowAdd(true)}
+              className="flex items-center gap-2 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add Team Member
+            </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -247,29 +275,33 @@ export default function TeamManagement() {
                 </tr>
               </thead>
               <tbody>
-                {members.map((m, i) => (
-                  <tr key={m.id} className={cn("border-b border-border last:border-0 hover:bg-muted/20 transition-colors", i % 2 !== 0 && "bg-muted/10")}>
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-2.5">
-                        <div className="h-8 w-8 rounded-full bg-foreground flex items-center justify-center text-xs font-bold text-background shrink-0">
-                          {m.fullName.charAt(0).toUpperCase()}
+                {members.map((m, i) => {
+                  const Icon = ROLE_ICON[m.role];
+                  return (
+                    <tr key={m.id} className={cn("border-b border-border last:border-0 hover:bg-muted/20 transition-colors", i % 2 !== 0 && "bg-muted/10")}>
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-8 w-8 rounded-lg bg-foreground flex items-center justify-center text-xs font-bold text-background shrink-0">
+                            {m.fullName.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="font-medium text-foreground">{m.fullName}</span>
                         </div>
-                        <span className="font-medium text-foreground">{m.fullName}</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3 font-mono text-xs text-muted-foreground">{m.username}</td>
-                    <td className="px-5 py-3">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-muted text-foreground border border-border">
-                        {m.role}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3 text-muted-foreground">{m.email || <span className="italic text-muted-foreground/50">—</span>}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{m.phone || <span className="italic text-muted-foreground/50">—</span>}</td>
-                    <td className="px-5 py-3 text-muted-foreground whitespace-nowrap">
-                      {new Date(m.joinedAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-5 py-3 font-mono text-xs text-muted-foreground">{m.username}</td>
+                      <td className="px-5 py-3">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-muted text-foreground border border-border">
+                          <Icon className="h-3 w-3" />
+                          {m.role}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-muted-foreground">{m.email || <span className="italic text-muted-foreground/50">—</span>}</td>
+                      <td className="px-5 py-3 text-muted-foreground">{m.phone || <span className="italic text-muted-foreground/50">—</span>}</td>
+                      <td className="px-5 py-3 text-muted-foreground whitespace-nowrap">
+                        {new Date(m.joinedAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
