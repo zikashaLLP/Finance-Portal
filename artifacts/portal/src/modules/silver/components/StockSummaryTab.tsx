@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Layers, Gem } from "lucide-react";
 import Pagination from "@/shared/components/Pagination";
+import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 import { mockSilverTransactions, SilverTransaction } from "../data/mockSilver";
 
 const PAGE_SIZE = 10;
@@ -27,62 +28,6 @@ const PAYMENT_BADGE: Record<string, string> = {
   UPI:             "bg-purple-50 text-purple-700",
   Cheque:          "bg-zinc-100 text-zinc-700",
 };
-
-function MetricCard({
-  title,
-  totalPurchases,
-  totalSales,
-  currentStock,
-  icon,
-  accent,
-  index,
-}: {
-  title: string;
-  totalPurchases: number;
-  totalSales: number;
-  currentStock: number;
-  icon: React.ReactNode;
-  accent: string;
-  index: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: index * 0.08, ease: "easeOut" }}
-      className="bg-card border border-border rounded-[18px] p-6 shadow-sm hover:shadow-md transition-shadow"
-    >
-      <div className="flex items-start justify-between mb-4">
-        <div
-          className="p-2.5 rounded-full inline-flex items-center justify-center"
-          style={{ backgroundColor: accent + "20", color: accent }}
-        >
-          {icon}
-        </div>
-        <span
-          className="text-xs font-semibold px-2.5 py-1 rounded-full"
-          style={{ backgroundColor: accent + "15", color: accent }}
-        >
-          Current Stock
-        </span>
-      </div>
-
-      <p className="text-[13px] font-medium text-muted-foreground mb-1">{title}</p>
-      <h3 className="text-[28px] font-semibold text-foreground tracking-tight mb-4">{fmtW(currentStock)}</h3>
-
-      <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border">
-        <div>
-          <p className="text-[11px] text-muted-foreground mb-0.5">Total Purchases</p>
-          <p className="text-sm font-semibold text-emerald-600">{fmtW(totalPurchases)}</p>
-        </div>
-        <div>
-          <p className="text-[11px] text-muted-foreground mb-0.5">Total Sales</p>
-          <p className="text-sm font-semibold text-red-500">{fmtW(totalSales)}</p>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 function TransactionHistoryTable({ rows }: { rows: SilverTransaction[] }) {
   const [page, setPage] = useState(1);
@@ -176,22 +121,20 @@ export default function StockSummaryTab() {
     <div className="space-y-6">
       {/* Metric cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <MetricCard
-          title="Pure Silver Stock"
-          totalPurchases={purePurchases}
-          totalSales={pureSales}
-          currentStock={pureStock}
-          icon={<Gem className="h-4 w-4" />}
-          accent="#64748b"
+        <AnimatedMetricCard
+          label="Pure Silver Stock"
+          value={fmtW(pureStock)}
+          sub={`↑ ${fmtW(purePurchases)} purchased · ↓ ${fmtW(pureSales)} sold`}
+          icon={Gem}
+          iconCls="text-slate-500"
           index={0}
         />
-        <MetricCard
-          title="Silver Jewelry Stock"
-          totalPurchases={jewelryPurchases}
-          totalSales={jewelrySales}
-          currentStock={jewelryStock}
-          icon={<Layers className="h-4 w-4" />}
-          accent="#7c3aed"
+        <AnimatedMetricCard
+          label="Silver Jewelry Stock"
+          value={fmtW(jewelryStock)}
+          sub={`↑ ${fmtW(jewelryPurchases)} purchased · ↓ ${fmtW(jewelrySales)} sold`}
+          icon={Layers}
+          iconCls="text-violet-500"
           index={1}
         />
       </div>

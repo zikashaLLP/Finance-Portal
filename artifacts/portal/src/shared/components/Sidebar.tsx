@@ -119,9 +119,8 @@ interface FlyoutState {
 
 export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
   const [location]  = useLocation();
-  const [isHovered, setIsHovered] = useState(false);
 
-  const isExpanded = isPinned || isHovered;
+  const isExpanded = isPinned;
 
   /* ── scroll preservation ── */
   const navScrollRef  = useRef<HTMLDivElement>(null);
@@ -226,13 +225,13 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         <button
           onClick={() => toggleGroup(item.name)}
           onMouseEnter={(e) => {
-            if (!isPinned) {
+            if (!isExpanded) {
               const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
               openFlyout(item.name, rect.top + rect.height / 2);
             }
           }}
           onMouseLeave={() => {
-            if (!isPinned) scheduleFlyoutClose();
+            if (!isExpanded) scheduleFlyoutClose();
           }}
           className={cn(
             "w-full flex items-center px-3 py-2 rounded-lg transition-colors",
@@ -313,11 +312,9 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
           isExpanded
             ? "w-[220px] bg-background"
             : "w-[56px]  bg-background",
-          isExpanded && !isPinned && "shadow-[4px_0_24px_rgba(0,0,0,0.07)]",
+          !isExpanded && "shadow-[4px_0_24px_rgba(0,0,0,0.07)]",
         )}
-        onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => {
-          setIsHovered(false);
           scheduleFlyoutClose();
         }}
       >
@@ -442,7 +439,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
       </aside>
 
       {/* Collapsed-mode flyout panel */}
-      {!isPinned && flyout && flyoutGroup && (
+      {!isExpanded && flyout && flyoutGroup && (
         <div
           className="fixed z-[200] bg-background border border-border rounded-xl shadow-lg py-2 min-w-[188px]"
           style={{ top: flyout.y, left: 72, transform: "translateY(-50%)" }}
