@@ -7,6 +7,7 @@ import Ledger from "../../modules/ledger/pages/Ledger";
 import ComingSoon from "../../pages/ComingSoon";
 import FinancePlanning from "../../modules/finance/pages/FinancePlanning";
 import TeamManagement from "../../modules/team/pages/TeamManagement";
+import GroundStaff from "../../modules/ground-staff/pages/GroundStaff";
 
 export default function AppRouter() {
   return (
@@ -35,6 +36,11 @@ export default function AppRouter() {
         <Route path="/team">
           <MainLayout>
             <TeamManagement />
+          </MainLayout>
+        </Route>
+        <Route path="/ground-staff">
+          <MainLayout>
+            <GroundStaff />
           </MainLayout>
         </Route>
         <Route path="/gold">
