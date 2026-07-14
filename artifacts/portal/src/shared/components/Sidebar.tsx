@@ -93,6 +93,7 @@ const MANAGEMENT: MenuItem[] = [
       { name: "Return Workflow",  path: "/diamond/returns",  icon: RefreshCw     },
     ],
   },
+  { kind: "flat", name: "Reports", icon: BarChart2, path: "/reports" },
 ];
 
 interface SidebarProps {
