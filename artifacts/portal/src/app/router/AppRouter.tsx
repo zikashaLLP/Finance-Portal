@@ -9,6 +9,7 @@ import FinancePlanning from "../../modules/finance/pages/FinancePlanning";
 import TeamManagement from "../../modules/team/pages/TeamManagement";
 import KarigarManagement from "../../modules/karigar/pages/KarigarManagement";
 import KarigarReports from "../../modules/karigar/pages/KarigarReports";
+import BulkManagement from "../../modules/karigar/pages/BulkManagement";
 import GroundStaff from "../../modules/ground-staff/pages/GroundStaff";
 
 export default function AppRouter() {
@@ -58,6 +59,11 @@ export default function AppRouter() {
         <Route path="/karigar/reports">
           <MainLayout>
             <KarigarReports />
+          </MainLayout>
+        </Route>
+        <Route path="/karigar/bulk">
+          <MainLayout>
+            <BulkManagement />
           </MainLayout>
         </Route>
         <Route path="/karigar">
