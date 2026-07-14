@@ -32,6 +32,8 @@ import {
   RefreshCw,
   LayoutDashboard,
   ClipboardCheck,
+  Wallet,
+  LayoutList,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -92,6 +94,13 @@ const MANAGEMENT: MenuItem[] = [
       { name: "Quality Tracking", path: "/diamond/tracking", icon: Sparkles      },
       { name: "Diamond Orders",   path: "/diamond/orders",   icon: ClipboardList },
       { name: "Return Workflow",  path: "/diamond/returns",  icon: RefreshCw     },
+    ],
+  },
+  {
+    kind: "group", name: "Harvest Plans", icon: Wallet,
+    children: [
+      { name: "Harvest Management", path: "/harvest",        icon: LayoutList  },
+      { name: "Group Management",   path: "/harvest/groups", icon: Users       },
     ],
   },
   { kind: "flat", name: "Approvals", icon: ClipboardCheck, path: "/approvals" },

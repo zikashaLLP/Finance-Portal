@@ -14,6 +14,8 @@ import StockManagement from "../../modules/stock/pages/StockManagement";
 import Dashboard from "../../modules/dashboard/pages/Dashboard";
 import Reports from "../../modules/reports/pages/Reports";
 import Approvals from "../../modules/approvals/pages/Approvals";
+import HarvestManagement from "../../modules/harvest/pages/HarvestManagement";
+import GroupManagement from "../../modules/harvest/pages/GroupManagement";
 import GroundStaff from "../../modules/ground-staff/pages/GroundStaff";
 
 export default function AppRouter() {
@@ -84,6 +86,16 @@ export default function AppRouter() {
         <Route path="/stock">
           <MainLayout>
             <StockManagement />
+          </MainLayout>
+        </Route>
+        <Route path="/harvest/groups">
+          <MainLayout>
+            <GroupManagement />
+          </MainLayout>
+        </Route>
+        <Route path="/harvest">
+          <MainLayout>
+            <HarvestManagement />
           </MainLayout>
         </Route>
         <Route path="/approvals">
