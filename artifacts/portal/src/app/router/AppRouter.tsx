@@ -21,6 +21,8 @@ import HarvestManagement from "../../modules/harvest/pages/HarvestManagement";
 import GroupManagement from "../../modules/harvest/pages/GroupManagement";
 import SalesManagement from "../../modules/sales/pages/SalesManagement";
 import ClientManagement from "../../modules/sales/pages/ClientManagement";
+import PurchaseManagement from "../../modules/purchase/pages/PurchaseManagement";
+import VendorManagement from "../../modules/purchase/pages/VendorManagement";
 import GroundStaff from "../../modules/ground-staff/pages/GroundStaff";
 
 export default function AppRouter() {
@@ -138,9 +140,14 @@ export default function AppRouter() {
             <SalesManagement />
           </MainLayout>
         </Route>
+        <Route path="/purchase/vendors">
+          <MainLayout>
+            <VendorManagement />
+          </MainLayout>
+        </Route>
         <Route path="/purchase">
           <MainLayout>
-            <ComingSoon title="Purchase" />
+            <PurchaseManagement />
           </MainLayout>
         </Route>
         <Route path="/diamond">
