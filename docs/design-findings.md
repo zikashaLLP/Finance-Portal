@@ -25,19 +25,39 @@
 15. [Harvest Plan Management](#15-harvest-plan-management)
 16. [Approval Management](#16-approval-management)
 17. [Sales Management](#17-sales-management)
-18. [Implementable Quick Wins (Prioritised)](#18-implementable-quick-wins-prioritised)
+18. [Purchase Management](#18-purchase-management)
+19. [Vendor Management](#19-vendor-management)
+20. [Client Management](#20-client-management)
+21. [Team Management](#21-team-management)
+22. [Ground Staff Tracking](#22-ground-staff-tracking)
+23. [Stock Tally Report](#23-stock-tally-report)
+24. [Stock Summary](#24-stock-summary)
+25. [Material Tracking Reports](#25-material-tracking-reports)
+26. [Transaction Reports](#26-transaction-reports)
+27. [Harvest Plan Groups](#27-harvest-plan-groups)
+28. [Settings & Help Center](#28-settings--help-center)
+29. [Implementable Quick Wins (Prioritised)](#29-implementable-quick-wins-prioritised)
 
 ---
 
 ## 1. Cross-cutting Issues
 
+### 🔴 Topbar title is hardcoded "Dashboard / Overview" on most pages — root cause identified
+`Topbar.tsx` has a single `getPageContext()` function that only handles `/ledger`. Every route not in the suppression list falls back to `{ title: "Dashboard", subtitle: "Overview" }`. Routes currently affected:
+- `/finance` → shows "Dashboard / Overview" (should be "Finance Planning")
+- `/team` → shows "Dashboard / Overview" (should be "Team Management")
+- `/ground-staff` → shows "Dashboard / Overview" (should be "Ground Staff Tracking")
+- `/settings` and `/help` → shows "Dashboard / Overview" on a "Page Not Found" screen
+
+**Fix:** Expand `getPageContext()` with an entry for every active route, or switch to a route-driven title approach (e.g. a `usePageTitle()` hook that pages push their title into).
+
 ### 🔴 Duplicate notification bell
-Ledger, Finance Planning, and Gold Management show **two bell icons** — one in the topbar and one rendered inside the page sub-header. Remove the in-page bell; keep only the topbar one.
+Finance Planning and Gold Management show **two bell icons** — one in the topbar and one rendered inside the page sub-header. The in-page bell in `FinancePlanning.tsx` imports `Bell` from lucide-react and renders it manually even though the topbar already has one. Remove the in-page bell; keep only the topbar one.
 
 ### 🔴 Inconsistent page header style
-- Transactions and Gold Management have a taller white header with a bottom border and custom topbar suppression.
-- All other pages (Ledger, Finance, Stock, etc.) use a plain white card header with the page title.
-- **Fix:** Standardise to one header pattern. The Gold/Transactions header style is richer — consider extending it to all pages.
+- Transactions and Gold Management suppress the topbar and own their full header (white bar with bottom border, large title, action buttons).
+- All other pages use a plain `<div>` inside the page content with a title + subtitle — no consistent header component.
+- **Fix:** Create a shared `<PageHeader>` component and use it everywhere, or extend the topbar suppression approach consistently to all pages.
 
 ### 🟡 Three distinct metric card designs in use
 1. **Gold Management style** — large icon circle, coloured sub-label, tall card (~180px). Most premium.
@@ -396,32 +416,267 @@ The search is placed top-right next to the page description and "+ New Sale" but
 
 ---
 
-## 18. Implementable Quick Wins (Prioritised)
+## 18. Purchase Management
+
+**Route:** `/purchase`
+
+### 🔴 Page header layout is broken
+The title "Purchase Management" is placed in the top-left, but the search bar, type filter dropdown, "Sync Gold Ledgers" button, and "+ Record Purchase" primary button are all jammed into the same header row to its right. The title wraps to two lines to make room. This is the most broken header layout in the app.
+
+**Fix:** Separate the page title (with subtitle) into its own row above a dedicated toolbar row containing search + filter + action buttons.
+
+### 🟡 "Sync Gold Ledgers" button — purpose is unclear
+A secondary button in the header reads "Sync Gold Ledgers" with a refresh icon. Users cannot tell from the label what syncing does, when to do it, or what happens if they don't. Rename to "Sync to Ledger" and add a tooltip or small description explaining the action.
+
+### 🟡 ITEM NAME column often duplicates ITEM TYPE
+For "Loose Diamond" rows, ITEM NAME always reads "Loose Diamond" — identical to ITEM TYPE. No additional information is conveyed. Consider merging these columns or hiding ITEM NAME when it equals ITEM TYPE.
+
+### 🟡 GOLD WEIGHT column is `—` for 75% of rows
+Most purchases are diamonds and show `—` in this column. A column that is empty most of the time wastes horizontal space. Make it conditional: hide the column when viewing only non-gold types, or show it only in the "Gold Jewellery" / "Pure Gold" filter view.
+
+### 🟢 Metric cards below the broken header use AnimatedMetricCard — good
+AnimatedMetricCard is correctly used here. However the 4 cards (Total Purchases, Total Spend, Diamond Orders, Gold Orders) have no icons and no colour differentiation.
+
+---
+
+## 19. Vendor Management
+
+**Route:** `/purchase/vendors`
+
+### 🟡 CONTACT DETAILS and ADDRESS columns are entirely empty
+Every row shows `—` in both columns. These two columns occupy ~35% of table width for zero information. Either populate mock data or hide these columns by default behind a "Show Details" toggle or a row expand.
+
+### 🟡 Vendor ID is exposed as a user-visible label
+"ID: 269" is shown below every vendor name as a grey sub-label. Database IDs are internal implementation details. Remove or replace with something meaningful (e.g. date added, transaction count).
+
+### 🟢 3 stat cards (Total Vendors / Diamond Vendors / Gold Vendors) use bare text
+No icons, no animation. Adopt AnimatedMetricCard. Use the semantic diamond (blue) and gold (amber) colours for the sub-cards.
+
+### 🟢 Category badge missing on several rows
+Some vendors have no category badge (`—`). These appear less important than vendors with "Diamond" or "Gold" badges. Consider showing "General" as a default badge rather than nothing.
+
+---
+
+## 20. Client Management
+
+**Route:** `/sales/clients`
+
+### 🟡 Three data columns (CONTACT DETAILS / PERSONAL INFO / ADDRESS) are entirely `—`
+All 20 clients show empty data in these three columns, which together take ~55% of table width. The table effectively has only 3 useful columns (Client, Registration Date, Actions). Either populate mock data or collapse these into a client detail panel that expands on row click.
+
+### 🟡 Client ID is exposed as a user-visible label
+"ID: 823" is shown below every name. Same issue as Vendor Management — remove or replace with business-meaningful data.
+
+### 🟡 VIP indicator is a tiny crown emoji in the avatar area
+VIP clients have a small crown icon overlaid on the avatar. This is easy to miss. Consider a visible VIP badge (gold pill) next to the client name, or a separate VIP column, so the 4 VIP clients are clearly scannable.
+
+### 🟢 "Filter" button exists but has no visible options
+Clicking the Filter button (top-right) should reveal filter controls. If no filters are implemented yet, remove the button or replace it with a clear placeholder ("Coming soon").
+
+### 🟢 3 stat cards use bare text — same issue as Vendor Management
+Apply AnimatedMetricCard with icons. "VIP Clients" card should use amber/gold styling to match the VIP concept.
+
+---
+
+## 21. Team Management
+
+**Route:** `/team`
+
+### 🔴 Page title shows "Dashboard / Overview" (topbar bug)
+The Topbar `getPageContext()` function has no entry for `/team`, so it falls back to the default "Dashboard / Overview". Should be "Team Management / Manage your team members".
+
+### 🟡 All 4 role stat cards show 0
+The mock data file (`mockTeam`) contains no pre-populated members, so all four cards (Owner / Accounts Team / Karigar Team / Sales Team) display `0`. A page with all zeros provides no design value or usability feedback. Add a few mock members so the layout can be validated.
+
+### 🟡 Stat cards use a unique fourth card design
+The 4 role cards (Owner / Accounts Team / etc.) use a design not seen elsewhere: large bold number top-left, icon bottom-right, description below the number. This is a fifth distinct card pattern in the app. Adopt AnimatedMetricCard or the Gold Management card style to unify.
+
+### 🟢 Empty state is the best in the app
+The "No team members yet" empty state with an illustration icon and a centred "Add Team Member" CTA is the only proper empty state in the entire portal. All other pages should adopt this pattern for their zero-data states.
+
+---
+
+## 22. Ground Staff Tracking
+
+**Route:** `/ground-staff`
+
+### 🔴 Page title shows "Dashboard / Overview" (topbar bug)
+Same root cause as Team Management. Should be "Ground Staff Tracking / Track deliveries and dispatches".
+
+### 🟡 Dispatch items use a card-list layout, not a table
+All other data-heavy pages use tables. Ground Staff uses individual white cards stacked vertically with no column alignment. This means:
+- Staff name + date are on the same line but in different visual weights with no column boundary
+- The From → To route uses map-pin icons and an arrow — visually appealing but not scannable at volume
+
+At 6 items this works; at 50 items it would be unmanageable. Consider a hybrid: keep the card aesthetic but align fields in implicit columns using CSS grid.
+
+### 🟡 Stat filter cards (All / Dispatched / Delivered / Returned) use a fifth unique card style
+These 4 cards are horizontal: icon left + large count + label below. They function as clickable filters (clicking "Dispatched" filters the list). This is a solid UX pattern. However the card design is unique — not reused anywhere else. Consider using a variant of AnimatedMetricCard with `isFilterActive` styling.
+
+### 🟡 No date/time filter
+All dispatch entries are sorted by date, but there's no way to filter by date range. A "Today / This Week / All" quick filter would immediately reduce noise for daily operations.
+
+### 🟢 Edit/delete icons visible on every row without a hover state
+The pencil and trash icons appear at full opacity at all times on the right of each card. A hover-reveal pattern (show on row hover only) would clean up the list's visual weight.
+
+---
+
+## 23. Stock Tally Report
+
+**Route:** `/stock/tally`
+
+### 🟡 Yes/No verification buttons have no visible selected state
+Each category row has `✓ Yes` and `✗ No` pill buttons. When neither is pressed yet, both appear with the same styling. After pressing "Yes", the selected state needs to be unmistakably clear (e.g. `Yes` fills green, `No` turns grey). The current design may have a subtle selected state but it's hard to distinguish at a glance during a fast daily tally.
+
+### 🟡 Two-column layout (Gold Jewelry | Diamond Jewelry) has no vertical scroll within panels
+The category list within each column continues off-screen. The user must scroll the entire page to see all categories. Better: make each column independently scrollable with a fixed height (`max-h-[60vh] overflow-y-auto`), so users can tally both category groups without losing sight of the progress bar at the bottom.
+
+### 🟡 "Submit Daily Report" has no confirmation step
+Clicking submit is an irreversible daily action (it closes the tally for the day). Add a confirmation dialog: "Submit report for 16 July 2026? This cannot be undone."
+
+### 🟢 Progress bar is well-designed
+"Tally Progress: 0 of 31 categories verified — 0% — Reset All" is clear and functional. One improvement: change the bar colour from grey to green as progress increases (0% grey → 50% amber → 100% green).
+
+### 🟢 "View History" button is well-placed
+Top-right placement next to the date picker is clean. No changes needed.
+
+---
+
+## 24. Stock Summary
+
+**Route:** `/stock/summary`
+
+### 🔴 Distribution bars are not proportional to the actual data
+The "Stock Distribution by Value" section shows bars for each category. "Pure Gold Stock at 44.7%" should show a bar nearly half the full width. "Gold Jewelry at 0.3%" should be nearly invisible. Instead, all bars appear similar in length — the bars are not scaled correctly to percentages. This makes the visualisation misleading.
+
+**Fix:** Set `style={{ width: percentage + "%" }}` on each bar and give the bar container `w-full`. Use the existing green/amber colour tokens for the fill.
+
+### 🟡 Large blank whitespace below the distribution section
+The page ends with ~400px of empty white space below the distribution bars. The cards above do not fill the viewport. Fix: either add more data sections (e.g. Recent Movements, Quick Links to each stock module) or simply reduce the page padding.
+
+### 🟡 The 5 summary cards use a fifth custom bespoke card design
+Gold Jewelry / Diamond Jewelry / Loose Diamonds / Pure Gold Stock / Old Gold Stock cards each have a unique layout (icon top-left, item count top-right, bullet list of sub-metrics). This is a fifth distinct card pattern. Standardise — these could use a slightly larger AnimatedMetricCard variant.
+
+### 🟡 No drill-down from summary cards to detailed stock pages
+Each category card shows its totals but clicking it does nothing. Add a subtle "View Details →" link at the bottom of each card linking to the relevant sub-page (e.g. Gold Jewelry → `/stock`, Loose Diamonds → `/diamond/tracking`).
+
+### 🟢 TOTAL VALUE header (₹23,82,64,649.28) is prominent — good
+The top-right total value is well-placed and clearly styled. No changes needed. Consider formatting in crores (₹23.82 Cr) for readability alongside the raw number.
+
+---
+
+## 25. Material Tracking Reports
+
+**Route:** `/stock/material`
+
+### 🟡 Stat card sub-text overflows on narrow values
+"Issued: 0.000g | Received: 0.000g" in the Gold Balance card sub-line is a long string that may wrap or clip at standard card widths. Use two separate lines or abbreviate: "Issued 0g · Rcvd 0g".
+
+### 🟡 "Material Flow Analysis" section shows all zeros with "Positive Balance" badges
+All flows show `0.000g` issued and `0.000g` received, yet both badges read "• Positive Balance" in green. A zero balance is not positive — it's neutral. The badge logic should show "• Balanced" for zero and reserve "Positive Balance" (green) for actual surplus.
+
+### 🟡 Report Filters: Download Report button is in the filter row
+The "Download Report" black button is placed at the end of the filter row (Report Type / All Karigars / Date Range / **Download Report**). The download is an output action, not a filter parameter. Move it out of the filter bar and into a toolbar area above the results, or below the data.
+
+### 🟢 Filter bar is comprehensive and well-spaced
+Three dropdowns (Report Type, Karigar, Date Range) are logically ordered and easy to use. No structural issues.
+
+---
+
+## 26. Transaction Reports
+
+**Route:** `/reports`
+
+### 🟡 Date inputs use native browser chrome, not the app's custom calendar
+Both "From Date" and "To Date" fields use `<input type="date">` which renders the browser's native date picker — a completely different visual style from the shadcn/ui Calendar used everywhere else in the app (e.g. Gold Management date filter, Transactions date picker). Replace with the app's Calendar + Popover pattern.
+
+### 🟡 Master-detail layout: right panel doesn't update when report type changes
+Clicking a different report type in the left list (e.g. "Monthly Summary Report") does not visually update the right panel's title/description beyond swapping text. The configuration options (date range, generate button) remain identical for all types. If configuration options differ by report type, make them type-specific. If they're always the same, make the selected report type visually active (filled background + checkmark) so users know their selection is registered.
+
+### 🟢 "Today / Last 7 Days / This Month" quick-select pills are a good pattern
+These shortcuts reduce date-picker friction. No changes needed.
+
+### 🟢 "Generate Report" button is prominent and clearly labelled
+Black filled button with icon and label. Correct primary button style. No changes needed.
+
+---
+
+## 27. Harvest Plan Groups
+
+**Route:** `/harvest/groups`
+
+### 🟡 CAPACITY progress bars are 1–2 px tall and nearly invisible
+The capacity column shows a thin grey bar + percentage text. The bar itself is so thin it reads as a decorative rule rather than a progress indicator. Increase to `h-1.5` (6px) with rounded ends and use a colour: green for >50%, amber for 25–50%, grey for <25%.
+
+### 🟡 TYPE column contains inconsistent values
+Some rows show "DIAMOND" (category badge), some show "GRP-18" (a group ID), and some show `—`. These are different kinds of data mixed into one column. If TYPE means the plan category, it should always be a category badge. "GRP-18" looks like a group reference ID — it belongs in a separate column or tooltip.
+
+### 🟡 All groups are "ACTIVE" — status column adds no value in this state
+With all 20 groups showing green "ACTIVE" badges, the STATUS column is visually uniform and adds no scanning value. Consider hiding or de-emphasising when all items share the same status, or ensure inactive groups exist in mock data to validate the design.
+
+### 🟢 Table columns are well-chosen
+GROUP / STATUS / TYPE / ASSIGNED / ACTIVE / AVAILABLE / CAPACITY covers the right dimensions for group management. No structural changes needed.
+
+---
+
+## 28. Settings & Help Center
+
+**Routes:** `/settings`, `/help`
+
+### 🔴 Both routes show "Dashboard / Overview" on a "Page Not Found" error screen
+Users who click Settings or Help Center from the sidebar land on a blank screen that shows the shared "Page Not Found / This module is currently under development" message — but with the Topbar still displaying "Dashboard / Overview". The combination of wrong title + error message is confusing.
+
+**Fix (short-term):** Add `/settings` and `/help` to `getPageContext()` so the title at least reflects where the user is:
+```ts
+if (location.startsWith("/settings")) return { title: "Settings", subtitle: "Application settings" };
+if (location.startsWith("/help"))     return { title: "Help Center", subtitle: "Support & documentation" };
+```
+
+**Fix (long-term):** Build stub pages with a proper "Coming Soon" layout that matches the ComingSoon component, showing the page title and an ETA or description.
+
+### 🟡 Sidebar links point to pages that don't work
+Help Center and Settings are visible in the sidebar for all users but lead nowhere. This erodes trust. Either build stub pages with a "Coming Soon" treatment, or temporarily hide these items from the sidebar navigation until they're implemented.
+
+---
+
+## 29. Implementable Quick Wins (Prioritised)
 
 These are self-contained changes — each can be implemented independently without touching protected files (Gold Management, Transactions Cash Book).
 
+> **Note:** Finance Planning's Days Old badge colour-coding (green/amber/red) is already implemented in code (`daysOldBadge()` function in `FinancePlanning.tsx`). Items below reflect current state.
+
 | # | Page | Change | Effort |
 |---|---|---|---|
-| 1 | All pages | Remove duplicate notification bell icons | XS |
-| 2 | Finance Planning | Fix page title ("Dashboard" → "Finance Planning") | XS |
-| 3 | Finance Planning | Colour-code Days Old badges (green / amber / red thresholds) | S |
-| 4 | Finance Planning | Add amount to tab labels ("To Receive ₹34.8L") | XS |
-| 5 | **Diamond Quality Tracking** | Replace vertical accordion stack with tab-per-quality bar | L |
-| 6 | **Diamond Quality Tracking** | Replace side-by-side tables with Purchase / Issue toggle tabs (full-width) | M |
-| 7 | **Diamond Quality Tracking** | Add quality stock breakdown summary row under page header | S |
-| 8 | **Diamond Quality Tracking** | Standardise inner table rows to `py-3.5` | XS |
-| 9 | Ledger | Colour balance badges by direction (green = receivable, red/amber = payable) | S |
-| 10 | Ledger | Add count badges to filter tabs (Suppliers · Clients · Karigar) | XS |
-| 11 | Karigar Management | Consolidate 6 overflowing tabs → 3 tabs with sub-filters | M |
-| 12 | Sales Management | Collapse 5 row action buttons → Edit + Delete + `⋯` overflow | S |
-| 13 | Sales Management | Flatten payment column (remove two-line stacked layout) | S |
-| 14 | Silver Management | Collapse entry form behind `+ New Transaction` toggle | M |
-| 15 | Stock Management | Move import status to toolbar chip; make warning banner dismissible | S |
-| 16 | Transactions | Label the unlabelled floating action button | XS |
-| 17 | Diamond Orders | Replace progress text fraction with a thin progress bar | S |
-| 18 | Bulk Manufacturing | Reduce 6 header buttons → 1 primary + 1 secondary dropdown | S |
-| 19 | All tables | Add hover popover/tooltip for truncated description cells | S |
-| 20 | Dashboard | Colour-code shortcut card icons by domain category | S |
+| 1 | **Topbar.tsx** | Add `getPageContext()` entries for `/team`, `/ground-staff`, `/finance`, `/settings`, `/help` | XS |
+| 2 | All pages | Remove duplicate notification bell icon in FinancePlanning (imports `Bell` from lucide manually) | XS |
+| 3 | **Purchase Management** | Separate title row from toolbar row — fix broken header layout | S |
+| 4 | Settings / Help | Add `/settings` and `/help` to topbar context; build stub Coming Soon pages | S |
+| 5 | Finance Planning | Add amount to tab labels ("To Receive ₹34.8L") | XS |
+| 6 | **Diamond Quality Tracking** | Replace vertical accordion stack with tab-per-quality bar | L |
+| 7 | **Diamond Quality Tracking** | Replace side-by-side tables with Purchase / Issue toggle tabs (full-width) | M |
+| 8 | **Diamond Quality Tracking** | Add quality stock breakdown summary row under page header | S |
+| 9 | **Diamond Quality Tracking** | Standardise inner table rows to `py-3.5` | XS |
+| 10 | Stock Summary | Fix distribution bars to be proportional (`width: percentage%`) | S |
+| 11 | Stock Tally | Make Yes/No buttons have unmistakably distinct selected state | S |
+| 12 | Stock Tally | Add confirmation dialog before "Submit Daily Report" | S |
+| 13 | Ledger | Colour balance badges by direction (green = receivable, red/amber = payable) | S |
+| 14 | Ledger | Add count badges to filter tabs (Suppliers · Clients · Karigar) | XS |
+| 15 | Material Reports | Fix "Positive Balance" badge to show "Balanced" when flow is zero | XS |
+| 16 | Karigar Management | Consolidate 6 overflowing tabs → 3 tabs with sub-filters | M |
+| 17 | Sales Management | Collapse 5 row action buttons → Edit + Delete + `⋯` overflow | S |
+| 18 | Sales Management | Flatten payment column (remove two-line stacked layout) | S |
+| 19 | Silver Management | Collapse entry form behind `+ New Transaction` toggle | M |
+| 20 | Stock Management | Move import status to toolbar chip; make warning banner dismissible | S |
+| 21 | Transactions | Label the unlabelled floating action button | XS |
+| 22 | Diamond Orders | Replace progress text fraction with a thin progress bar | S |
+| 23 | Bulk Manufacturing | Reduce 6 header buttons → 1 primary + 1 secondary dropdown | S |
+| 24 | Harvest Plan Groups | Fix CAPACITY bar height from 1px to 6px with colour coding | XS |
+| 25 | Reports | Replace native `<input type="date">` with the app's Calendar + Popover | M |
+| 26 | Vendor / Client Mgmt | Hide or stub the empty CONTACT DETAILS / ADDRESS / PERSONAL INFO columns | S |
+| 27 | Vendor / Client Mgmt | Remove database ID sub-labels ("ID: 269") from visible rows | XS |
+| 28 | Team Management | Populate mock team member data so stat cards aren't all 0 | XS |
+| 29 | All tables | Add hover popover/tooltip for truncated description cells | S |
+| 30 | Dashboard | Colour-code shortcut card icons by domain category | S |
 
 **Effort scale:** XS = < 30 min · S = 30–90 min · M = 2–4 hrs · L = 4–8 hrs
 
