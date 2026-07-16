@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "M9PBOssB2e6awim_5ibDN"
+uri = "file://docs/design-findings.md"
+type = "text"
+title = "Portal — Design Findings & Improvement Roadmap"
