@@ -352,7 +352,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         {/* Scrollable nav */}
         <div
           ref={navScrollRef}
-          className="flex-1 overflow-y-auto thin-scrollbar"
+          className="flex-1 overflow-y-auto no-scrollbar"
           onScroll={(e) => {
             savedScrollRef.current = (e.target as HTMLDivElement).scrollTop;
           }}
