@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Medal } from "lucide-react";
+import { Medal, Plus } from "lucide-react";
 import { AppModal } from "@/shared/components/AppModal";
 import Pagination from "@/shared/components/Pagination";
 import { mockSilverTransactions, SilverTransaction, SilverType, SilverCategory, PaymentMode } from "../data/mockSilver";
@@ -114,12 +114,8 @@ function TransactionHistoryTable({ rows }: { rows: SilverTransaction[] }) {
   );
 }
 
-interface PurchaseSaleTabProps {
-  modalOpen: boolean;
-  onModalClose: () => void;
-}
-
-export default function PurchaseSaleTab({ modalOpen, onModalClose }: PurchaseSaleTabProps) {
+export default function PurchaseSaleTab() {
+  const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [transactions, setTransactions] = useState<SilverTransaction[]>(mockSilverTransactions);
 
@@ -151,12 +147,12 @@ export default function PurchaseSaleTab({ modalOpen, onModalClose }: PurchaseSal
 
     setTransactions((prev) => [newTx, ...prev]);
     setForm(EMPTY_FORM);
-    onModalClose();
+    setModalOpen(false);
   }
 
   function handleClose() {
     setForm(EMPTY_FORM);
-    onModalClose();
+    setModalOpen(false);
   }
 
   const inputCls = "w-full h-9 px-3 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring/40 transition-shadow";
@@ -313,7 +309,16 @@ export default function PurchaseSaleTab({ modalOpen, onModalClose }: PurchaseSal
       >
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-foreground">Transaction History</h2>
-          <span className="text-xs text-muted-foreground">{transactions.length} entries</span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground">{transactions.length} entries</span>
+            <button
+              onClick={() => setModalOpen(true)}
+              className="flex items-center gap-1.5 h-8 px-3 rounded-lg bg-foreground text-background text-xs font-medium hover:bg-foreground/90 transition-colors"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add Transaction
+            </button>
+          </div>
         </div>
         <TransactionHistoryTable rows={transactions} />
       </motion.div>

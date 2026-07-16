@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Medal, Plus } from "lucide-react";
+import { Medal } from "lucide-react";
 import PurchaseSaleTab from "../components/PurchaseSaleTab";
 import StockSummaryTab from "../components/StockSummaryTab";
 
@@ -7,7 +7,6 @@ type Tab = "purchase-sale" | "stock-summary";
 
 export default function SilverManagement() {
   const [tab, setTab] = useState<Tab>("purchase-sale");
-  const [modalOpen, setModalOpen] = useState(false);
 
   return (
     <div className="w-full flex flex-col h-full">
@@ -52,21 +51,12 @@ export default function SilverManagement() {
           </button>
         </div>
 
-        {/* Add Transaction button */}
-        <button
-          onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 h-9 px-4 rounded-[10px] bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          Add Transaction
-        </button>
+        <div className="w-[180px]" />
       </div>
 
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto no-scrollbar p-8">
-        {tab === "purchase-sale" && (
-          <PurchaseSaleTab modalOpen={modalOpen} onModalClose={() => setModalOpen(false)} />
-        )}
+        {tab === "purchase-sale" && <PurchaseSaleTab />}
         {tab === "stock-summary" && <StockSummaryTab />}
       </div>
     </div>
