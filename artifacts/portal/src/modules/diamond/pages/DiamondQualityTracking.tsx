@@ -277,25 +277,6 @@ export default function DiamondQualityTracking() {
           </div>
         </div>
 
-        {/* Quality breakdown summary chips */}
-        <div className="flex items-center gap-2 flex-wrap pb-4">
-          {QUALITIES.map(q => (
-            <button
-              key={q.id}
-              onClick={() => setActiveId(q.id)}
-              className={cn(
-                "px-3 py-1 rounded-full text-xs font-medium border transition-colors",
-                activeId === q.id
-                  ? "bg-foreground text-background border-foreground"
-                  : "bg-muted/30 text-muted-foreground border-border hover:text-foreground hover:bg-muted/50"
-              )}
-            >
-              {q.name}
-              <span className="ml-1.5 tabular-nums opacity-80">{q.stock.toFixed(3)} ct</span>
-            </button>
-          ))}
-        </div>
-
         {/* Quality tab bar */}
         <div className="flex items-center gap-0.5 -mx-8 px-8 overflow-x-auto no-scrollbar">
           {QUALITIES.map(q => (
