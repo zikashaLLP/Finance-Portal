@@ -310,7 +310,6 @@ export default function PurchaseSaleTab() {
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-foreground">Transaction History</h2>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">{transactions.length} entries</span>
             <button
               onClick={() => setModalOpen(true)}
               className="flex items-center gap-1.5 h-8 px-3 rounded-lg bg-foreground text-background text-xs font-medium hover:bg-foreground/90 transition-colors"
