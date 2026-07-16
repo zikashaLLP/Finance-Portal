@@ -221,6 +221,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
       <div className="mb-0.5">
         <button
           onClick={() => toggleGroup(item.name)}
+          onMouseDown={(e) => e.preventDefault()}
           onMouseEnter={(e) => {
             if (!isExpanded) {
               const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -351,7 +352,7 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         {/* Scrollable nav */}
         <div
           ref={navScrollRef}
-          className="flex-1 overflow-y-auto no-scrollbar"
+          className="flex-1 overflow-y-auto thin-scrollbar"
           onScroll={(e) => {
             savedScrollRef.current = (e.target as HTMLDivElement).scrollTop;
           }}
