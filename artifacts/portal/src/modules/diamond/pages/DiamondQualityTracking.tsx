@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Gem, RefreshCw, Plus, Edit, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { Gem, RefreshCw, Plus, Edit, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /* ── DATA ── */
@@ -77,150 +77,255 @@ const QUALITIES: Quality[] = [
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(n);
 
-/* ── QUALITY SECTION ── */
-function QualitySection({ q }: { q: Quality }) {
-  const [open, setOpen] = useState(true);
+/* ── PURCHASE TABLE ── */
+function PurchaseTable({ purchases }: { purchases: PurchaseRow[] }) {
+  const total = purchases.reduce((s, r) => s + r.weight, 0);
+  return (
+    <div>
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-border bg-muted/30">
+            {["Date", "Weight (ct)", "Rate (₹/ct)", "Actions"].map(h => (
+              <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border">
+          {purchases.map((r, i) => (
+            <tr key={i} className="hover:bg-muted/20 transition-colors">
+              <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
+              <td className="px-5 py-3.5 text-xs font-semibold text-foreground tabular-nums">{r.weight.toFixed(3)}</td>
+              <td className="px-5 py-3.5 text-xs text-foreground tabular-nums">
+                {r.weight > 0 ? fmtINR(r.price / r.weight) : "—"}
+                <span className="text-muted-foreground ml-1.5 text-[10px]">({fmtINR(r.price)} total)</span>
+              </td>
+              <td className="px-5 py-3.5">
+                <div className="flex items-center gap-1">
+                  <button className="h-6 w-6 rounded border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent transition-colors">
+                    <Edit className="h-3 w-3" />
+                  </button>
+                  <button className="h-6 w-6 rounded border border-border flex items-center justify-center text-red-400 hover:bg-red-50 transition-colors">
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+          {purchases.length === 0 && (
+            <tr>
+              <td colSpan={4} className="px-5 py-8 text-center text-xs text-muted-foreground">
+                No purchase transactions
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <div className="px-5 py-3.5 border-t border-border bg-muted/10 flex items-center justify-between">
+        <span className="text-xs font-semibold text-foreground">
+          Total Purchased: {total.toFixed(3)} ct
+        </span>
+        <span className="text-xs text-muted-foreground">
+          {purchases.length} {purchases.length === 1 ? "record" : "records"}
+        </span>
+      </div>
+    </div>
+  );
+}
 
-  const totalPurchased = q.purchases.reduce((s, r) => s + r.weight, 0);
-  const totalIssued    = q.issues.reduce((s, r) => s + r.weight, 0);
+/* ── ISSUE TABLE ── */
+function IssueTable({ issues }: { issues: IssueRow[] }) {
+  const total = issues.reduce((s, r) => s + r.weight, 0);
+  return (
+    <div>
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-border bg-muted/30">
+            {["Date", "Weight (ct)", "Issued To", "Comment", "Actions"].map(h => (
+              <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border">
+          {issues.map((r, i) => (
+            <tr key={i} className="hover:bg-muted/20 transition-colors">
+              <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
+              <td className="px-5 py-3.5 text-xs font-semibold text-foreground tabular-nums">{r.weight.toFixed(3)}</td>
+              <td className="px-5 py-3.5 text-xs text-foreground">{r.issuedTo}</td>
+              <td className="px-5 py-3.5 text-xs text-muted-foreground">{r.comment}</td>
+              <td className="px-5 py-3.5">
+                <button className="h-6 w-6 rounded border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent transition-colors">
+                  <Edit className="h-3 w-3" />
+                </button>
+              </td>
+            </tr>
+          ))}
+          {issues.length === 0 && (
+            <tr>
+              <td colSpan={5} className="px-5 py-8 text-center text-xs text-muted-foreground">
+                No issue transactions
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <div className="px-5 py-3.5 border-t border-border bg-muted/10 flex items-center justify-between">
+        <span className="text-xs font-semibold text-foreground">
+          Total Issued: {total.toFixed(3)} ct
+        </span>
+        <span className="text-xs text-muted-foreground">
+          {issues.length} {issues.length === 1 ? "record" : "records"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ── QUALITY PANEL (sub-tabs: Purchase / Issue) ── */
+function QualityPanel({ q }: { q: Quality }) {
+  const [subTab, setSubTab] = useState<"purchase" | "issue">("purchase");
 
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden">
-      {/* Section header */}
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/20 transition-colors"
-      >
-        <div className="flex items-center gap-2">
-          <Gem className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-bold text-foreground">Quality: {q.name}</span>
+      {/* Sub-tab bar */}
+      <div className="px-6 py-3.5 border-b border-border flex items-center justify-between">
+        <div className="flex items-center gap-1 bg-muted/30 rounded-lg p-1">
+          <button
+            onClick={() => setSubTab("purchase")}
+            className={cn(
+              "px-4 py-1.5 rounded-md text-xs font-semibold transition-colors",
+              subTab === "purchase"
+                ? "bg-background text-foreground shadow-sm border border-border"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Purchase History
+            <span className={cn("ml-1.5 tabular-nums", subTab === "purchase" ? "text-foreground" : "text-muted-foreground")}>
+              ({q.purchases.length})
+            </span>
+          </button>
+          <button
+            onClick={() => setSubTab("issue")}
+            className={cn(
+              "px-4 py-1.5 rounded-md text-xs font-semibold transition-colors",
+              subTab === "issue"
+                ? "bg-background text-foreground shadow-sm border border-border"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Issue History
+            <span className={cn("ml-1.5 tabular-nums", subTab === "issue" ? "text-foreground" : "text-muted-foreground")}>
+              ({q.issues.length})
+            </span>
+          </button>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-bold text-emerald-600 tabular-nums">
-            Stock: {q.stock.toFixed(3)} ct
-          </span>
-          {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+        <div className="text-sm">
+          Stock:{" "}
+          <span className="font-bold text-emerald-600 tabular-nums">{q.stock.toFixed(3)} ct</span>
         </div>
-      </button>
+      </div>
 
-      {open && (
-        <div className="border-t border-border grid grid-cols-2 divide-x divide-border">
-          {/* Purchase History */}
-          <div>
-            <div className="px-5 py-3 border-b border-border flex items-center gap-2 bg-muted/10">
-              <span className="text-xs font-semibold text-foreground">Purchase History</span>
-            </div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-muted/30">
-                  {["Date","Weight (ct)","Price (₹)","Actions"].map(h => (
-                    <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {q.purchases.map((r, i) => (
-                  <tr key={i} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
-                    <td className="px-5 py-3.5 text-xs font-semibold text-foreground tabular-nums">{r.weight.toFixed(3)}</td>
-                    <td className="px-5 py-3.5 text-xs text-foreground tabular-nums">{fmtINR(r.price)}</td>
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-1">
-                        <button className="h-6 w-6 rounded border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent transition-colors">
-                          <Edit className="h-3 w-3" />
-                        </button>
-                        <button className="h-6 w-6 rounded border border-border flex items-center justify-center text-red-400 hover:bg-red-50 transition-colors">
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {q.purchases.length === 0 && (
-                  <tr><td colSpan={4} className="px-4 py-4 text-center text-xs text-muted-foreground">No purchase transactions</td></tr>
-                )}
-              </tbody>
-            </table>
-            <div className="px-5 py-3.5 border-t border-border bg-muted/10">
-              <span className="text-xs font-semibold text-foreground">Total Purchased: {totalPurchased.toFixed(3)} ct</span>
-            </div>
-          </div>
-
-          {/* Issue History */}
-          <div>
-            <div className="px-5 py-3 border-b border-border flex items-center gap-2 bg-muted/10">
-              <span className="text-xs font-semibold text-foreground">Issue History</span>
-            </div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-muted/30">
-                  {["Date","Weight (ct)","Issued To","Comment","Actions"].map(h => (
-                    <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {q.issues.map((r, i) => (
-                  <tr key={i} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-5 py-3.5 text-xs text-muted-foreground whitespace-nowrap">{r.date}</td>
-                    <td className="px-5 py-3.5 text-xs font-semibold text-foreground tabular-nums">{r.weight.toFixed(3)}</td>
-                    <td className="px-5 py-3.5 text-xs text-foreground">{r.issuedTo}</td>
-                    <td className="px-5 py-3.5 text-xs text-muted-foreground">{r.comment}</td>
-                    <td className="px-5 py-3.5">
-                      <button className="h-6 w-6 rounded border border-border flex items-center justify-center text-muted-foreground hover:bg-sidebar-accent transition-colors">
-                        <Edit className="h-3 w-3" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {q.issues.length === 0 && (
-                  <tr><td colSpan={5} className="px-4 py-4 text-center text-xs text-muted-foreground">No issue transactions</td></tr>
-                )}
-              </tbody>
-            </table>
-            <div className="px-5 py-3.5 border-t border-border bg-muted/10">
-              <span className="text-xs font-semibold text-foreground">Total Issued: {totalIssued.toFixed(3)} ct</span>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Full-width table */}
+      {subTab === "purchase"
+        ? <PurchaseTable purchases={q.purchases} />
+        : <IssueTable issues={q.issues} />
+      }
     </div>
   );
 }
 
 /* ── MAIN ── */
 export default function DiamondQualityTracking() {
+  const [activeId, setActiveId] = useState(QUALITIES[0].id);
   const totalStock = QUALITIES.reduce((s, q) => s + q.stock, 0);
+  const activeQuality = QUALITIES.find(q => q.id === activeId)!;
 
   return (
     <div className="w-full flex flex-col h-full">
-      <div className="px-8 pt-6 pb-5 border-b border-border shrink-0 flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Gem className="h-5 w-5 text-muted-foreground" />
-            <h1 className="text-2xl font-semibold text-foreground tracking-tight">Loose Diamonds Quality Tracking</h1>
+
+      {/* ── Page header ── */}
+      <div className="px-8 pt-6 pb-0 border-b border-border shrink-0">
+        {/* Title row */}
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Gem className="h-5 w-5 text-muted-foreground" />
+              <h1 className="text-2xl font-semibold text-foreground tracking-tight">
+                Loose Diamonds Quality Tracking
+              </h1>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Track diamond purchases, issues &amp; sales by quality. Solitaires are tracked as single pieces.
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Track diamond purchases, issues &amp; sales by quality. Solitaires are tracked as single pieces.
-          </p>
+          <div className="flex items-center gap-2 shrink-0 mt-0.5">
+            <div className="px-4 py-1.5 rounded-lg border border-border bg-card text-xs font-semibold text-muted-foreground">
+              Total Stock:{" "}
+              <span className="text-foreground">{totalStock.toFixed(3)} ct</span>
+            </div>
+            <button className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-sidebar-accent transition-colors">
+              <RefreshCw className="h-3.5 w-3.5" />
+              Sync to Ledger
+            </button>
+            <button className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
+              <Plus className="h-3.5 w-3.5" />
+              Add Transaction
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="px-4 py-1.5 rounded-lg border border-border bg-card text-xs font-semibold text-muted-foreground">
-            Total Stock: <span className="text-foreground">{totalStock.toFixed(3)} ct</span>
-          </div>
-          <button className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-sidebar-accent transition-colors">
-            <RefreshCw className="h-3.5 w-3.5" />
-            Sync Missing Ledgers
-          </button>
-          <button className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
-            <Plus className="h-3.5 w-3.5" />
-            Add Transaction
-          </button>
+
+        {/* Quality breakdown summary chips */}
+        <div className="flex items-center gap-2 flex-wrap pb-4">
+          {QUALITIES.map(q => (
+            <button
+              key={q.id}
+              onClick={() => setActiveId(q.id)}
+              className={cn(
+                "px-3 py-1 rounded-full text-xs font-medium border transition-colors",
+                activeId === q.id
+                  ? "bg-foreground text-background border-foreground"
+                  : "bg-muted/30 text-muted-foreground border-border hover:text-foreground hover:bg-muted/50"
+              )}
+            >
+              {q.name}
+              <span className="ml-1.5 tabular-nums opacity-80">{q.stock.toFixed(3)} ct</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Quality tab bar */}
+        <div className="flex items-center gap-0.5 -mx-8 px-8 overflow-x-auto no-scrollbar">
+          {QUALITIES.map(q => (
+            <button
+              key={q.id}
+              onClick={() => setActiveId(q.id)}
+              className={cn(
+                "relative shrink-0 px-5 py-3 text-sm font-medium transition-colors whitespace-nowrap",
+                activeId === q.id
+                  ? "text-foreground after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-foreground after:rounded-t"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {q.name}
+              <span className={cn(
+                "ml-2 text-[11px] tabular-nums px-1.5 py-0.5 rounded-full",
+                activeId === q.id
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-muted/50 text-muted-foreground"
+              )}>
+                {q.stock.toFixed(2)}ct
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto no-scrollbar p-8 space-y-4">
-        {QUALITIES.map(q => <QualitySection key={q.id} q={q} />)}
+      {/* ── Quality panel ── */}
+      <div className="flex-1 overflow-y-auto no-scrollbar p-8">
+        <QualityPanel key={activeId} q={activeQuality} />
       </div>
     </div>
   );

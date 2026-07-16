@@ -281,50 +281,42 @@ The 3 dropdowns (Category / Source / Status) float on an open white surface. Wra
 
 ## 12. Diamond Quality Tracking
 
-> ⚠️ **Densest page in the app.** Multiple quality grades each render a full two-panel table (Purchase History | Issue History) stacked vertically with no pagination or limit. With 5–8+ quality types (SHADE, 4D, CVD, 2D, 1D, Solitaire…) this creates an extremely long page where all data is simultaneously visible and navigation is impossible.
+> ✅ **All findings implemented** — July 16, 2026
 
-### 🔴 Vertical accordion stack is unnavigable
+> ~~⚠️ **Densest page in the app.** Multiple quality grades each render a full two-panel table (Purchase History | Issue History) stacked vertically with no pagination or limit. With 5–8+ quality types (SHADE, 4D, CVD, 2D, 1D, Solitaire…) this creates an extremely long page where all data is simultaneously visible and navigation is impossible.~~
 
-Each quality (SHADE, 4D, CVD…) renders as a full card with two tables inside. With 6 qualities at ~250px each this is 1,500px of unbroken content. Users cannot orient or jump to a specific quality.
+### ✅ ~~🔴 Vertical accordion stack is unnavigable~~ — DONE
 
-**Recommended fix — Tab-per-quality:**
-Replace the vertical stack with a horizontal quality tab bar:
-```
-[SHADE ▸ 2.53ct]  [4D ▸ 7.12ct]  [CVD ▸ ...]  [2D ▸ ...]  [1D]  ...
-```
-Each tab shows one quality's data. The page collapses to a fixed, manageable height.
+~~Each quality (SHADE, 4D, CVD…) renders as a full card with two tables inside. With 6 qualities at ~250px each this is 1,500px of unbroken content. Users cannot orient or jump to a specific quality.~~
 
-**Alternative fix — True collapse accordion:**
-Default all sections to collapsed; allow expanding one at a time. Currently the accordion header is clickable but all sections start expanded, defeating the purpose.
+**Implemented:** Replaced the vertical accordion stack with a two-level navigation system:
+- A **quality summary chip bar** directly under the page title — one pill per quality showing name + stock (e.g. `SHADE 2.533 ct`). Clicking a chip selects that quality.
+- A **horizontal underline tab bar** below the chips — one tab per quality with a green stock badge (e.g. `SHADE 2.53ct`). Active tab has an underline indicator.
+- Only the selected quality's data is shown at any time — the page is now a fixed, manageable height regardless of how many qualities exist.
 
-### 🔴 Side-by-side table layout is too narrow
+### ✅ ~~🔴 Side-by-side table layout is too narrow~~ — DONE
 
-Purchase History | Issue History at 50/50 width on a 1280px screen gives ~600px per table — tight for 4–5 columns. Numbers like "0.050 ct" and "₹13,064" are cramped.
+~~Purchase History | Issue History at 50/50 width on a 1280px screen gives ~600px per table — tight for 4–5 columns.~~
 
-**Recommended fix — Stacked tabs within each quality card:**
-```
-Quality: SHADE   Stock: 2.533 ct
-[Purchase History]  [Issue History]   ← toggle tabs
-```
-Show one table at a time, full width. This doubles readability per table.
+**Implemented:** Each quality now shows a pill-toggle inside the panel: **Purchase History (N) / Issue History (N)** — one table at a time, full width. Record counts shown in each tab button. The active tab has a raised white pill with border.
 
-### 🔴 Only a single total shown in the page header
+### ✅ ~~🔴 Only a single total shown in the page header~~ — DONE
 
-"Total Stock: 22.756 ct" in the header gives no breakdown. With multiple qualities, a quality breakdown summary helps users prioritise which section to inspect:
+~~"Total Stock: 22.756 ct" in the header gives no breakdown.~~
 
-```
-SHADE 2.53ct  ·  4D 7.12ct  ·  CVD 5.20ct  ·  2D 4.10ct  ·  ...
-```
-A compact summary row under the header (or as a set of small metric chips) would make the header genuinely useful for navigation.
+**Implemented:** Quality breakdown summary chips rendered directly below the page description — all 6 qualities shown with their stock values. Double as navigation (clicking activates that quality's tab).
 
-### 🟡 Inner table rows are `py-2.5` (below canonical)
-The inner table rows are shorter than the canonical `py-3.5`. On a data-critical page with small carat values this makes errors harder to catch visually. Standardise.
+### ✅ ~~🟡 Inner table rows are `py-2.5` (below canonical)~~ — ALREADY DONE
 
-### 🟡 "Price (₹)" column is less useful than "Rate (₹/ct)"
-Purchase rows show "Price (₹)" as a total (₹1, ₹13,064, ₹15,200) with no per-carat context. A "Rate (₹/ct)" column is more useful for comparing purchases across rows.
+Code inspection confirmed rows were already using `py-3.5` — no change required.
 
-### 🟢 "Sync Missing Ledgers" button — purpose is unclear
-Rename to "Sync to Ledger" or add a tooltip explaining what syncing does and when to use it.
+### ✅ ~~🟡 "Price (₹)" column is less useful than "Rate (₹/ct)"~~ — DONE
+
+**Implemented:** Purchase History table now shows **Rate (₹/ct)** as the primary value (price ÷ weight), with the total price shown as a smaller muted sub-label in parentheses — e.g. `₹3,478 (₹15,200 total)`. This enables per-carat comparison across purchase rows.
+
+### ✅ ~~🟢 "Sync Missing Ledgers" button — purpose is unclear~~ — DONE
+
+**Implemented:** Button renamed from "Sync Missing Ledgers" to **"Sync to Ledger"**.
 
 ---
 
@@ -652,10 +644,10 @@ These are self-contained changes — each can be implemented independently witho
 | 3 | **Purchase Management** | Separate title row from toolbar row — fix broken header layout | S |
 | 4 | Settings / Help | Add `/settings` and `/help` to topbar context; build stub Coming Soon pages | S |
 | 5 | Finance Planning | Add amount to tab labels ("To Receive ₹34.8L") | XS |
-| 6 | **Diamond Quality Tracking** | Replace vertical accordion stack with tab-per-quality bar | L |
-| 7 | **Diamond Quality Tracking** | Replace side-by-side tables with Purchase / Issue toggle tabs (full-width) | M |
-| 8 | **Diamond Quality Tracking** | Add quality stock breakdown summary row under page header | S |
-| 9 | **Diamond Quality Tracking** | Standardise inner table rows to `py-3.5` | XS |
+| ~~6~~ | ~~**Diamond Quality Tracking**~~ | ~~Replace vertical accordion stack with tab-per-quality bar~~ | ~~L~~ | ✅ Done |
+| ~~7~~ | ~~**Diamond Quality Tracking**~~ | ~~Replace side-by-side tables with Purchase / Issue toggle tabs (full-width)~~ | ~~M~~ | ✅ Done |
+| ~~8~~ | ~~**Diamond Quality Tracking**~~ | ~~Add quality stock breakdown summary row under page header~~ | ~~S~~ | ✅ Done |
+| ~~9~~ | ~~**Diamond Quality Tracking**~~ | ~~Standardise inner table rows to `py-3.5`~~ | ~~XS~~ | ✅ Already done |
 | 10 | Stock Summary | Fix distribution bars to be proportional (`width: percentage%`) | S |
 | 11 | Stock Tally | Make Yes/No buttons have unmistakably distinct selected state | S |
 | 12 | Stock Tally | Add confirmation dialog before "Submit Daily Report" | S |
