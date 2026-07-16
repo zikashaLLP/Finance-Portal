@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { Link, useLocation } from "wouter";
 import {
   ArrowLeftRight,
@@ -127,14 +127,10 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
   const navScrollRef  = useRef<HTMLDivElement>(null);
   const savedScrollRef = useRef(0);
 
-  useEffect(() => {
-    /* Restore scroll position after every location change */
-    const frame = requestAnimationFrame(() => {
-      if (navScrollRef.current) {
-        navScrollRef.current.scrollTop = savedScrollRef.current;
-      }
-    });
-    return () => cancelAnimationFrame(frame);
+  useLayoutEffect(() => {
+    if (navScrollRef.current) {
+      navScrollRef.current.scrollTop = savedScrollRef.current;
+    }
   }, [location]);
 
   /* ── auto-open groups on navigate ── */
