@@ -243,16 +243,17 @@
 
   .thin-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--border)) transparent;
+    scrollbar-color: #000 #e5e7eb;
+    overflow-y: scroll;
   }
   .thin-scrollbar::-webkit-scrollbar {
-    width: 4px;
+    width: 3px;
   }
   .thin-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+    background: #e5e7eb;
   }
   .thin-scrollbar::-webkit-scrollbar-thumb {
-    background-color: hsl(var(--border));
+    background-color: #000;
     border-radius: 9999px;
   }
 }
