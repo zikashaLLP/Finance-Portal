@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { RotateCcw, Send } from "lucide-react";
+import { Medal } from "lucide-react";
+import { AppModal } from "@/shared/components/AppModal";
 import Pagination from "@/shared/components/Pagination";
 import { mockSilverTransactions, SilverTransaction, SilverType, SilverCategory, PaymentMode } from "../data/mockSilver";
 
@@ -113,7 +114,12 @@ function TransactionHistoryTable({ rows }: { rows: SilverTransaction[] }) {
   );
 }
 
-export default function PurchaseSaleTab() {
+interface PurchaseSaleTabProps {
+  modalOpen: boolean;
+  onModalClose: () => void;
+}
+
+export default function PurchaseSaleTab({ modalOpen, onModalClose }: PurchaseSaleTabProps) {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [transactions, setTransactions] = useState<SilverTransaction[]>(mockSilverTransactions);
 
@@ -124,8 +130,7 @@ export default function PurchaseSaleTab() {
     return null;
   }, [form.weight, form.rate]);
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  function handleAdd() {
     const w = parseFloat(form.weight);
     const r = parseFloat(form.rate);
     if (isNaN(w) || isNaN(r) || w <= 0 || r <= 0 || !form.vendor.trim()) return;
@@ -146,10 +151,12 @@ export default function PurchaseSaleTab() {
 
     setTransactions((prev) => [newTx, ...prev]);
     setForm(EMPTY_FORM);
+    onModalClose();
   }
 
-  function handleReset() {
+  function handleClose() {
     setForm(EMPTY_FORM);
+    onModalClose();
   }
 
   const inputCls = "w-full h-9 px-3 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring/40 transition-shadow";
@@ -157,17 +164,26 @@ export default function PurchaseSaleTab() {
   const labelCls = "block text-xs font-medium text-muted-foreground mb-1.5";
 
   return (
-    <div className="space-y-6">
-      {/* Entry form */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="bg-card border border-border rounded-2xl shadow-sm p-6"
+    <>
+      {/* New Transaction Modal */}
+      <AppModal
+        open={modalOpen}
+        onClose={handleClose}
+        maxWidth="sm:max-w-[680px]"
+        headerBg="bg-slate-50"
+        icon={
+          <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center">
+            <Medal className="h-4 w-4 text-slate-600" />
+          </div>
+        }
+        title="New Silver Transaction"
+        subtitle="Fill in the details below to record a purchase or sale"
+        primaryLabel="Save Transaction"
+        onPrimary={handleAdd}
+        onClose={handleClose}
       >
-        <h2 className="text-sm font-semibold text-foreground mb-4">New Transaction</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="px-6 pt-4 pb-5">
+          <div className="grid grid-cols-2 gap-4">
             {/* Type */}
             <div>
               <label className={labelCls}>Type</label>
@@ -275,7 +291,7 @@ export default function PurchaseSaleTab() {
             </div>
 
             {/* Description — full width */}
-            <div className="col-span-2 md:col-span-4">
+            <div className="col-span-2">
               <label className={labelCls}>Description</label>
               <input
                 type="text"
@@ -286,32 +302,14 @@ export default function PurchaseSaleTab() {
               />
             </div>
           </div>
-
-          <div className="flex items-center gap-2.5 mt-5">
-            <button
-              type="submit"
-              className="flex items-center gap-2 h-9 px-5 rounded-[10px] bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
-            >
-              <Send className="h-3.5 w-3.5" />
-              Submit
-            </button>
-            <button
-              type="button"
-              onClick={handleReset}
-              className="flex items-center gap-2 h-9 px-5 rounded-[10px] border border-border bg-background text-foreground text-sm font-medium hover:bg-muted/40 transition-colors"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              Reset
-            </button>
-          </div>
-        </form>
-      </motion.div>
+        </div>
+      </AppModal>
 
       {/* Transaction history */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.1, ease: "easeOut" }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
       >
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-foreground">Transaction History</h2>
@@ -319,6 +317,6 @@ export default function PurchaseSaleTab() {
         </div>
         <TransactionHistoryTable rows={transactions} />
       </motion.div>
-    </div>
+    </>
   );
 }
