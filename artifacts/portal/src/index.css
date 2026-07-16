@@ -256,6 +256,11 @@
     background-color: #000;
     border-radius: 9999px;
   }
+  .thin-scrollbar::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+  }
 }
 
 /**
