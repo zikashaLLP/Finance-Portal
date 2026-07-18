@@ -176,7 +176,6 @@ export default function PurchaseSaleTab() {
         subtitle="Fill in the details below to record a purchase or sale"
         primaryLabel="Save Transaction"
         onPrimary={handleAdd}
-        onClose={handleClose}
       >
         <div className="px-6 pt-4 pb-5">
           <div className="grid grid-cols-2 gap-4">
