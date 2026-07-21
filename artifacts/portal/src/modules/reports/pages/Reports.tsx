@@ -6,6 +6,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import KarigarReports from "../../karigar/pages/KarigarReports";
+import StockTallyReport from "../../stock/pages/StockTallyReport";
+import MaterialReport from "../../stock/pages/MaterialReport";
 
 /* ── REPORT TYPES ── */
 const REPORT_TYPES = [
@@ -90,7 +92,7 @@ const addDays = (n: number) => {
   return d.toISOString().split("T")[0];
 };
 
-type PageTab = "transaction" | "karigar";
+type PageTab = "transaction" | "karigar" | "stock-tally" | "material";
 
 /* ── TRANSACTION REPORTS PANEL ── */
 function TransactionReportsPanel() {
@@ -287,6 +289,8 @@ export default function Reports() {
   const PAGE_TABS: { key: PageTab; label: string }[] = [
     { key: "transaction", label: "Transaction Reports" },
     { key: "karigar",     label: "Karigar Reports"     },
+    { key: "stock-tally", label: "Stock Tally Report"  },
+    { key: "material",    label: "Material Report"     },
   ];
 
   return (
@@ -330,6 +334,18 @@ export default function Reports() {
       {pageTab === "karigar" && (
         <div className="flex-1 min-h-0">
           <KarigarReports />
+        </div>
+      )}
+
+      {pageTab === "stock-tally" && (
+        <div className="flex-1 min-h-0">
+          <StockTallyReport />
+        </div>
+      )}
+
+      {pageTab === "material" && (
+        <div className="flex-1 min-h-0">
+          <MaterialReport />
         </div>
       )}
     </div>

@@ -18,9 +18,7 @@ import {
   GOLD_STOCK, DIAMOND_STOCK,
   type StockItem, type StockStatus, type StockSource,
 } from "../data/mockStock";
-import StockTallyReport from "./StockTallyReport";
 import StockSummary from "./StockSummary";
-import MaterialReport from "./MaterialReport";
 
 /* ═══════════════════════════════════════════════
    HELPERS
@@ -51,13 +49,11 @@ const SUB_TABS: { key: SubTab; label: string; count?: number; icon: React.Elemen
 
 type JewTab = "gold" | "diamond";
 
-type OuterStockTab = "stock" | "tally" | "summary" | "material";
+type OuterStockTab = "stock" | "summary";
 
 const OUTER_STOCK_TABS: { key: OuterStockTab; label: string }[] = [
-  { key: "stock",    label: "Stock"           },
-  { key: "tally",    label: "Tally Report"    },
-  { key: "summary",  label: "Summary"         },
-  { key: "material", label: "Material Report" },
+  { key: "stock",   label: "Stock"   },
+  { key: "summary", label: "Summary" },
 ];
 
 /* ═══════════════════════════════════════════════
@@ -656,14 +652,8 @@ export default function StockManagement() {
       </div>
       )}
 
-      {outerTab === "tally" && (
-        <div className="flex-1 min-h-0"><StockTallyReport /></div>
-      )}
       {outerTab === "summary" && (
         <div className="flex-1 min-h-0"><StockSummary /></div>
-      )}
-      {outerTab === "material" && (
-        <div className="flex-1 min-h-0"><MaterialReport /></div>
       )}
 
       {/* ── MODALS ── */}
