@@ -12,6 +12,7 @@ import PurchaseManagement from "../../modules/purchase/pages/PurchaseManagement"
 import DiamondQualityTracking from "../../modules/diamond/pages/DiamondQualityTracking";
 import ComingSoon from "../../pages/ComingSoon";
 import SettingsPage from "../../modules/settings/pages/SettingsPage";
+import Accounts from "../../modules/accounts/pages/Accounts";
 
 export default function AppRouter() {
   return (
@@ -83,7 +84,7 @@ export default function AppRouter() {
 
         <Route path="/accounts">
           <MainLayout>
-            <ComingSoon title="Accounts" />
+            <Accounts />
           </MainLayout>
         </Route>
 
