@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import {
-  Download, Upload, FileSpreadsheet, Link2, RefreshCw,
+  Download, Upload, FileSpreadsheet, Link2,
   Search, X, Plus, Eye, Pencil, Trash2, Package,
-  CheckCircle2, TrendingDown, Gem, Layers, AlertCircle,
+  Gem, Layers,
   ChevronRight, RotateCcw, History, Copy, ShieldAlert,
 } from "lucide-react";
 import {
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import Pagination from "@/shared/components/Pagination";
-import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
+import StockTallyReport from "./StockTallyReport";
 import {
   GOLD_STOCK, DIAMOND_STOCK,
   type StockItem, type StockStatus, type StockSource,
@@ -357,15 +357,8 @@ export default function StockManagement() {
   const [sourceFilter, setSource]     = useState("all");
   const [statusFilter, setStatus]     = useState("all");
 
-  const [showImportBanner, setShowImportBanner]   = useState(true);
-  const [showOpeningMode, setShowOpeningMode]     = useState(true);
-
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewItem, setViewItem]         = useState<StockItem | null>(null);
-
-  const allStock = [...goldStock, ...diamondStock];
-  const inStock  = allStock.filter((i) => i.status === "available").length;
-  const sold     = allStock.filter((i) => i.status === "sold").length;
 
   const activeStock = jewTab === "gold" ? goldStock : diamondStock;
 
@@ -439,79 +432,6 @@ export default function StockManagement() {
       <div className="flex-1 overflow-y-auto no-scrollbar">
 
         <div className="p-8 space-y-5">
-
-          {/* ── IMPORT STATUS BANNER ── */}
-          {showImportBanner && (
-            <div className="bg-card border border-border rounded-2xl shadow-sm p-4 flex items-start gap-4">
-              <div className="h-9 w-9 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <p className="text-sm font-semibold text-foreground">Latest Import Status</p>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-100 text-[10px] font-bold text-emerald-700">✓</span>
-                </div>
-                <p className="text-xs text-muted-foreground">Successfully imported: 116 items (81 chains, 9 pendant sets, 26 other items)</p>
-                <p className="text-[11px] text-muted-foreground/60 mt-0.5">Import completed at 9:37:37 PM</p>
-              </div>
-              {/* Counters */}
-              <div className="flex items-center gap-3 shrink-0">
-                <div className="text-center px-4 py-2 rounded-xl bg-muted border border-border">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">In Stock</p>
-                  <p className="text-xl font-bold text-foreground tabular-nums">{inStock}</p>
-                </div>
-                <div className="text-center px-4 py-2 rounded-xl bg-muted border border-border">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">Sold</p>
-                  <p className="text-xl font-bold text-foreground tabular-nums">{sold}</p>
-                </div>
-                <div className="text-center px-4 py-2 rounded-xl bg-muted border border-border">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">Gold Jewellery</p>
-                  <p className="text-xl font-bold text-foreground tabular-nums">{goldStock.length}</p>
-                </div>
-                <div className="text-center px-4 py-2 rounded-xl bg-muted border border-border">
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-0.5">Diamond Jewellery</p>
-                  <p className="text-xl font-bold text-foreground tabular-nums">{diamondStock.length}</p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2 shrink-0">
-                <button className="h-8 px-3 rounded-lg text-xs font-medium bg-foreground text-background hover:bg-foreground/90 transition-colors whitespace-nowrap">
-                  View All Items
-                </button>
-                <button className="h-8 px-3 rounded-lg text-xs font-medium border border-border hover:bg-muted/40 transition-colors flex items-center gap-1.5 whitespace-nowrap">
-                  <RefreshCw className="h-3 w-3" /> Refresh Data
-                </button>
-              </div>
-              <button onClick={() => setShowImportBanner(false)} className="h-6 w-6 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors shrink-0">
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
-
-          {/* ── OPENING STOCK MODE BANNER ── */}
-          {showOpeningMode && (
-            <div className="flex items-start gap-3 px-4 py-3 rounded-xl border border-amber-200 bg-amber-50">
-              <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-amber-800 mb-0.5">Opening Stock Mode</p>
-                <p className="text-[11px] text-amber-700 leading-relaxed">
-                  Opening Stock Mode is active. You can enter your existing stock IDs to maintain inventory continuity.
-                  This mode allows manual stock ID entry for items you already have.
-                </p>
-              </div>
-              <button onClick={() => setShowOpeningMode(false)}
-                className="h-8 px-3 rounded-lg text-[11px] font-semibold bg-amber-700 text-white hover:bg-amber-800 transition-colors shrink-0 whitespace-nowrap">
-                Disable Opening Stock
-              </button>
-            </div>
-          )}
-
-          {/* ── METRIC CARDS ── */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <AnimatedMetricCard label="Total Stock"   value={String(allStock.length)}    icon={Layers}       iconCls="text-foreground/60"  index={0} />
-            <AnimatedMetricCard label="In Stock"      value={String(inStock)}            icon={CheckCircle2} iconCls="text-emerald-600"     valueColor="text-emerald-700" index={1} />
-            <AnimatedMetricCard label="Sold"          value={String(sold)}               icon={TrendingDown} iconCls="text-foreground/60"   index={2} />
-            <AnimatedMetricCard label="Diamond Items" value={String(diamondStock.length)} icon={Gem}         iconCls="text-violet-600"      valueColor="text-violet-700"  index={3} />
-          </div>
 
           {/* ── SEARCH & FILTERS ── */}
           <div className="bg-card border border-border rounded-2xl shadow-sm p-4 space-y-3">
@@ -641,7 +561,7 @@ export default function StockManagement() {
               </div>
             )}
 
-            {subTab === "tallying"  && <PlaceholderTab icon={Layers}    label="Stock Tallying"   />}
+            {subTab === "tallying"  && <div className="flex-1 min-h-0 h-[600px]"><StockTallyReport /></div>}
             {subTab === "duplicates"&& <PlaceholderTab icon={Copy}      label="Duplicates"        />}
             {subTab === "history"   && <PlaceholderTab icon={History}   label="Import History"   />}
             {subTab === "deletion"  && <PlaceholderTab icon={ShieldAlert}label="Deletion Audit"  />}
