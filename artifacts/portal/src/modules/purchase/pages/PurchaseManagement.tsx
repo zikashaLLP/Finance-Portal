@@ -6,14 +6,6 @@ import {
 import { cn } from "@/lib/utils";
 import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 import Pagination from "@/shared/components/Pagination";
-import VendorManagement from "./VendorManagement";
-
-type OuterTab = "purchase" | "vendors";
-
-const OUTER_TABS: { key: OuterTab; label: string }[] = [
-  { key: "purchase", label: "Purchase" },
-  { key: "vendors",  label: "Vendors"  },
-];
 
 type ItemType = "Loose Diamond" | "Gold Jewellery" | "Diamond Jewellery" | "Pure Gold";
 
@@ -61,7 +53,6 @@ const diamondCount = PURCHASES.filter(p => p.itemType === "Loose Diamond" || p.i
 const goldCount    = PURCHASES.filter(p => p.itemType === "Gold Jewellery" || p.itemType === "Pure Gold").length;
 
 export default function PurchaseManagement() {
-  const [outerTab, setOuterTab] = useState<OuterTab>("purchase");
   const [search,   setSearch]   = useState("");
   const [typeFilter, setType]   = useState("All Types");
   const [page,     setPage]     = useState(1);
@@ -93,8 +84,7 @@ export default function PurchaseManagement() {
             </div>
             <p className="text-sm text-muted-foreground">Track and manage all jewellery and diamond purchases</p>
           </div>
-          {outerTab === "purchase" && (
-            <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                 <input
@@ -124,31 +114,12 @@ export default function PurchaseManagement() {
                 Record Purchase
               </button>
             </div>
-          )}
         </div>
 
-        {/* Outer tab bar */}
-        <div className="flex items-center gap-0 overflow-x-auto no-scrollbar">
-          {OUTER_TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setOuterTab(t.key)}
-              className={cn(
-                "px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
-                outerTab === t.key
-                  ? "border-foreground text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
       </div>
 
-      {/* BODY — Purchase tab */}
-      {outerTab === "purchase" && (
-        <div className="flex-1 overflow-y-auto no-scrollbar p-8 space-y-5">
+      {/* BODY */}
+      <div className="flex-1 overflow-y-auto no-scrollbar p-8 space-y-5">
 
           <div className="grid grid-cols-4 gap-4">
             {[
@@ -240,15 +211,7 @@ export default function PurchaseManagement() {
             />
           </div>
 
-        </div>
-      )}
-
-      {/* BODY — Vendors tab */}
-      {outerTab === "vendors" && (
-        <div className="flex-1 min-h-0">
-          <VendorManagement />
-        </div>
-      )}
+      </div>
     </div>
   );
 }
