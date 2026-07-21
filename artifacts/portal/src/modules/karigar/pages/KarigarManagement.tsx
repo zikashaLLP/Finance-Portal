@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Diamond, ArrowRight, CheckCircle2, Clock, Plus } from "lucide-react";
-import KarigarReports from "./KarigarReports";
+
 import BulkManagement from "./BulkManagement";
 import DiamondReturnWorkflow from "../../diamond/pages/DiamondReturnWorkflow";
 import { cn } from "@/lib/utils";
@@ -368,12 +368,11 @@ function WorkflowTab() {
 /* ══════════════════════════════════════════════
    MAIN PAGE
 ══════════════════════════════════════════════ */
-type MainTab = "workflow" | "diamond-returns" | "reports" | "bulk";
+type MainTab = "workflow" | "diamond-returns" | "bulk";
 
 const TABS: { key: MainTab; label: string }[] = [
   { key: "workflow",        label: "Workflow"        },
   { key: "diamond-returns", label: "Diamond Returns" },
-  { key: "reports",         label: "Reports"         },
   { key: "bulk",            label: "Bulk Management" },
 ];
 
@@ -387,7 +386,7 @@ export default function KarigarManagement() {
         <div className="flex items-start justify-between mb-5">
           <div>
             <h1 className="text-2xl font-semibold text-foreground tracking-tight mb-0.5">Karigar</h1>
-            <p className="text-sm text-muted-foreground">Job pipeline, diamond returns, reports and bulk management</p>
+            <p className="text-sm text-muted-foreground">Job pipeline, diamond returns and bulk management</p>
           </div>
           {tab === "workflow" && (
             <button className="flex items-center gap-2 h-10 px-5 rounded-xl bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors shadow-sm shrink-0">
@@ -424,12 +423,6 @@ export default function KarigarManagement() {
       {tab === "diamond-returns" && (
         <div className="flex-1 min-h-0">
           <DiamondReturnWorkflow />
-        </div>
-      )}
-
-      {tab === "reports" && (
-        <div className="flex-1 min-h-0">
-          <KarigarReports />
         </div>
       )}
 
