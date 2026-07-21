@@ -1,9 +1,9 @@
 import { useState, useMemo } from "react";
 import {
-  Download, Upload, FileSpreadsheet, Link2,
-  Search, X, Plus, Eye, Pencil, Trash2, Package,
-  Gem, Layers,
-  ChevronRight, RotateCcw, History, Copy, ShieldAlert,
+  Download, Upload,
+  Search, X, Plus, Pencil, Trash2, Package,
+  Gem, Layers, BarChart2,
+  RotateCcw, History, Copy, ShieldAlert,
 } from "lucide-react";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -37,24 +37,8 @@ const STATUS_META: Record<StockStatus, { label: string; cls: string; dot: string
   sold:      { label: "Sold",      cls: "bg-muted text-muted-foreground border-border",       dot: "bg-muted-foreground/50" },
 };
 
-type SubTab = "items" | "tallying" | "duplicates" | "history" | "deletion" | "restore";
-const SUB_TABS: { key: SubTab; label: string; count?: number; icon: React.ElementType }[] = [
-  { key: "items",     label: "Stock Items",     count: 1276, icon: Package      },
-  { key: "tallying",  label: "Stock Tallying",  icon: Layers                    },
-  { key: "duplicates",label: "Duplicates",      count: 0,    icon: Copy         },
-  { key: "history",   label: "Import History",  icon: History                   },
-  { key: "deletion",  label: "Deletion Audit",  count: 1592, icon: ShieldAlert  },
-  { key: "restore",   label: "Restore Items",   icon: RotateCcw                 },
-];
-
 type JewTab = "gold" | "diamond";
-
-type OuterStockTab = "stock" | "summary";
-
-const OUTER_STOCK_TABS: { key: OuterStockTab; label: string }[] = [
-  { key: "stock",   label: "Stock"   },
-  { key: "summary", label: "Summary" },
-];
+type StockTab = "gold" | "diamond" | "tallying" | "summary" | "duplicates" | "history" | "deletion" | "restore";
 
 /* ═══════════════════════════════════════════════
    ADD ITEM MODAL
@@ -345,24 +329,22 @@ function PlaceholderTab({ icon: Icon, label }: { icon: React.ElementType; label:
    MAIN PAGE
 ═══════════════════════════════════════════════ */
 export default function StockManagement() {
-  const [outerTab, setOuterTab]         = useState<OuterStockTab>("stock");
-  const [goldStock, setGoldStock]       = useState<StockItem[]>(GOLD_STOCK);
+  const [tab, setTab]               = useState<StockTab>("gold");
+  const [goldStock, setGoldStock]   = useState<StockItem[]>(GOLD_STOCK);
   const [diamondStock, setDiamondStock] = useState<StockItem[]>(DIAMOND_STOCK);
 
-  const [subTab, setSubTab]     = useState<SubTab>("items");
-  const [jewTab, setJewTab]     = useState<JewTab>("gold");
-
-  const [search, setSearch]           = useState("");
-  const [categoryFilter, setCategory] = useState("all");
-  const [sourceFilter, setSource]     = useState("all");
-  const [statusFilter, setStatus]     = useState("all");
+  const [search, setSearch]       = useState("");
+  const [sourceFilter, setSource] = useState("all");
+  const [statusFilter, setStatus] = useState("all");
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewItem, setViewItem]         = useState<StockItem | null>(null);
 
-  const activeStock = jewTab === "gold" ? goldStock : diamondStock;
+  const isStockTab   = tab === "gold" || tab === "diamond";
+  const activeStock  = tab === "gold" ? goldStock : diamondStock;
 
   const filtered = useMemo(() => {
+    if (!isStockTab) return [];
     const q = search.toLowerCase();
     return activeStock.filter((item) => {
       const matchSearch = !q
@@ -373,213 +355,157 @@ export default function StockManagement() {
       const matchStatus = statusFilter === "all" || item.status === statusFilter;
       return matchSearch && matchSource && matchStatus;
     });
-  }, [activeStock, search, sourceFilter, statusFilter]);
+  }, [activeStock, search, sourceFilter, statusFilter, isStockTab]);
 
   function handleDelete(id: string) {
-    if (jewTab === "gold") setGoldStock((p) => p.filter((i) => i.id !== id));
+    if (tab === "gold") setGoldStock((p) => p.filter((i) => i.id !== id));
     else setDiamondStock((p) => p.filter((i) => i.id !== id));
   }
 
   function handleAdd(item: Omit<StockItem, "id">) {
     const newItem = { ...item, id: crypto.randomUUID() };
-    if (jewTab === "gold") setGoldStock((p) => [newItem, ...p]);
+    if (tab === "gold") setGoldStock((p) => [newItem, ...p]);
     else setDiamondStock((p) => [newItem, ...p]);
   }
 
+  function switchTab(next: StockTab) {
+    setTab(next);
+    setSearch(""); setSource("all"); setStatus("all");
+  }
+
+  const TABS: { key: StockTab; label: string; icon: React.ElementType; count?: number }[] = [
+    { key: "gold",       label: "Gold Jewellery",   icon: Package,     count: goldStock.length    },
+    { key: "diamond",    label: "Diamond Jewellery", icon: Gem,         count: diamondStock.length },
+    { key: "tallying",   label: "Stock Tallying",    icon: Layers                                  },
+    { key: "summary",    label: "Summary",           icon: BarChart2                               },
+    { key: "duplicates", label: "Duplicates",        icon: Copy,        count: 0                   },
+    { key: "history",    label: "Import History",    icon: History                                 },
+    { key: "deletion",   label: "Deletion Audit",    icon: ShieldAlert, count: 1592                },
+    { key: "restore",    label: "Restore Items",     icon: RotateCcw                               },
+  ];
+
   const btnOutline = "flex items-center gap-1.5 h-9 px-4 rounded-xl text-sm font-medium border border-border hover:bg-muted/40 transition-colors whitespace-nowrap";
   const btnBlack   = "flex items-center gap-1.5 h-9 px-4 rounded-xl bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors whitespace-nowrap";
+  const hasFilters = !!(search || sourceFilter !== "all" || statusFilter !== "all");
 
   return (
     <div className="w-full flex flex-col h-full">
 
       {/* ── HEADER ── */}
       <div className="px-8 pt-6 pb-0 border-b border-border shrink-0">
-        <div className="flex items-start justify-between gap-6 flex-wrap pb-5">
+        <div className="flex items-center justify-between gap-4 mb-5">
           <div>
             <h1 className="text-2xl font-semibold text-foreground tracking-tight mb-0.5">Stock Management</h1>
-            <p className="text-sm text-muted-foreground">View and manage Gold Jewellery and Diamond Jewellery stock items</p>
+            <p className="text-sm text-muted-foreground">Manage gold and diamond jewellery inventory</p>
           </div>
-          {outerTab === "stock" && (
-            <div className="flex items-center gap-2 flex-wrap">
-              <button className={btnOutline}><Download className="h-3.5 w-3.5" /> Download Template</button>
-              <button className={btnOutline}><Upload className="h-3.5 w-3.5" /> Import Excel</button>
-              <button className={btnOutline}><FileSpreadsheet className="h-3.5 w-3.5" /> Export Excel</button>
-              <button className={btnOutline}><Link2 className="h-3.5 w-3.5" /> Image URL Generator</button>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <button className={btnOutline}><Upload className="h-3.5 w-3.5" /> Import</button>
+            <button className={btnOutline}><Download className="h-3.5 w-3.5" /> Export</button>
+            {isStockTab && (
+              <button onClick={() => setShowAddModal(true)} className={btnBlack}>
+                <Plus className="h-3.5 w-3.5" /> Add {tab === "gold" ? "Gold" : "Diamond"} Item
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Outer tab bar */}
+        {/* Single flat tab bar */}
         <div className="flex items-center gap-0 overflow-x-auto no-scrollbar">
-          {OUTER_STOCK_TABS.map((t) => (
+          {TABS.map((t) => (
             <button
               key={t.key}
-              onClick={() => setOuterTab(t.key)}
+              onClick={() => switchTab(t.key)}
               className={cn(
-                "px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
-                outerTab === t.key
+                "flex items-center gap-1.5 px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap shrink-0",
+                tab === t.key
                   ? "border-foreground text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground",
               )}
             >
+              <t.icon className="h-3.5 w-3.5" />
               {t.label}
+              {t.count !== undefined && (
+                <span className={cn(
+                  "inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold",
+                  tab === t.key ? "bg-foreground text-background" : "bg-muted text-muted-foreground",
+                )}>
+                  {t.count}
+                </span>
+              )}
             </button>
           ))}
         </div>
       </div>
 
-      {outerTab === "stock" && (
-      <div className="flex-1 overflow-y-auto no-scrollbar">
-
-        <div className="p-8 space-y-5">
-
-          {/* ── SEARCH & FILTERS ── */}
-          <div className="bg-card border border-border rounded-2xl shadow-sm p-4 space-y-3">
-            <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/60" />
-              <input type="text" placeholder="Search by Stock ID, Name, Category, Gold Weight, Diamond Weight…"
-                value={search} onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-10 pr-10 rounded-xl border border-border bg-background text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-foreground/20" />
+      {/* ── GOLD / DIAMOND STOCK ── */}
+      {isStockTab && (
+        <div className="flex-1 flex flex-col min-h-0">
+          {/* Inline filter bar */}
+          <div className="px-6 py-3 border-b border-border flex items-center gap-3 flex-wrap shrink-0 bg-muted/20">
+            <div className="relative flex-1 min-w-[180px] max-w-xs">
+              <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/60" />
+              <input
+                type="text"
+                placeholder="Search stock ID or name…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-9 pl-9 pr-3 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-foreground/20"
+              />
               {search && (
-                <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2">
+                <button onClick={() => setSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2">
                   <X className="h-3.5 w-3.5 text-muted-foreground" />
                 </button>
               )}
             </div>
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="text-xs text-muted-foreground whitespace-nowrap">Filter by Category:</span>
-                <Select value={categoryFilter} onValueChange={setCategory}>
-                  <SelectTrigger className="h-8 w-40 rounded-lg border-border text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="gold">Gold Jewellery</SelectItem>
-                    <SelectItem value="diamond">Diamond Jewellery</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground whitespace-nowrap">Filter by Source:</span>
-                <Select value={sourceFilter} onValueChange={setSource}>
-                  <SelectTrigger className="h-8 w-40 rounded-lg border-border text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Sources</SelectItem>
-                    <SelectItem value="purchased">Purchased</SelectItem>
-                    <SelectItem value="karigar">Karigar</SelectItem>
-                    <SelectItem value="opening_stock">Opening Stock</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground whitespace-nowrap">Filter by Status:</span>
-                <Select value={statusFilter} onValueChange={setStatus}>
-                  <SelectTrigger className="h-8 w-36 rounded-lg border-border text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="available">Available</SelectItem>
-                    <SelectItem value="sold">Sold</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {(search || sourceFilter !== "all" || statusFilter !== "all") && (
-                <button onClick={() => { setSearch(""); setSource("all"); setStatus("all"); }}
-                  className="flex items-center gap-1 h-8 px-3 rounded-lg text-xs text-muted-foreground border border-border hover:bg-muted/40 transition-colors">
-                  <X className="h-3 w-3" /> Clear filters
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* ── SUB-TAB BAR ── */}
-          <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
-            {/* Tab bar */}
-            <div className="flex items-center border-b border-border overflow-x-auto no-scrollbar">
-              {SUB_TABS.map((t) => (
-                <button key={t.key} onClick={() => setSubTab(t.key)}
-                  className={cn(
-                    "flex items-center gap-1.5 px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
-                    subTab === t.key
-                      ? "border-foreground text-foreground"
-                      : "border-transparent text-muted-foreground hover:text-foreground",
-                  )}>
-                  <t.icon className="h-3.5 w-3.5" />
-                  {t.label}
-                  {t.count !== undefined && (
-                    <span className={cn(
-                      "inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold",
-                      subTab === t.key ? "bg-foreground text-background" : "bg-muted text-muted-foreground",
-                    )}>{t.count}</span>
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {/* ── STOCK ITEMS TAB ── */}
-            {subTab === "items" && (
-              <div>
-                {/* Gold / Diamond inner tabs */}
-                <div className="flex items-center border-b border-border px-5 gap-1 bg-muted/20">
-                  {(["gold","diamond"] as JewTab[]).map((jt) => (
-                    <button key={jt} onClick={() => { setJewTab(jt); setSearch(""); }}
-                      className={cn(
-                        "px-5 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap flex items-center gap-1.5",
-                        jewTab === jt ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground",
-                      )}>
-                      {jt === "gold" ? <Package className="h-3.5 w-3.5" /> : <Gem className="h-3.5 w-3.5" />}
-                      {jt === "gold" ? "Gold Jewelry" : "Diamond Jewelry"}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Section header */}
-                <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      {jewTab === "gold" ? <Package className="h-4 w-4 text-muted-foreground" /> : <Gem className="h-4 w-4 text-muted-foreground" />}
-                      <h3 className="text-sm font-semibold text-foreground">
-                        {jewTab === "gold" ? "Gold Jewelry Stock" : "Diamond Jewelry Stock"}
-                      </h3>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-muted text-[11px] font-medium text-muted-foreground border border-border">
-                        {filtered.length}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-0.5 ml-6">
-                      Manage your {jewTab === "gold" ? "gold" : "diamond"} jewellery inventory
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button className={btnOutline + " h-8 text-xs px-3"}>
-                      <ChevronRight className="h-3 w-3" /> Select
-                    </button>
-                    <button onClick={() => setShowAddModal(true)} className={btnBlack + " h-8 text-xs px-3"}>
-                      <Plus className="h-3 w-3" /> Add {jewTab === "gold" ? "Gold" : "Diamond"} Jewelry
-                    </button>
-                  </div>
-                </div>
-
-                <StockTable items={filtered} onView={setViewItem} onDelete={handleDelete} />
-              </div>
+            <Select value={sourceFilter} onValueChange={setSource}>
+              <SelectTrigger className="h-9 w-36 rounded-lg border-border text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sources</SelectItem>
+                <SelectItem value="purchased">Purchased</SelectItem>
+                <SelectItem value="karigar">Karigar</SelectItem>
+                <SelectItem value="opening_stock">Opening Stock</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatus}>
+              <SelectTrigger className="h-9 w-32 rounded-lg border-border text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="available">Available</SelectItem>
+                <SelectItem value="sold">Sold</SelectItem>
+              </SelectContent>
+            </Select>
+            {hasFilters && (
+              <button
+                onClick={() => { setSearch(""); setSource("all"); setStatus("all"); }}
+                className="flex items-center gap-1 h-9 px-3 rounded-lg text-xs text-muted-foreground border border-border hover:bg-muted/40 transition-colors"
+              >
+                <X className="h-3 w-3" /> Clear
+              </button>
             )}
-
-            {subTab === "tallying"  && <div className="flex-1 min-h-0 h-[600px]"><StockTallyReport /></div>}
-            {subTab === "duplicates"&& <PlaceholderTab icon={Copy}      label="Duplicates"        />}
-            {subTab === "history"   && <PlaceholderTab icon={History}   label="Import History"   />}
-            {subTab === "deletion"  && <PlaceholderTab icon={ShieldAlert}label="Deletion Audit"  />}
-            {subTab === "restore"   && <PlaceholderTab icon={RotateCcw} label="Restore Items"    />}
+            <span className="ml-auto text-xs text-muted-foreground tabular-nums shrink-0">
+              {filtered.length} items
+            </span>
           </div>
 
+          {/* Table fills remaining height */}
+          <div className="flex-1 overflow-y-auto no-scrollbar">
+            <StockTable items={filtered} onView={setViewItem} onDelete={handleDelete} />
+          </div>
         </div>
-      </div>
       )}
 
-      {outerTab === "summary" && (
-        <div className="flex-1 min-h-0"><StockSummary /></div>
-      )}
+      {tab === "tallying"   && <div className="flex-1 min-h-0"><StockTallyReport /></div>}
+      {tab === "summary"    && <div className="flex-1 min-h-0"><StockSummary /></div>}
+      {tab === "duplicates" && <PlaceholderTab icon={Copy}       label="Duplicates"    />}
+      {tab === "history"    && <PlaceholderTab icon={History}    label="Import History"/>}
+      {tab === "deletion"   && <PlaceholderTab icon={ShieldAlert}label="Deletion Audit"/>}
+      {tab === "restore"    && <PlaceholderTab icon={RotateCcw}  label="Restore Items" />}
 
       {/* ── MODALS ── */}
       <AddItemModal
         open={showAddModal} onClose={() => setShowAddModal(false)}
-        category={jewTab} onAdd={handleAdd}
+        category={tab === "gold" ? "gold" : "diamond"}
+        onAdd={handleAdd}
       />
       <ViewItemModal item={viewItem} onClose={() => setViewItem(null)} />
     </div>
