@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Diamond, ArrowRight, CheckCircle2, Clock, Plus } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Diamond, CheckCircle2, Clock, Plus, Search, ChevronRight, SlidersHorizontal } from "lucide-react";
 
 import BulkManagement from "./BulkManagement";
 import DiamondReturnWorkflow from "../../diamond/pages/DiamondReturnWorkflow";
@@ -142,164 +142,97 @@ function CompleteJobModal({ job, onClose, onConfirm }: {
 }
 
 /* ══════════════════════════════════════════════
-   JOB CARD
+   STAGE CONFIG
 ══════════════════════════════════════════════ */
-const DAY_BADGE_CLS = (days: number) => {
-  if (days <= 3)  return "bg-emerald-50 text-emerald-700 border-emerald-200";
-  if (days <= 7)  return "bg-amber-50 text-amber-700 border-amber-200";
-  return "bg-red-50 text-red-600 border-red-200";
-};
-
-function JobCard({ job, onIssueDiamonds, onComplete }: {
-  job: PipelineJob;
-  onIssueDiamonds?: (job: PipelineJob) => void;
-  onComplete?: (job: PipelineJob) => void;
-}) {
-  return (
-    <div className="bg-card border border-border rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <span className="font-mono text-[11px] font-semibold text-muted-foreground">#{job.order_no}</span>
-        <span className={cn(
-          "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border shrink-0",
-          DAY_BADGE_CLS(job.days_old)
-        )}>
-          <Clock className="h-2.5 w-2.5" />
-          {job.days_old}d
-        </span>
-      </div>
-
-      <div className="mb-2">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="h-6 w-6 rounded-md bg-foreground flex items-center justify-center text-[10px] font-bold text-background shrink-0">
-            {job.karigar_name.charAt(0)}
-          </div>
-          <span className="text-xs font-semibold text-foreground leading-tight truncate">{job.karigar_name}</span>
-        </div>
-        <p className="text-xs text-muted-foreground leading-snug line-clamp-2">{job.item_description}</p>
-      </div>
-
-      <div className="flex items-center gap-2 mb-3">
-        <span className="inline-flex items-center px-2 py-0.5 rounded bg-muted text-[10px] font-semibold text-foreground border border-border">
-          {job.weight.toFixed(3)}g
-        </span>
-        <span className="inline-flex items-center px-2 py-0.5 rounded bg-muted text-[10px] font-medium text-muted-foreground border border-border">
-          {job.purity}
-        </span>
-        {job.diamond_issued !== undefined && job.diamond_issued > 0 && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-50 text-[10px] font-semibold text-blue-700 border border-blue-200">
-            <Diamond className="h-2.5 w-2.5" />
-            {job.diamond_issued.toFixed(3)}ct
-          </span>
-        )}
-      </div>
-
-      {onIssueDiamonds && (
-        <button
-          onClick={() => onIssueDiamonds(job)}
-          className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100 transition-colors"
-        >
-          <Diamond className="h-3 w-3" /> Issue Diamonds
-        </button>
-      )}
-
-      {onComplete && (
-        <button
-          onClick={() => onComplete(job)}
-          className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100 transition-colors"
-        >
-          <CheckCircle2 className="h-3 w-3" /> Mark Complete
-        </button>
-      )}
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════
-   KANBAN COLUMN
-══════════════════════════════════════════════ */
-const COLUMN_META: Record<PipelineStatus, { label: string; dot: string; headerCls: string; count_cls: string }> = {
+const STAGE_META: Record<PipelineStatus, {
+  label: string;
+  dot: string;
+  badgeCls: string;
+  actionLabel: string;
+  actionCls: string;
+}> = {
   Pending: {
     label: "Pending",
     dot: "bg-amber-400",
-    headerCls: "border-amber-200 bg-amber-50",
-    count_cls: "bg-amber-100 text-amber-700",
+    badgeCls: "bg-amber-50 text-amber-700 border-amber-200",
+    actionLabel: "Issue Diamonds",
+    actionCls: "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100",
   },
   Issue: {
     label: "Issue Diamonds",
     dot: "bg-blue-400",
-    headerCls: "border-blue-200 bg-blue-50",
-    count_cls: "bg-blue-100 text-blue-700",
+    badgeCls: "bg-blue-50 text-blue-700 border-blue-200",
+    actionLabel: "Start Processing",
+    actionCls: "border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100",
   },
   Processing: {
     label: "Processing",
     dot: "bg-violet-400",
-    headerCls: "border-violet-200 bg-violet-50",
-    count_cls: "bg-violet-100 text-violet-700",
+    badgeCls: "bg-violet-50 text-violet-700 border-violet-200",
+    actionLabel: "Ready to Receive",
+    actionCls: "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
   },
   Receive: {
     label: "Receive Jewellery",
     dot: "bg-emerald-400",
-    headerCls: "border-emerald-200 bg-emerald-50",
-    count_cls: "bg-emerald-100 text-emerald-700",
+    badgeCls: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    actionLabel: "Mark Complete",
+    actionCls: "border-emerald-200 bg-emerald-600 text-white hover:bg-emerald-700",
   },
 };
 
-function KanbanColumn({ status, jobs, onIssueDiamonds, onComplete }: {
-  status: PipelineStatus;
-  jobs: PipelineJob[];
-  onIssueDiamonds?: (job: PipelineJob) => void;
-  onComplete?: (job: PipelineJob) => void;
-}) {
-  const meta = COLUMN_META[status];
-  return (
-    <div className="flex flex-col min-w-[260px] flex-1">
-      <div className={cn("flex items-center justify-between px-3.5 py-2.5 rounded-xl border mb-3", meta.headerCls)}>
-        <div className="flex items-center gap-2">
-          <span className={cn("h-2 w-2 rounded-full shrink-0", meta.dot)} />
-          <span className="text-xs font-semibold text-foreground">{meta.label}</span>
-        </div>
-        <span className={cn("text-[11px] font-bold px-2 py-0.5 rounded-full", meta.count_cls)}>
-          {jobs.length}
-        </span>
-      </div>
-
-      <div className="flex flex-col gap-3 flex-1">
-        {jobs.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center border-2 border-dashed border-border rounded-xl py-10">
-            <p className="text-xs text-muted-foreground">No jobs</p>
-          </div>
-        ) : jobs.map((job) => (
-          <JobCard
-            key={job.id}
-            job={job}
-            onIssueDiamonds={status === "Issue" ? onIssueDiamonds : undefined}
-            onComplete={status === "Receive" ? onComplete : undefined}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════
-   WORKFLOW TAB  (kanban)
-══════════════════════════════════════════════ */
 const PIPELINE_STATUSES: PipelineStatus[] = ["Pending", "Issue", "Processing", "Receive"];
 
-function WorkflowTab() {
-  const [jobs, setJobs]                 = useState<PipelineJob[]>(mockPipelineJobs);
-  const [issueTarget, setIssueTarget]   = useState<PipelineJob | null>(null);
-  const [completeTarget, setCompleteTarget] = useState<PipelineJob | null>(null);
-  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+const NEXT_STATUS: Record<PipelineStatus, PipelineStatus | "done"> = {
+  Pending:    "Issue",
+  Issue:      "Processing",
+  Processing: "Receive",
+  Receive:    "done",
+};
 
+const DAY_BADGE_CLS = (days: number) => {
+  if (days <= 3) return "bg-emerald-50 text-emerald-700 border-emerald-200";
+  if (days <= 7) return "bg-amber-50 text-amber-700 border-amber-200";
+  return "bg-red-50 text-red-600 border-red-200";
+};
+
+/* ══════════════════════════════════════════════
+   WORKFLOW TAB  (stage tabs + table)
+══════════════════════════════════════════════ */
+function WorkflowTab() {
+  const [jobs, setJobs]                     = useState<PipelineJob[]>(mockPipelineJobs);
+  const [stage, setStage]                   = useState<PipelineStatus>("Pending");
+  const [issueTarget, setIssueTarget]       = useState<PipelineJob | null>(null);
+  const [completeTarget, setCompleteTarget] = useState<PipelineJob | null>(null);
+  const [completedIds, setCompletedIds]     = useState<Set<string>>(new Set());
+
+  /* filters */
+  const [search,       setSearch]       = useState("");
+  const [filterKarigar, setFilterKarigar] = useState("all");
+  const [filterPurity,  setFilterPurity]  = useState("all");
+
+  const allKarigars = useMemo(() => [...new Set(jobs.map((j) => j.karigar_name))].sort(), [jobs]);
+  const allPurities = useMemo(() => [...new Set(jobs.map((j) => j.purity))].sort(), [jobs]);
+
+  const stageJobs = useMemo(() => {
+    return jobs
+      .filter((j) => j.status === stage)
+      .filter((j) => {
+        const q = search.toLowerCase();
+        if (q && !j.karigar_name.toLowerCase().includes(q) && !j.order_no.includes(q) && !j.item_description.toLowerCase().includes(q)) return false;
+        if (filterKarigar !== "all" && j.karigar_name !== filterKarigar) return false;
+        if (filterPurity  !== "all" && j.purity  !== filterPurity)  return false;
+        return true;
+      });
+  }, [jobs, stage, search, filterKarigar, filterPurity]);
+
+  const countByStage = (s: PipelineStatus) => jobs.filter((j) => j.status === s).length;
+
+  /* handlers */
   function handleIssueDiamonds(jobId: string, weight: number) {
-    setJobs((prev) =>
-      prev.map((j) =>
-        j.id === jobId
-          ? { ...j, status: "Processing" as PipelineStatus, diamond_issued: weight }
-          : j
-      )
-    );
+    setJobs((prev) => prev.map((j) =>
+      j.id === jobId ? { ...j, status: "Processing" as PipelineStatus, diamond_issued: weight } : j
+    ));
     setIssueTarget(null);
   }
 
@@ -309,21 +242,36 @@ function WorkflowTab() {
     setCompleteTarget(null);
   }
 
-  const byStatus = (s: PipelineStatus) => jobs.filter((j) => j.status === s);
+  function handleAction(job: PipelineJob) {
+    const next = NEXT_STATUS[job.status];
+    if (next === "done") { setCompleteTarget(job); return; }
+    if (job.status === "Pending") {
+      /* Pending → Issue: just move, no modal */
+      setJobs((prev) => prev.map((j) => j.id === job.id ? { ...j, status: "Issue" } : j));
+      return;
+    }
+    if (job.status === "Issue") { setIssueTarget(job); return; }
+    if (job.status === "Processing") {
+      setJobs((prev) => prev.map((j) => j.id === job.id ? { ...j, status: "Receive" } : j));
+    }
+  }
 
-  const totalJobs  = jobs.length + completedIds.size;
-  const doneCount  = completedIds.size;
+  const totalJobs    = jobs.length + completedIds.size;
+  const doneCount    = completedIds.size;
   const overdueCount = jobs.filter((j) => j.days_old > 7).length;
 
+  const SELECT_CLS = "h-9 pl-3 pr-8 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20 appearance-none";
+
   return (
-    <div className="flex flex-col gap-6 h-full">
-      {/* Summary strip */}
+    <div className="flex flex-col gap-5 h-full">
+
+      {/* ── Summary strip ── */}
       <div className="grid grid-cols-4 gap-3 shrink-0">
         {[
-          { label: "Active Jobs",      value: jobs.length,    cls: "text-foreground" },
-          { label: "Completed Today",  value: doneCount,      cls: "text-emerald-600" },
-          { label: "Overdue (>7d)",    value: overdueCount,   cls: overdueCount > 0 ? "text-red-600" : "text-foreground" },
-          { label: "Total This Month", value: totalJobs,      cls: "text-foreground" },
+          { label: "Active Jobs",      value: jobs.length,  cls: "text-foreground" },
+          { label: "Completed Today",  value: doneCount,    cls: "text-emerald-600" },
+          { label: "Overdue (>7d)",    value: overdueCount, cls: overdueCount > 0 ? "text-red-600" : "text-foreground" },
+          { label: "Total This Month", value: totalJobs,    cls: "text-foreground" },
         ].map((m) => (
           <div key={m.label} className="bg-card border border-border rounded-xl px-4 py-3 shadow-sm">
             <p className="text-[11px] text-muted-foreground mb-1">{m.label}</p>
@@ -332,23 +280,176 @@ function WorkflowTab() {
         ))}
       </div>
 
-      {/* Kanban board */}
-      <div className="flex gap-4 overflow-x-auto no-scrollbar flex-1 min-h-0 pb-2">
-        {PIPELINE_STATUSES.map((status, idx) => (
-          <div key={status} className="flex items-start gap-4 flex-1 min-w-[260px]">
-            <KanbanColumn
-              status={status}
-              jobs={byStatus(status)}
-              onIssueDiamonds={(j) => setIssueTarget(j)}
-              onComplete={(j) => setCompleteTarget(j)}
+      {/* ── Stage tabs ── */}
+      <div className="bg-card border border-border rounded-xl overflow-hidden flex flex-col flex-1 min-h-0">
+
+        {/* Tab bar */}
+        <div className="flex items-center border-b border-border overflow-x-auto no-scrollbar shrink-0">
+          {PIPELINE_STATUSES.map((s) => {
+            const meta    = STAGE_META[s];
+            const isActive = s === stage;
+            const count   = countByStage(s);
+            return (
+              <button
+                key={s}
+                onClick={() => setStage(s)}
+                className={cn(
+                  "flex items-center gap-2 px-5 py-3.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap shrink-0",
+                  isActive
+                    ? "border-foreground text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <span className={cn("h-2 w-2 rounded-full shrink-0", meta.dot)} />
+                {meta.label}
+                <span className={cn(
+                  "inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold border",
+                  isActive ? meta.badgeCls : "bg-muted/60 text-muted-foreground border-border",
+                )}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Filters row */}
+        <div className="flex items-center gap-3 px-5 py-3.5 border-b border-border shrink-0 bg-muted/20">
+          <SlidersHorizontal className="h-4 w-4 text-muted-foreground shrink-0" />
+          {/* Search */}
+          <div className="relative flex-1 max-w-xs">
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search order, karigar or item…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-9 pl-8 pr-3 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20"
             />
-            {idx < PIPELINE_STATUSES.length - 1 && (
-              <div className="flex items-start pt-[54px] shrink-0">
-                <ArrowRight className="h-4 w-4 text-muted-foreground/40" />
-              </div>
-            )}
           </div>
-        ))}
+          {/* Karigar filter */}
+          <div className="relative">
+            <select value={filterKarigar} onChange={(e) => setFilterKarigar(e.target.value)} className={SELECT_CLS}>
+              <option value="all">All Karigars</option>
+              {allKarigars.map((k) => <option key={k} value={k}>{k}</option>)}
+            </select>
+            <ChevronRight className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground rotate-90" />
+          </div>
+          {/* Purity filter */}
+          <div className="relative">
+            <select value={filterPurity} onChange={(e) => setFilterPurity(e.target.value)} className={SELECT_CLS}>
+              <option value="all">All Purities</option>
+              {allPurities.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+            <ChevronRight className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground rotate-90" />
+          </div>
+          {(search || filterKarigar !== "all" || filterPurity !== "all") && (
+            <button
+              onClick={() => { setSearch(""); setFilterKarigar("all"); setFilterPurity("all"); }}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+            >
+              Clear
+            </button>
+          )}
+          <span className="ml-auto text-[11px] text-muted-foreground tabular-nums">
+            {stageJobs.length} job{stageJobs.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+
+        {/* Jobs table */}
+        <div className="flex-1 overflow-y-auto no-scrollbar">
+          {stageJobs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-48 gap-2">
+              <p className="text-sm text-muted-foreground">No jobs in this stage</p>
+              {(search || filterKarigar !== "all" || filterPurity !== "all") && (
+                <p className="text-xs text-muted-foreground">Try adjusting your filters</p>
+              )}
+            </div>
+          ) : (
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-muted/30">
+                  <th className="px-5 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Order</th>
+                  <th className="px-5 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Karigar</th>
+                  <th className="px-5 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Item</th>
+                  <th className="px-5 py-3.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Weight</th>
+                  <th className="px-5 py-3.5 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Purity</th>
+                  {stage !== "Pending" && (
+                    <th className="px-5 py-3.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Diamonds</th>
+                  )}
+                  <th className="px-5 py-3.5 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Age</th>
+                  <th className="px-5 py-3.5 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {stageJobs.map((job) => {
+                  const meta = STAGE_META[stage];
+                  return (
+                    <tr key={job.id} className="hover:bg-muted/20 transition-colors">
+                      <td className="px-5 py-3.5">
+                        <span className="font-mono text-xs font-semibold text-foreground">#{job.order_no}</span>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <div className="flex items-center gap-2">
+                          <div className="h-6 w-6 rounded-md bg-foreground flex items-center justify-center text-[10px] font-bold text-background shrink-0">
+                            {job.karigar_name.charAt(0)}
+                          </div>
+                          <span className="text-xs font-medium text-foreground truncate max-w-[140px]">{job.karigar_name}</span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3.5">
+                        <span className="text-xs text-muted-foreground line-clamp-1 max-w-[200px]">{job.item_description}</span>
+                      </td>
+                      <td className="px-5 py-3.5 text-right">
+                        <span className="text-xs font-semibold text-foreground tabular-nums">{job.weight.toFixed(3)}g</span>
+                      </td>
+                      <td className="px-5 py-3.5 text-center">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded bg-muted text-[10px] font-semibold text-foreground border border-border">
+                          {job.purity}
+                        </span>
+                      </td>
+                      {stage !== "Pending" && (
+                        <td className="px-5 py-3.5 text-right">
+                          {job.diamond_issued && job.diamond_issued > 0 ? (
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 tabular-nums">
+                              <Diamond className="h-3 w-3" />{job.diamond_issued.toFixed(3)}ct
+                            </span>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
+                        </td>
+                      )}
+                      <td className="px-5 py-3.5 text-center">
+                        <span className={cn(
+                          "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border",
+                          DAY_BADGE_CLS(job.days_old),
+                        )}>
+                          <Clock className="h-2.5 w-2.5" />{job.days_old}d
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5 text-center">
+                        <button
+                          onClick={() => handleAction(job)}
+                          className={cn(
+                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-semibold transition-colors whitespace-nowrap",
+                            meta.actionCls,
+                          )}
+                        >
+                          {stage === "Receive" ? (
+                            <CheckCircle2 className="h-3 w-3" />
+                          ) : (
+                            <ChevronRight className="h-3 w-3" />
+                          )}
+                          {meta.actionLabel}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
 
       <IssueDiamondsModal
