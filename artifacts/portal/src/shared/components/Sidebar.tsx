@@ -10,7 +10,7 @@ import {
   Medal,
   Hexagon,
   ChevronRight,
-  LifeBuoy,
+
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
@@ -142,15 +142,6 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
 
       {/* Footer */}
       <div className="pb-1 shrink-0 border-t border-border pt-2">
-        <div className={cn(
-          "flex items-center px-3 py-2 rounded-lg text-sidebar-foreground",
-          "hover:bg-sidebar-accent/50 transition-colors cursor-pointer mb-2",
-          isExpanded ? "justify-start" : "justify-center",
-        )}>
-          <LifeBuoy className="h-4 w-4 shrink-0" />
-          <span className={labelCls}>Help Center</span>
-        </div>
-
         <div className={cn(
           "flex items-center px-3 py-2 rounded-lg hover:bg-sidebar-accent/50 transition-colors cursor-pointer",
           isExpanded ? "justify-start" : "justify-center",
