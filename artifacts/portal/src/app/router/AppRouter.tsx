@@ -11,6 +11,7 @@ import SalesManagement from "../../modules/sales/pages/SalesManagement";
 import PurchaseManagement from "../../modules/purchase/pages/PurchaseManagement";
 import DiamondQualityTracking from "../../modules/diamond/pages/DiamondQualityTracking";
 import ComingSoon from "../../pages/ComingSoon";
+import SettingsPage from "../../modules/settings/pages/SettingsPage";
 
 export default function AppRouter() {
   return (
@@ -88,7 +89,7 @@ export default function AppRouter() {
 
         <Route path="/settings">
           <MainLayout>
-            <ComingSoon title="Settings" />
+            <SettingsPage />
           </MainLayout>
         </Route>
 
