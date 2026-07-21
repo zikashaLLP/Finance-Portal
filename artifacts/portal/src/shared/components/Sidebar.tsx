@@ -10,7 +10,7 @@ import {
   Medal,
   Hexagon,
   ChevronRight,
-
+  LogOut,
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
@@ -141,7 +141,8 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
       </div>
 
       {/* Footer */}
-      <div className="pb-1 shrink-0 border-t border-border pt-2">
+      <div className="pb-2 shrink-0 border-t border-border pt-2 px-2 space-y-0.5">
+        {/* User row */}
         <div className={cn(
           "flex items-center px-3 py-2 rounded-lg hover:bg-sidebar-accent/50 transition-colors cursor-pointer",
           isExpanded ? "justify-start" : "justify-center",
@@ -158,6 +159,24 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
           </div>
           {isExpanded && <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0" />}
         </div>
+
+        {/* Logout row */}
+        <button
+          className={cn(
+            "w-full flex items-center px-3 py-2 rounded-lg transition-colors",
+            "text-red-500 hover:bg-red-50 hover:text-red-600",
+            isExpanded ? "justify-start" : "justify-center",
+          )}
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          <span className={cn(
+            "text-sm whitespace-nowrap overflow-hidden transition-all duration-300",
+            isExpanded ? "opacity-100 max-w-[160px] ml-3" : "opacity-0 max-w-0 ml-0",
+          )}>
+            Logout
+          </span>
+          {isExpanded && <ChevronRight className="h-4 w-4 ml-auto shrink-0 opacity-60" />}
+        </button>
       </div>
     </aside>
   );
