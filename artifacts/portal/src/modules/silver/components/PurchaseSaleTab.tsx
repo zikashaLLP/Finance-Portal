@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Medal, Plus } from "lucide-react";
+import { Medal } from "lucide-react";
 import { AppModal } from "@/shared/components/AppModal";
 import Pagination from "@/shared/components/Pagination";
 import { mockSilverTransactions, SilverTransaction, SilverType, SilverCategory, PaymentMode } from "../data/mockSilver";
@@ -308,15 +308,6 @@ export default function PurchaseSaleTab() {
       >
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-foreground">Transaction History</h2>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setModalOpen(true)}
-              className="flex items-center gap-1.5 h-8 px-3 rounded-lg bg-foreground text-background text-xs font-medium hover:bg-foreground/90 transition-colors"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              Add Transaction
-            </button>
-          </div>
         </div>
         <TransactionHistoryTable rows={transactions} />
       </motion.div>
