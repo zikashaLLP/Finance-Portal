@@ -1,0 +1,75 @@
+Context & Goal:
+We need to drastically refactor the UI and architecture of this jewelry business management system to improve usability, declutter the current sidebar and interface, and achieve strict Separation of Concerns (SoC).
+
+Please execute the following refactoring steps:
+
+Step 1: Sidebar & Navigation Overhaul
+
+Flatten the Sidebar: Remove all nested sub-menus from the sidebar. Modules that previously had sub-menus should now be single sidebar links that open a main page with horizontal tabs for their sub-sections.
+
+Simplify Main Menus: The main sidebar should only contain core operational areas: Dashboard, Gold Management, Stock Management, Diamond Quality, Purchase, Sales, Karigar, Reports, Accounts, and Settings.
+
+Remove Management Clutter: Completely remove Team, Client, Vendor, and Branch management links from the sidebar. These belong in Settings.
+
+Step 2: Consolidate "Settings" Area
+Create a comprehensive, tabbed "Settings" page to manage all master data and CRUD operations. Implement the following tabs using the provided database schema structures:
+
+Team Management (Place at the bottom of settings):
+
+Roles: id, role_name (Admin, Account, Sale, Staff), description, created_at, updated_at.
+
+Users: id, username, password, full_name, email, phone, role_id, branch_id, Status, last_login, created_at, updated_at.
+
+Branch Management: id, name, code, phone, email, address, city, state, country, pincode, Status, created_at, updated_at.
+
+Client Management: id, client_code, name, phone, email, birth_date, anniversary_date, spouse_name, spouse_birth_date, occupation, company, gst_no, pan_no, street_address, city, state, country, pincode, photo_url, notes, credit_limit, is_premium_client, Status, created_at, updated_at.
+
+Vendor Management: id, vendor_code, name, phone, email, gst_no, pan_no, address, city, state, country, pincode, vendor_logo_url, Status, created_at, updated_at.
+
+Karigar Profile Management: id, karigar_code, name, phone, address, labour_type, image_url, Status, created_at, updated_at.
+
+General Management (Dropdown Master Tables):
+
+Jewellery Categories: id, name, description, Status, created_at.
+
+Jewellery Types: id, category_id, name, Status, created_at, updated_at.
+
+Gold Purity: id, purity, Karat, Rate_per_gram, description, created_at, updated_at.
+
+Diamond Filters (Solitaire Quality): id, filter_type (Shape, Color, Cut, Clarity), filter_name (e.g., Round, D, VVS1, F), filter_value, created_at, updated_at.
+
+Step 3: Refactor the "Karigar" Operational Module
+
+Separation of Concern: Since Karigar profiles are now managed in Settings, this module must strictly be for the work pipeline.
+
+Workflow UI: Build a simplified, step-by-step kanban or wizard interface for the workflow:
+
+Pending (Auto-populated from Sales)
+
+Issue Diamonds (Actionable step)
+
+Processing (Status tracking)
+
+Receive Jewellery (Completion).
+
+Diamond Returns: Move the "Diamond Return Workflow" entirely into this Karigar section.
+
+Step 4: Restructure Purchase & Stock Management
+
+Purchase Module: Create clear tabbed sections for Clients (Gold Jewellery, Diamond Jewellery, Pure Gold) and Vendors (Gold Jewellery, Diamond Jewellery, Pure Gold, Loose Diamond, Solitaire).
+
+Stock Management Module: Create tabbed sections for Diamond stock and Diamond/Gold Jewellery stock.
+
+Step 5: Create the "Accounts" Module
+
+Place this near the bottom of the sidebar, right after "Reports".
+
+Create a dashboard view showing high-level financial summaries: Total Cash In, Total Cash Out.
+
+Include tabs/views for: Transactions, Ledgers, and Accounts (Specifically: HDFC Bank Account, SBI Account, Cash). Each account should show a brief history of individual transactions.
+
+Step 6: UI Clean-up & Separation of Concerns (SoC) Guidelines
+
+Remove all unnecessary widgets, redundant buttons, and abstract multi-purpose tabs that clutter the UI. Keep data entry forms clean and modal-based if possible.
+
+For the Codebase (SoC): Ensure that the UI components (Views) are strictly separated from data fetching and business logic (Controllers/Hooks). Use distinct service files for API calls related to Users, Karigars, Inventory, and Accounts. Do not mix inventory logic with account ledger logic. Keep the global state lightweight by scoping domain-specific state strictly to its module (e.g., Karigar workflow state should not bleed into global app state).
