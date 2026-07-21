@@ -2,14 +2,12 @@ import { useState } from "react";
 import { Gem, RefreshCw, Plus, Edit, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import DiamondOrders from "./DiamondOrders";
-import DiamondReturnWorkflow from "./DiamondReturnWorkflow";
 
-type OuterTab = "tracking" | "orders" | "returns";
+type OuterTab = "tracking" | "orders";
 
 const OUTER_TABS: { key: OuterTab; label: string }[] = [
   { key: "tracking", label: "Quality Tracking" },
   { key: "orders",   label: "Orders"           },
-  { key: "returns",  label: "Returns"          },
 ];
 
 type PurchaseRow = { date: string; weight: number; price: number };
@@ -338,12 +336,6 @@ export default function DiamondQualityTracking() {
         </div>
       )}
 
-      {/* BODY — Returns */}
-      {outerTab === "returns" && (
-        <div className="flex-1 min-h-0">
-          <DiamondReturnWorkflow />
-        </div>
-      )}
     </div>
   );
 }
