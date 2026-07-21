@@ -281,7 +281,7 @@ export default function DiamondQualityTracking() {
           )}
         </div>
 
-        {/* Outer tab bar */}
+        {/* Main tab bar */}
         <div className="flex items-center gap-0 overflow-x-auto no-scrollbar">
           {OUTER_TABS.map(t => (
             <button
@@ -297,12 +297,18 @@ export default function DiamondQualityTracking() {
               {t.label}
             </button>
           ))}
-          {outerTab === "tracking" && QUALITIES.map(q => (
+        </div>
+      </div>
+
+      {/* Quality sub-tab bar — only when on tracking tab */}
+      {outerTab === "tracking" && (
+        <div className="border-b border-border bg-muted/20 px-4 shrink-0 overflow-x-auto no-scrollbar flex items-center gap-1">
+          {QUALITIES.map(q => (
             <button
               key={q.id}
               onClick={() => setActiveId(q.id)}
               className={cn(
-                "relative shrink-0 px-5 py-3 text-sm font-medium transition-colors whitespace-nowrap border-b-2 -mb-px",
+                "flex items-center gap-2 shrink-0 px-4 py-2.5 text-sm font-medium rounded-none transition-colors whitespace-nowrap border-b-2 -mb-px",
                 activeId === q.id
                   ? "border-foreground text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground"
@@ -310,17 +316,17 @@ export default function DiamondQualityTracking() {
             >
               {q.name}
               <span className={cn(
-                "ml-2 text-[11px] tabular-nums px-1.5 py-0.5 rounded-full",
+                "text-[11px] tabular-nums px-1.5 py-0.5 rounded-full font-semibold",
                 activeId === q.id
                   ? "bg-emerald-100 text-emerald-700"
-                  : "bg-muted/50 text-muted-foreground"
+                  : "bg-muted text-muted-foreground"
               )}>
                 {q.stock.toFixed(2)}ct
               </span>
             </button>
           ))}
         </div>
-      </div>
+      )}
 
       {/* BODY — Quality Tracking */}
       {outerTab === "tracking" && (
