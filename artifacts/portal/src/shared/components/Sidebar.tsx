@@ -27,7 +27,7 @@ const NAV_ITEMS: NavItem[] = [
   { name: "Dashboard",        icon: LayoutDashboard, path: "/dashboard"  },
   { name: "Gold Management",  icon: Gem,             path: "/gold"       },
   { name: "Silver Management",icon: Medal,           path: "/silver"     },
-  { name: "Diamond Quality",  icon: Diamond,         path: "/diamond"    },
+  { name: "Diamond Management",  icon: Diamond,         path: "/diamond"    },
   { name: "Stock Management", icon: Package,         path: "/stock"      },
   { name: "Purchase",         icon: ShoppingBag,     path: "/purchase"   },
   { name: "Sales",            icon: ShoppingCart,    path: "/sales"      },

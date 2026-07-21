@@ -256,7 +256,7 @@ export default function DiamondQualityTracking() {
             <div className="flex items-center gap-2 mb-1">
               <Gem className="h-5 w-5 text-muted-foreground" />
               <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-                Diamond Quality
+                Diamond Management
               </h1>
             </div>
             <p className="text-sm text-muted-foreground">
