@@ -13,6 +13,69 @@ export interface PipelineJob {
   diamond_issued?: number;
 }
 
+export const mockCompletedJobs: PipelineJob[] = [
+  {
+    id: "cj1",
+    karigar_name: "BHAGIRATH DADA",
+    item_description: "Necklace — choker CVD diamond 18K",
+    weight: 11.200,
+    purity: "18K",
+    status: "Receive",
+    created_at: "28/06/2026",
+    days_old: 23,
+    order_no: "1498",
+    diamond_issued: 2.540,
+  },
+  {
+    id: "cj2",
+    karigar_name: "AMRESH DADA",
+    item_description: "Ring set — pavé 22K yellow gold",
+    weight: 6.800,
+    purity: "22K",
+    status: "Receive",
+    created_at: "25/06/2026",
+    days_old: 26,
+    order_no: "1494",
+    diamond_issued: 0,
+  },
+  {
+    id: "cj3",
+    karigar_name: "DILIP BHAI SURAT",
+    item_description: "Earrings — solitaire drop 18K rose gold",
+    weight: 4.300,
+    purity: "18K",
+    status: "Receive",
+    created_at: "22/06/2026",
+    days_old: 29,
+    order_no: "1490",
+    diamond_issued: 1.080,
+  },
+  {
+    id: "cj4",
+    karigar_name: "NITIN KARIGAR UNIQUE",
+    item_description: "Mangalsutra — 22K black bead chain",
+    weight: 9.500,
+    purity: "22K",
+    status: "Receive",
+    created_at: "18/06/2026",
+    days_old: 33,
+    order_no: "1485",
+    diamond_issued: 0,
+  },
+  {
+    id: "cj5",
+    karigar_name: "HIRANMAY DADA",
+    item_description: "Bangle pair — plain 22K yellow gold",
+    weight: 18.000,
+    purity: "22K",
+    status: "Receive",
+    created_at: "15/06/2026",
+    days_old: 36,
+    order_no: "1480",
+    diamond_issued: 0,
+  },
+];
+
 export const mockPipelineJobs: PipelineJob[] = [
   {
     id: "pj1",

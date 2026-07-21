@@ -14,9 +14,12 @@ import {
 } from "@/components/ui/select";
 import {
   mockPipelineJobs,
+  mockCompletedJobs,
   type PipelineJob,
   type PipelineStatus,
 } from "../data/mockPipeline";
+
+type WorkflowStage = PipelineStatus | "Completed";
 
 /* ══════════════════════════════════════════════
    ISSUE DIAMONDS MODAL
@@ -179,9 +182,16 @@ const STAGE_META: Record<PipelineStatus, {
     actionLabel: "Mark Complete",
     actionCls: "border-emerald-200 bg-emerald-600 text-white hover:bg-emerald-700",
   },
+  Completed: {
+    label: "Completed",
+    dot: "bg-emerald-600",
+    badgeCls: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    actionLabel: "",
+    actionCls: "",
+  },
 };
 
-const PIPELINE_STATUSES: PipelineStatus[] = ["Pending", "Issue", "Processing", "Receive"];
+const PIPELINE_STATUSES: WorkflowStage[] = ["Pending", "Issue", "Processing", "Receive", "Completed"];
 
 const NEXT_STATUS: Record<PipelineStatus, PipelineStatus | "done"> = {
   Pending:    "Issue",
@@ -201,32 +211,32 @@ const DAY_BADGE_CLS = (days: number) => {
 ══════════════════════════════════════════════ */
 function WorkflowTab() {
   const [jobs, setJobs]                     = useState<PipelineJob[]>(mockPipelineJobs);
-  const [stage, setStage]                   = useState<PipelineStatus>("Pending");
+  const [stage, setStage]                   = useState<WorkflowStage>("Pending");
   const [issueTarget, setIssueTarget]       = useState<PipelineJob | null>(null);
   const [completeTarget, setCompleteTarget] = useState<PipelineJob | null>(null);
-  const [completedIds, setCompletedIds]     = useState<Set<string>>(new Set());
+  const [completedJobs, setCompletedJobs]   = useState<PipelineJob[]>(mockCompletedJobs);
 
   /* filters */
   const [search,       setSearch]       = useState("");
   const [filterKarigar, setFilterKarigar] = useState("all");
   const [filterPurity,  setFilterPurity]  = useState("all");
 
-  const allKarigars = useMemo(() => [...new Set(jobs.map((j) => j.karigar_name))].sort(), [jobs]);
-  const allPurities = useMemo(() => [...new Set(jobs.map((j) => j.purity))].sort(), [jobs]);
+  const allKarigars = useMemo(() => [...new Set([...jobs, ...completedJobs].map((j) => j.karigar_name))].sort(), [jobs, completedJobs]);
+  const allPurities = useMemo(() => [...new Set([...jobs, ...completedJobs].map((j) => j.purity))].sort(), [jobs, completedJobs]);
 
   const stageJobs = useMemo(() => {
-    return jobs
-      .filter((j) => j.status === stage)
-      .filter((j) => {
-        const q = search.toLowerCase();
-        if (q && !j.karigar_name.toLowerCase().includes(q) && !j.order_no.includes(q) && !j.item_description.toLowerCase().includes(q)) return false;
-        if (filterKarigar !== "all" && j.karigar_name !== filterKarigar) return false;
-        if (filterPurity  !== "all" && j.purity  !== filterPurity)  return false;
-        return true;
-      });
-  }, [jobs, stage, search, filterKarigar, filterPurity]);
+    const pool = stage === "Completed" ? completedJobs : jobs.filter((j) => j.status === stage);
+    return pool.filter((j) => {
+      const q = search.toLowerCase();
+      if (q && !j.karigar_name.toLowerCase().includes(q) && !j.order_no.includes(q) && !j.item_description.toLowerCase().includes(q)) return false;
+      if (filterKarigar !== "all" && j.karigar_name !== filterKarigar) return false;
+      if (filterPurity  !== "all" && j.purity  !== filterPurity)  return false;
+      return true;
+    });
+  }, [jobs, completedJobs, stage, search, filterKarigar, filterPurity]);
 
-  const countByStage = (s: PipelineStatus) => jobs.filter((j) => j.status === s).length;
+  const countByStage = (s: WorkflowStage) =>
+    s === "Completed" ? completedJobs.length : jobs.filter((j) => j.status === s).length;
 
   /* handlers */
   function handleIssueDiamonds(jobId: string, weight: number) {
@@ -237,7 +247,8 @@ function WorkflowTab() {
   }
 
   function handleComplete(jobId: string) {
-    setCompletedIds((prev) => new Set(prev).add(jobId));
+    const job = jobs.find((j) => j.id === jobId);
+    if (job) setCompletedJobs((prev) => [job, ...prev]);
     setJobs((prev) => prev.filter((j) => j.id !== jobId));
     setCompleteTarget(null);
   }
@@ -256,8 +267,8 @@ function WorkflowTab() {
     }
   }
 
-  const totalJobs    = jobs.length + completedIds.size;
-  const doneCount    = completedIds.size;
+  const totalJobs    = jobs.length + completedJobs.length;
+  const doneCount    = completedJobs.length;
   const overdueCount = jobs.filter((j) => j.days_old > 7).length;
 
   const SELECT_CLS = "h-9 pl-3 pr-8 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20 appearance-none";
@@ -378,7 +389,12 @@ function WorkflowTab() {
                     <th className="px-5 py-3.5 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Diamonds</th>
                   )}
                   <th className="px-5 py-3.5 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Age</th>
-                  <th className="px-5 py-3.5 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Action</th>
+                  {stage !== "Completed" && (
+                    <th className="px-5 py-3.5 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Action</th>
+                  )}
+                  {stage === "Completed" && (
+                    <th className="px-5 py-3.5 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -428,20 +444,26 @@ function WorkflowTab() {
                         </span>
                       </td>
                       <td className="px-5 py-3.5 text-center">
-                        <button
-                          onClick={() => handleAction(job)}
-                          className={cn(
-                            "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-semibold transition-colors whitespace-nowrap",
-                            meta.actionCls,
-                          )}
-                        >
-                          {stage === "Receive" ? (
-                            <CheckCircle2 className="h-3 w-3" />
-                          ) : (
-                            <ChevronRight className="h-3 w-3" />
-                          )}
-                          {meta.actionLabel}
-                        </button>
+                        {stage === "Completed" ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] font-semibold text-emerald-700">
+                            <CheckCircle2 className="h-3 w-3" /> Done
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => handleAction(job)}
+                            className={cn(
+                              "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-semibold transition-colors whitespace-nowrap",
+                              meta.actionCls,
+                            )}
+                          >
+                            {stage === "Receive" ? (
+                              <CheckCircle2 className="h-3 w-3" />
+                            ) : (
+                              <ChevronRight className="h-3 w-3" />
+                            )}
+                            {meta.actionLabel}
+                          </button>
+                        )}
                       </td>
                     </tr>
                   );
