@@ -6,8 +6,15 @@ import {
 import { cn } from "@/lib/utils";
 import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 import Pagination from "@/shared/components/Pagination";
+import ClientManagement from "./ClientManagement";
 
-/* ── MOCK DATA ── */
+type OuterTab = "sales" | "clients";
+
+const OUTER_TABS: { key: OuterTab; label: string }[] = [
+  { key: "sales",   label: "Sales"   },
+  { key: "clients", label: "Clients" },
+];
+
 type Sale = {
   id: string;
   billNo: string;
@@ -41,6 +48,7 @@ const totalRevenue = SALES.reduce((s, r) => s + r.totalAmount, 0);
 const totalPending = SALES.reduce((s, r) => s + (r.totalAmount - r.payment), 0);
 
 export default function SalesManagement() {
+  const [outerTab, setOuterTab] = useState<OuterTab>("sales");
   const [search, setSearch] = useState("");
   const [page,   setPage]   = useState(1);
 
@@ -59,145 +67,174 @@ export default function SalesManagement() {
     <div className="w-full flex flex-col h-full">
 
       {/* HEADER */}
-      <div className="px-8 pt-6 pb-5 border-b border-border shrink-0 flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <ShoppingCart className="h-5 w-5 text-muted-foreground" />
-            <h1 className="text-2xl font-semibold text-foreground tracking-tight">Sales Management</h1>
+      <div className="px-8 pt-6 pb-0 border-b border-border shrink-0">
+        <div className="flex items-center justify-between pb-5">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <ShoppingCart className="h-5 w-5 text-muted-foreground" />
+              <h1 className="text-2xl font-semibold text-foreground tracking-tight">Sales Management</h1>
+            </div>
+            <p className="text-sm text-muted-foreground max-w-xl">
+              Sell only Diamond Jewellery and Gold Jewellery from here. Pure Gold sales managed in Gold Management section.
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground max-w-xl">
-            Sell only Diamond Jewellery and Gold Jewellery from here. Pure Gold sales managed in Gold Management section.
-          </p>
+          {outerTab === "sales" && (
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search bills (name, amount, weight)"
+                  value={search}
+                  onChange={e => handleSearch(e.target.value)}
+                  className="h-9 pl-9 pr-4 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20 transition-colors w-64"
+                />
+              </div>
+              <button className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
+                <Plus className="h-3.5 w-3.5" />
+                New Sale
+              </button>
+            </div>
+          )}
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search bills (name, amount, weight)"
-              value={search}
-              onChange={e => handleSearch(e.target.value)}
-              className="h-9 pl-9 pr-4 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20 transition-colors w-64"
-            />
-          </div>
-          <button className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
-            <Plus className="h-3.5 w-3.5" />
-            New Sale
-          </button>
-        </div>
-      </div>
 
-      {/* BODY */}
-      <div className="flex-1 overflow-y-auto no-scrollbar p-8 space-y-5">
-
-        {/* SUMMARY METRICS */}
-        <div className="grid grid-cols-3 gap-4">
-          {[
-            { label:"Total Bills",   value: String(SALES.length),    sub:"All records"       },
-            { label:"Total Revenue", value: fmtINR(totalRevenue),    sub:"Gross sales value" },
-            { label:"Pending",       value: fmtINR(totalPending),    sub:"Unpaid amount"     },
-          ].map(({ label, value, sub }, i) => (
-            <AnimatedMetricCard key={label} label={label} value={value} sub={sub} index={i} />
+        {/* Outer tab bar */}
+        <div className="flex items-center gap-0 overflow-x-auto no-scrollbar">
+          {OUTER_TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setOuterTab(t.key)}
+              className={cn(
+                "px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
+                outerTab === t.key
+                  ? "border-foreground text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t.label}
+            </button>
           ))}
         </div>
+      </div>
 
-        {/* TABLE */}
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-            <span className="text-sm font-semibold text-foreground">Sales Records ({filtered.length})</span>
-            <span className="text-xs text-muted-foreground">Page {safePage} of {totalPages}</span>
+      {/* BODY — Sales tab */}
+      {outerTab === "sales" && (
+        <div className="flex-1 overflow-y-auto no-scrollbar p-8 space-y-5">
+
+          <div className="grid grid-cols-3 gap-4">
+            {[
+              { label:"Total Bills",   value: String(SALES.length),    sub:"All records"       },
+              { label:"Total Revenue", value: fmtINR(totalRevenue),    sub:"Gross sales value" },
+              { label:"Pending",       value: fmtINR(totalPending),    sub:"Unpaid amount"     },
+            ].map(({ label, value, sub }, i) => (
+              <AnimatedMetricCard key={label} label={label} value={value} sub={sub} index={i} />
+            ))}
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-muted/30">
-                  {["Bill Number", "Date", "Customer", "Total Amount", "Payment", "Actions"].map(h => (
-                    <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {paged.map(sale => {
-                  const pending = sale.totalAmount - sale.payment;
-                  return (
-                    <tr key={sale.id} className="hover:bg-muted/20 transition-colors">
-                      <td className="px-5 py-3.5">
-                        <span className="text-sm font-semibold text-foreground tabular-nums">{sale.billNo}</span>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">{sale.date}</span>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <span className="text-sm text-foreground font-medium">{sale.customer}</span>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <span className="text-sm font-semibold text-foreground tabular-nums">{fmtINR(sale.totalAmount)}</span>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <div>
-                          <span className={cn(
-                            "text-xs font-semibold tabular-nums",
-                            pending > 0 ? "text-red-500" : "text-emerald-600",
-                          )}>
-                            {fmtINR(sale.payment)}
-                          </span>
-                          {pending > 0 && (
-                            <p className="text-[10px] text-red-400 mt-0.5">Pending: {fmtINR(pending)}</p>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-1">
-                          {[
-                            { icon: FileText, title:"View Bill"    },
-                            { icon: Download, title:"Download"     },
-                            { icon: Edit,     title:"Edit"         },
-                            { icon: Share2,   title:"Share"        },
-                            { icon: Trash2,   title:"Delete", red:true },
-                          ].map(({ icon: Icon, title, red }) => (
-                            <button
-                              key={title}
-                              title={title}
-                              className={cn(
-                                "h-7 w-7 rounded flex items-center justify-center border border-border transition-colors",
-                                red
-                                  ? "text-red-400 hover:bg-red-50 hover:border-red-200"
-                                  : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
-                              )}
-                            >
-                              <Icon className="h-3.5 w-3.5" />
-                            </button>
-                          ))}
-                        </div>
+          <div className="bg-card border border-border rounded-xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+              <span className="text-sm font-semibold text-foreground">Sales Records ({filtered.length})</span>
+              <span className="text-xs text-muted-foreground">Page {safePage} of {totalPages}</span>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-muted/30">
+                    {["Bill Number", "Date", "Customer", "Total Amount", "Payment", "Actions"].map(h => (
+                      <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {paged.map(sale => {
+                    const pending = sale.totalAmount - sale.payment;
+                    return (
+                      <tr key={sale.id} className="hover:bg-muted/20 transition-colors">
+                        <td className="px-5 py-3.5">
+                          <span className="text-sm font-semibold text-foreground tabular-nums">{sale.billNo}</span>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">{sale.date}</span>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span className="text-sm text-foreground font-medium">{sale.customer}</span>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span className="text-sm font-semibold text-foreground tabular-nums">{fmtINR(sale.totalAmount)}</span>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <div>
+                            <span className={cn(
+                              "text-xs font-semibold tabular-nums",
+                              pending > 0 ? "text-red-500" : "text-emerald-600",
+                            )}>
+                              {fmtINR(sale.payment)}
+                            </span>
+                            {pending > 0 && (
+                              <p className="text-[10px] text-red-400 mt-0.5">Pending: {fmtINR(pending)}</p>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <div className="flex items-center gap-1">
+                            {[
+                              { icon: FileText, title:"View Bill"    },
+                              { icon: Download, title:"Download"     },
+                              { icon: Edit,     title:"Edit"         },
+                              { icon: Share2,   title:"Share"        },
+                              { icon: Trash2,   title:"Delete", red:true },
+                            ].map(({ icon: Icon, title, red }) => (
+                              <button
+                                key={title}
+                                title={title}
+                                className={cn(
+                                  "h-7 w-7 rounded flex items-center justify-center border border-border transition-colors",
+                                  red
+                                    ? "text-red-400 hover:bg-red-50 hover:border-red-200"
+                                    : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
+                                )}
+                              >
+                                <Icon className="h-3.5 w-3.5" />
+                              </button>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {paged.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-10 text-center text-sm text-muted-foreground">
+                        No sales records match the search.
                       </td>
                     </tr>
-                  );
-                })}
-                {paged.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-10 text-center text-sm text-muted-foreground">
-                      No sales records match the search.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <Pagination
+              page={safePage}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              totalItems={filtered.length}
+              pageSize={PAGE_SIZE}
+              itemLabel="records"
+            />
           </div>
 
-          <Pagination
-            page={safePage}
-            totalPages={totalPages}
-            onPageChange={setPage}
-            totalItems={filtered.length}
-            pageSize={PAGE_SIZE}
-            itemLabel="records"
-          />
         </div>
+      )}
 
-      </div>
+      {/* BODY — Clients tab */}
+      {outerTab === "clients" && (
+        <div className="flex-1 min-h-0">
+          <ClientManagement />
+        </div>
+      )}
     </div>
   );
 }

@@ -20,15 +20,14 @@ export default function Topbar() {
     location.startsWith("/ledger") ||
     location.startsWith("/finance") ||
     location.startsWith("/team") ||
-    location.startsWith("/ground-staff")
+    location.startsWith("/ground-staff") ||
+    location.startsWith("/accounts") ||
+    location.startsWith("/settings")
   ) {
     return null;
   }
 
   const getPageContext = () => {
-    if (location.startsWith("/ledger")) {
-      return { title: "Ledger", subtitle: "View complete ledger" };
-    }
     return { title: "Dashboard", subtitle: "Overview" };
   };
 

@@ -1,5 +1,7 @@
 import { useState, useMemo } from "react";
 import { Plus, Filter, Eye, Pencil, Trash2, Search, Printer, Diamond, ChevronDown } from "lucide-react";
+import KarigarReports from "./KarigarReports";
+import BulkManagement from "./BulkManagement";
 import SharedPagination from "@/shared/components/Pagination";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -778,7 +780,16 @@ const TABS: { key: MainTab; label: string; icon?: React.ReactNode }[] = [
   { key: "receive",  label: "Receive Jewellery" },
 ];
 
+type OuterKarigarTab = "workflow" | "reports" | "bulk";
+
+const OUTER_KARIGAR_TABS: { key: OuterKarigarTab; label: string }[] = [
+  { key: "workflow", label: "Workflow"        },
+  { key: "reports",  label: "Reports"         },
+  { key: "bulk",     label: "Bulk Management" },
+];
+
 export default function KarigarManagement() {
+  const [outerTab, setOuterTab]     = useState<OuterKarigarTab>("workflow");
   const [tab, setTab]               = useState<MainTab>("karigars");
   const [karigars, setKarigars]     = useState<Karigar[]>(mockKarigars);
   const [showAddKarigar, setShowAddKarigar] = useState(false);
@@ -805,15 +816,15 @@ export default function KarigarManagement() {
           </button>
         </div>
 
-        {/* Tab bar */}
+        {/* Outer tab bar */}
         <div className="flex items-center gap-0 overflow-x-auto no-scrollbar">
-          {TABS.map((t) => (
+          {OUTER_KARIGAR_TABS.map((t) => (
             <button
               key={t.key}
-              onClick={() => setTab(t.key)}
+              onClick={() => setOuterTab(t.key)}
               className={cn(
-                "flex items-center gap-1.5 px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
-                tab === t.key
+                "px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
+                outerTab === t.key
                   ? "border-foreground text-foreground"
                   : "border-transparent text-muted-foreground hover:text-foreground",
               )}
@@ -821,25 +832,58 @@ export default function KarigarManagement() {
               {t.label}
             </button>
           ))}
-          {/* Create Order as a tab action */}
-          <button
-            onClick={() => setShowCreateOrder(true)}
-            className="flex items-center gap-1.5 px-5 py-3 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap -mb-px"
-          >
-            <Plus className="h-3.5 w-3.5" /> Create Order
-          </button>
         </div>
+
+        {/* Inner tab bar — Workflow sub-tabs */}
+        {outerTab === "workflow" && (
+          <div className="flex items-center gap-0 overflow-x-auto no-scrollbar border-t border-border/40 bg-muted/20">
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key)}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
+                  tab === t.key
+                    ? "border-foreground text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {t.label}
+              </button>
+            ))}
+            <button
+              onClick={() => setShowCreateOrder(true)}
+              className="flex items-center gap-1.5 px-4 py-2.5 text-[13px] font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap -mb-px"
+            >
+              <Plus className="h-3.5 w-3.5" /> Create Order
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── Tab content ── */}
-      <div className="flex-1 overflow-y-auto no-scrollbar p-8">
-        {tab === "karigars" && <KarigarsTab karigars={karigars} onAddClick={() => setShowAddKarigar(true)} />}
-        {tab === "pending"  && <PendingOrdersTab orders={mockOrders} />}
-        {tab === "executed" && <ExecutedOrdersTab orders={mockOrders} />}
-        {tab === "diamonds" && <PendingDiamondsTab records={mockDiamondRecords} />}
-        {tab === "issue"    && <DiamondIssueTab />}
-        {tab === "receive"  && <ReceiveJewelleryTab karigars={karigars} />}
-      </div>
+      {outerTab === "workflow" && (
+        <div className="flex-1 overflow-y-auto no-scrollbar p-8">
+          {tab === "karigars" && <KarigarsTab karigars={karigars} onAddClick={() => setShowAddKarigar(true)} />}
+          {tab === "pending"  && <PendingOrdersTab orders={mockOrders} />}
+          {tab === "executed" && <ExecutedOrdersTab orders={mockOrders} />}
+          {tab === "diamonds" && <PendingDiamondsTab records={mockDiamondRecords} />}
+          {tab === "issue"    && <DiamondIssueTab />}
+          {tab === "receive"  && <ReceiveJewelleryTab karigars={karigars} />}
+        </div>
+      )}
+
+      {outerTab === "reports" && (
+        <div className="flex-1 min-h-0">
+          <KarigarReports />
+        </div>
+      )}
+
+      {outerTab === "bulk" && (
+        <div className="flex-1 min-h-0">
+          <BulkManagement />
+        </div>
+      )}
 
       <AddKarigarModal open={showAddKarigar} onClose={() => setShowAddKarigar(false)} onAdd={handleAddKarigar} />
       <CreateOrderModal open={showCreateOrder} onClose={() => setShowCreateOrder(false)} karigars={karigars} />

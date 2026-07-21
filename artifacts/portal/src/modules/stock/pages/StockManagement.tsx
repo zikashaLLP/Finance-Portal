@@ -18,6 +18,9 @@ import {
   GOLD_STOCK, DIAMOND_STOCK,
   type StockItem, type StockStatus, type StockSource,
 } from "../data/mockStock";
+import StockTallyReport from "./StockTallyReport";
+import StockSummary from "./StockSummary";
+import MaterialReport from "./MaterialReport";
 
 /* ═══════════════════════════════════════════════
    HELPERS
@@ -47,6 +50,15 @@ const SUB_TABS: { key: SubTab; label: string; count?: number; icon: React.Elemen
 ];
 
 type JewTab = "gold" | "diamond";
+
+type OuterStockTab = "stock" | "tally" | "summary" | "material";
+
+const OUTER_STOCK_TABS: { key: OuterStockTab; label: string }[] = [
+  { key: "stock",    label: "Stock"           },
+  { key: "tally",    label: "Tally Report"    },
+  { key: "summary",  label: "Summary"         },
+  { key: "material", label: "Material Report" },
+];
 
 /* ═══════════════════════════════════════════════
    ADD ITEM MODAL
@@ -337,6 +349,7 @@ function PlaceholderTab({ icon: Icon, label }: { icon: React.ElementType; label:
    MAIN PAGE
 ═══════════════════════════════════════════════ */
 export default function StockManagement() {
+  const [outerTab, setOuterTab]         = useState<OuterStockTab>("stock");
   const [goldStock, setGoldStock]       = useState<StockItem[]>(GOLD_STOCK);
   const [diamondStock, setDiamondStock] = useState<StockItem[]>(DIAMOND_STOCK);
 
@@ -391,22 +404,42 @@ export default function StockManagement() {
     <div className="w-full flex flex-col h-full">
 
       {/* ── HEADER ── */}
-      <div className="px-8 pt-6 pb-5 border-b border-border shrink-0">
-        <div className="flex items-start justify-between gap-6 flex-wrap">
+      <div className="px-8 pt-6 pb-0 border-b border-border shrink-0">
+        <div className="flex items-start justify-between gap-6 flex-wrap pb-5">
           <div>
             <h1 className="text-2xl font-semibold text-foreground tracking-tight mb-0.5">Stock Management</h1>
             <p className="text-sm text-muted-foreground">View and manage Gold Jewellery and Diamond Jewellery stock items</p>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <button className={btnOutline}><Download className="h-3.5 w-3.5" /> Download Template</button>
-            <button className={btnOutline}><Upload className="h-3.5 w-3.5" /> Import Excel</button>
-            <button className={btnOutline}><FileSpreadsheet className="h-3.5 w-3.5" /> Export Excel</button>
-            <button className={btnOutline}><Link2 className="h-3.5 w-3.5" /> Image URL Generator</button>
-          </div>
+          {outerTab === "stock" && (
+            <div className="flex items-center gap-2 flex-wrap">
+              <button className={btnOutline}><Download className="h-3.5 w-3.5" /> Download Template</button>
+              <button className={btnOutline}><Upload className="h-3.5 w-3.5" /> Import Excel</button>
+              <button className={btnOutline}><FileSpreadsheet className="h-3.5 w-3.5" /> Export Excel</button>
+              <button className={btnOutline}><Link2 className="h-3.5 w-3.5" /> Image URL Generator</button>
+            </div>
+          )}
+        </div>
+
+        {/* Outer tab bar */}
+        <div className="flex items-center gap-0 overflow-x-auto no-scrollbar">
+          {OUTER_STOCK_TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setOuterTab(t.key)}
+              className={cn(
+                "px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
+                outerTab === t.key
+                  ? "border-foreground text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* ── SCROLLABLE BODY ── */}
+      {outerTab === "stock" && (
       <div className="flex-1 overflow-y-auto no-scrollbar">
 
         <div className="p-8 space-y-5">
@@ -621,6 +654,17 @@ export default function StockManagement() {
 
         </div>
       </div>
+      )}
+
+      {outerTab === "tally" && (
+        <div className="flex-1 min-h-0"><StockTallyReport /></div>
+      )}
+      {outerTab === "summary" && (
+        <div className="flex-1 min-h-0"><StockSummary /></div>
+      )}
+      {outerTab === "material" && (
+        <div className="flex-1 min-h-0"><MaterialReport /></div>
+      )}
 
       {/* ── MODALS ── */}
       <AddItemModal

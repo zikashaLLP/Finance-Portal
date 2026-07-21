@@ -1,8 +1,17 @@
 import { useState } from "react";
 import { Gem, RefreshCw, Plus, Edit, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import DiamondOrders from "./DiamondOrders";
+import DiamondReturnWorkflow from "./DiamondReturnWorkflow";
 
-/* ── DATA ── */
+type OuterTab = "tracking" | "orders" | "returns";
+
+const OUTER_TABS: { key: OuterTab; label: string }[] = [
+  { key: "tracking", label: "Quality Tracking" },
+  { key: "orders",   label: "Orders"           },
+  { key: "returns",  label: "Returns"          },
+];
+
 type PurchaseRow = { date: string; weight: number; price: number };
 type IssueRow    = { date: string; weight: number; issuedTo: string; comment: string };
 
@@ -77,7 +86,6 @@ const QUALITIES: Quality[] = [
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(n);
 
-/* ── PURCHASE TABLE ── */
 function PurchaseTable({ purchases }: { purchases: PurchaseRow[] }) {
   const total = purchases.reduce((s, r) => s + r.weight, 0);
   return (
@@ -134,7 +142,6 @@ function PurchaseTable({ purchases }: { purchases: PurchaseRow[] }) {
   );
 }
 
-/* ── ISSUE TABLE ── */
 function IssueTable({ issues }: { issues: IssueRow[] }) {
   const total = issues.reduce((s, r) => s + r.weight, 0);
   return (
@@ -184,13 +191,11 @@ function IssueTable({ issues }: { issues: IssueRow[] }) {
   );
 }
 
-/* ── QUALITY PANEL (sub-tabs: Purchase / Issue) ── */
 function QualityPanel({ q }: { q: Quality }) {
   const [subTab, setSubTab] = useState<"purchase" | "issue">("purchase");
 
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden">
-      {/* Sub-tab bar */}
       <div className="px-6 py-3.5 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-1 bg-muted/30 rounded-lg p-1">
           <button
@@ -228,7 +233,6 @@ function QualityPanel({ q }: { q: Quality }) {
         </div>
       </div>
 
-      {/* Full-width table */}
       {subTab === "purchase"
         ? <PurchaseTable purchases={q.purchases} />
         : <IssueTable issues={q.issues} />
@@ -237,8 +241,8 @@ function QualityPanel({ q }: { q: Quality }) {
   );
 }
 
-/* ── MAIN ── */
 export default function DiamondQualityTracking() {
+  const [outerTab, setOuterTab] = useState<OuterTab>("tracking");
   const [activeId, setActiveId] = useState(QUALITIES[0].id);
   const totalStock = QUALITIES.reduce((s, q) => s + q.stock, 0);
   const activeQuality = QUALITIES.find(q => q.id === activeId)!;
@@ -246,48 +250,64 @@ export default function DiamondQualityTracking() {
   return (
     <div className="w-full flex flex-col h-full">
 
-      {/* ── Page header ── */}
+      {/* HEADER */}
       <div className="px-8 pt-6 pb-0 border-b border-border shrink-0">
         {/* Title row */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between pb-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Gem className="h-5 w-5 text-muted-foreground" />
               <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-                Loose Diamonds Quality Tracking
+                Diamond Quality
               </h1>
             </div>
             <p className="text-sm text-muted-foreground">
               Track diamond purchases, issues &amp; sales by quality. Solitaires are tracked as single pieces.
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0 mt-0.5">
-            <div className="px-4 py-1.5 rounded-lg border border-border bg-card text-xs font-semibold text-muted-foreground">
-              Total Stock:{" "}
-              <span className="text-foreground">{totalStock.toFixed(3)} ct</span>
+          {outerTab === "tracking" && (
+            <div className="flex items-center gap-2 shrink-0 mt-0.5">
+              <div className="px-4 py-1.5 rounded-lg border border-border bg-card text-xs font-semibold text-muted-foreground">
+                Total Stock:{" "}
+                <span className="text-foreground">{totalStock.toFixed(3)} ct</span>
+              </div>
+              <button className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-sidebar-accent transition-colors">
+                <RefreshCw className="h-3.5 w-3.5" />
+                Sync to Ledger
+              </button>
+              <button className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
+                <Plus className="h-3.5 w-3.5" />
+                Add Transaction
+              </button>
             </div>
-            <button className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-sidebar-accent transition-colors">
-              <RefreshCw className="h-3.5 w-3.5" />
-              Sync to Ledger
-            </button>
-            <button className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
-              <Plus className="h-3.5 w-3.5" />
-              Add Transaction
-            </button>
-          </div>
+          )}
         </div>
 
-        {/* Quality tab bar */}
-        <div className="flex items-center gap-0.5 -mx-8 px-8 overflow-x-auto no-scrollbar">
-          {QUALITIES.map(q => (
+        {/* Outer tab bar */}
+        <div className="flex items-center gap-0 overflow-x-auto no-scrollbar">
+          {OUTER_TABS.map(t => (
+            <button
+              key={t.key}
+              onClick={() => setOuterTab(t.key)}
+              className={cn(
+                "px-5 py-3 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
+                outerTab === t.key
+                  ? "border-foreground text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+          {outerTab === "tracking" && QUALITIES.map(q => (
             <button
               key={q.id}
               onClick={() => setActiveId(q.id)}
               className={cn(
-                "relative shrink-0 px-5 py-3 text-sm font-medium transition-colors whitespace-nowrap",
+                "relative shrink-0 px-5 py-3 text-sm font-medium transition-colors whitespace-nowrap border-b-2 -mb-px",
                 activeId === q.id
-                  ? "text-foreground after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-foreground after:rounded-t"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "border-foreground text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
               )}
             >
               {q.name}
@@ -304,10 +324,26 @@ export default function DiamondQualityTracking() {
         </div>
       </div>
 
-      {/* ── Quality panel ── */}
-      <div className="flex-1 overflow-y-auto no-scrollbar p-8">
-        <QualityPanel key={activeId} q={activeQuality} />
-      </div>
+      {/* BODY — Quality Tracking */}
+      {outerTab === "tracking" && (
+        <div className="flex-1 overflow-y-auto no-scrollbar p-8">
+          <QualityPanel key={activeId} q={activeQuality} />
+        </div>
+      )}
+
+      {/* BODY — Orders */}
+      {outerTab === "orders" && (
+        <div className="flex-1 min-h-0">
+          <DiamondOrders />
+        </div>
+      )}
+
+      {/* BODY — Returns */}
+      {outerTab === "returns" && (
+        <div className="flex-1 min-h-0">
+          <DiamondReturnWorkflow />
+        </div>
+      )}
     </div>
   );
 }
