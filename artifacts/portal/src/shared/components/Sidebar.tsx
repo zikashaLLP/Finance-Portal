@@ -32,8 +32,6 @@ type NavItem = { name: string; icon: React.ElementType; path: string };
 type SettingsSubItem = { name: string; icon: React.ElementType; path: string };
 
 const SETTINGS_SUB_ITEMS: SettingsSubItem[] = [
-  { name: "Client Management",  icon: Users,     path: "/settings/clients"  },
-  { name: "Vendor Management",  icon: Truck,     path: "/settings/vendors"  },
   { name: "Branch Management",  icon: Building2, path: "/settings/branches" },
   { name: "Karigar",            icon: Hammer,    path: "/settings/karigar"  },
   { name: "General",            icon: Tag,       path: "/settings/general"  },
@@ -51,6 +49,8 @@ const NAV_ITEMS: NavItem[] = [
   { name: "Karigar",             icon: Hammer,          path: "/karigar"   },
   { name: "Reports",             icon: BarChart2,       path: "/reports"   },
   { name: "Accounts",            icon: Wallet,          path: "/accounts"  },
+  { name: "Client Management",   icon: Users,           path: "/settings/clients"  },
+  { name: "Vendor Management",   icon: Truck,           path: "/settings/vendors"  },
 ];
 
 interface SidebarProps {
