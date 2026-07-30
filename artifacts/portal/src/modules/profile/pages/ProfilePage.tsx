@@ -185,10 +185,10 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-white">
 
       {/* ── tab bar only ── */}
-      <div className="bg-background border-b border-border px-6 shrink-0">
+      <div className="bg-white border-b border-border px-6 shrink-0">
         <div className="flex items-end gap-0 overflow-x-auto no-scrollbar">
           {TABS.map((t) => (
             <button
@@ -208,7 +208,7 @@ export default function ProfilePage() {
       </div>
 
       {/* ── centered content ── */}
-      <div className="flex-1 overflow-y-auto flex items-center justify-center p-6">
+      <div className="flex-1 overflow-y-auto flex items-center justify-center p-6 bg-white">
 
         {/* ── Profile Details ── */}
         {tab === "details" && (
