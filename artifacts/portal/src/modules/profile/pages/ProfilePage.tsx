@@ -185,7 +185,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="h-full bg-muted/30 flex flex-col">
+    <div className="h-full flex flex-col">
 
       {/* ── tab bar only ── */}
       <div className="bg-background border-b border-border px-6 shrink-0">
