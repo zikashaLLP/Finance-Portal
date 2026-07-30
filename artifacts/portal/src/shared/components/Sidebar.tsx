@@ -61,11 +61,24 @@ interface SidebarProps {
 export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
   const [location]  = useLocation();
   const [isHovered, setIsHovered] = useState(false);
+  const [forceCollapsed, setForceCollapsed] = useState(false);
 
   const isInSettings = location.startsWith("/settings");
   const [settingsOpen, setSettingsOpen] = useState(isInSettings);
 
-  const isExpanded = isPinned || isHovered;
+  const isExpanded = !forceCollapsed && (isPinned || isHovered);
+
+  function handleToggle() {
+    if (isExpanded) {
+      // collapse and lock — disable hover expansion
+      setForceCollapsed(true);
+      onPinnedChange(false);
+    } else {
+      // expand and pin
+      setForceCollapsed(false);
+      onPinnedChange(true);
+    }
+  }
 
   const navScrollRef   = useRef<HTMLDivElement>(null);
   const savedScrollRef = useRef(0);
@@ -107,16 +120,16 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         </div>
 
         <button
-          onClick={() => onPinnedChange(!isPinned)}
+          onClick={handleToggle}
           className={cn(
             "shrink-0 h-6 w-6 flex items-center justify-center rounded-md",
             "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50",
             "transition-all duration-200",
-            isExpanded ? "opacity-100 ml-1" : "opacity-0 pointer-events-none",
+            !isExpanded && "ml-auto",
           )}
-          title={isPinned ? "Collapse sidebar" : "Pin sidebar open"}
+          title={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
         >
-          {isPinned
+          {isExpanded
             ? <PanelLeftClose className="h-3.5 w-3.5" />
             : <PanelLeftOpen  className="h-3.5 w-3.5" />
           }
