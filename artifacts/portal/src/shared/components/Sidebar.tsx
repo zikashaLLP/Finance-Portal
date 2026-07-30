@@ -214,23 +214,28 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
 
       {/* Footer */}
       <div className="pb-2 shrink-0 border-t border-border pt-2 px-2 space-y-0.5">
-        {/* User row */}
-        <div className={cn(
-          "flex items-center px-3 py-2 rounded-lg hover:bg-sidebar-accent/50 transition-colors cursor-pointer",
-          isExpanded ? "justify-start" : "justify-center",
-        )}>
-          <Avatar className="h-7 w-7 bg-blue-100 text-blue-700 shrink-0">
-            <AvatarFallback className="bg-transparent text-[10px] font-semibold">AU</AvatarFallback>
-          </Avatar>
+        {/* User row — navigates to /profile */}
+        <Link href="/profile" className="block w-full">
           <div className={cn(
-            "flex flex-col overflow-hidden transition-all duration-300",
-            isExpanded ? "opacity-100 max-w-[120px] ml-3" : "opacity-0 max-w-0 ml-0",
+            "flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer",
+            location.startsWith("/profile")
+              ? "bg-sidebar-accent text-sidebar-accent-foreground"
+              : "hover:bg-sidebar-accent/50",
+            isExpanded ? "justify-start" : "justify-center",
           )}>
-            <span className="text-sm font-medium text-foreground leading-none mb-1 whitespace-nowrap">Admin User</span>
-            <span className="text-[11px] text-muted-foreground leading-none whitespace-nowrap">admin@portal.com</span>
+            <Avatar className="h-7 w-7 bg-blue-100 text-blue-700 shrink-0">
+              <AvatarFallback className="bg-transparent text-[10px] font-semibold">AU</AvatarFallback>
+            </Avatar>
+            <div className={cn(
+              "flex flex-col overflow-hidden transition-all duration-300",
+              isExpanded ? "opacity-100 max-w-[120px] ml-3" : "opacity-0 max-w-0 ml-0",
+            )}>
+              <span className="text-sm font-medium text-foreground leading-none mb-1 whitespace-nowrap">Admin User</span>
+              <span className="text-[11px] text-muted-foreground leading-none whitespace-nowrap">admin@portal.com</span>
+            </div>
+            {isExpanded && <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0" />}
           </div>
-          {isExpanded && <ChevronRight className="h-4 w-4 text-muted-foreground ml-auto shrink-0" />}
-        </div>
+        </Link>
 
         {/* Logout row */}
         <button

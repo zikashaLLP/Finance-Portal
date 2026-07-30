@@ -13,6 +13,7 @@ import DiamondQualityTracking from "../../modules/diamond/pages/DiamondQualityTr
 import ComingSoon from "../../pages/ComingSoon";
 import Accounts from "../../modules/accounts/pages/Accounts";
 
+import ProfilePage from "../../modules/profile/pages/ProfilePage";
 import BranchesPage from "../../modules/settings/pages/BranchesPage";
 import ClientsPage from "../../modules/settings/pages/ClientsPage";
 import VendorsPage from "../../modules/settings/pages/VendorsPage";
@@ -95,6 +96,12 @@ export default function AppRouter() {
         </Route>
 
         {/* Settings sub-routes */}
+        <Route path="/profile">
+          <MainLayout>
+            <ProfilePage />
+          </MainLayout>
+        </Route>
+
         <Route path="/settings">
           <Redirect to="/settings/branches" />
         </Route>
