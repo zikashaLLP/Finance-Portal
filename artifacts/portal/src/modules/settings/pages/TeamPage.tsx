@@ -92,16 +92,6 @@ export default function TeamPage() {
   return (
     <div className="min-h-screen bg-muted/30">
       <div className="bg-background border-b border-border px-6 py-5">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="h-10 w-10 rounded-xl bg-purple-600 flex items-center justify-center shrink-0">
-            <UserCog className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight leading-tight">Team Management</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Manage roles, permissions, and user accounts</p>
-          </div>
-        </div>
-
         {/* Sub-tabs */}
         <div className="flex items-end gap-0 overflow-x-auto no-scrollbar">
           {TEAM_SUB_TABS.map((t) => (

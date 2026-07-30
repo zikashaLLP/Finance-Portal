@@ -50,17 +50,6 @@ export default function KarigarPage() {
 
   return (
     <div className="min-h-screen bg-muted/30">
-      <div className="bg-background border-b border-border px-6 py-5">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-amber-600 flex items-center justify-center shrink-0">
-            <Hammer className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight leading-tight">Karigar Profiles</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Manage karigar artisan profiles and labour types</p>
-          </div>
-        </div>
-      </div>
       <div className="px-6 py-6">
         <SettingsTable
           data={data}
