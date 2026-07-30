@@ -32,9 +32,9 @@ type NavItem = { name: string; icon: React.ElementType; path: string };
 type SettingsSubItem = { name: string; icon: React.ElementType; path: string };
 
 const SETTINGS_SUB_ITEMS: SettingsSubItem[] = [
-  { name: "Branch Management",  icon: Building2, path: "/settings/branches" },
   { name: "Client Management",  icon: Users,     path: "/settings/clients"  },
   { name: "Vendor Management",  icon: Truck,     path: "/settings/vendors"  },
+  { name: "Branch Management",  icon: Building2, path: "/settings/branches" },
   { name: "Karigar",            icon: Hammer,    path: "/settings/karigar"  },
   { name: "General",            icon: Tag,       path: "/settings/general"  },
   { name: "Team Management",    icon: UserCog,   path: "/settings/team"     },
