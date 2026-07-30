@@ -1,49 +1,58 @@
 import { Bell } from "lucide-react";
 import { useLocation } from "wouter";
 
+const ROUTE_META: { match: (p: string) => boolean; title: string; subtitle: string }[] = [
+  { match: (p) => p.startsWith("/dashboard"),         title: "Dashboard",          subtitle: "Overview"                        },
+  { match: (p) => p.startsWith("/gold"),              title: "Gold Management",    subtitle: "Gold inventory & purity"         },
+  { match: (p) => p.startsWith("/silver"),            title: "Silver Management",  subtitle: "Silver stock & transactions"     },
+  { match: (p) => p.startsWith("/diamond"),           title: "Diamond Management", subtitle: "Quality tracking & orders"       },
+  { match: (p) => p.startsWith("/stock"),             title: "Stock Management",   subtitle: "Inventory & stock levels"        },
+  { match: (p) => p.startsWith("/purchase"),          title: "Purchase",           subtitle: "Purchase orders & suppliers"     },
+  { match: (p) => p.startsWith("/sales"),             title: "Sales",              subtitle: "Sales orders & clients"          },
+  { match: (p) => p.startsWith("/karigar"),           title: "Karigar",            subtitle: "Karigar work & assignments"      },
+  { match: (p) => p.startsWith("/reports"),           title: "Reports",            subtitle: "Business analytics & reports"    },
+  { match: (p) => p.startsWith("/accounts"),          title: "Accounts",           subtitle: "Accounting & ledger"             },
+  { match: (p) => p.startsWith("/transactions"),      title: "Transactions",       subtitle: "Payment records"                 },
+  { match: (p) => p.startsWith("/profile"),           title: "My Profile",         subtitle: "Account details & settings"      },
+  { match: (p) => p.startsWith("/settings/clients"),  title: "Client Management",  subtitle: "Manage client accounts"          },
+  { match: (p) => p.startsWith("/settings/vendors"),  title: "Vendor Management",  subtitle: "Manage vendor accounts"          },
+  { match: (p) => p.startsWith("/settings/branches"), title: "Branch Management",  subtitle: "Manage store branches"           },
+  { match: (p) => p.startsWith("/settings/karigar"),  title: "Karigar Settings",   subtitle: "Karigar types & rates"           },
+  { match: (p) => p.startsWith("/settings/general"),  title: "General Settings",   subtitle: "App preferences & configuration" },
+  { match: (p) => p.startsWith("/settings/team"),     title: "Team Management",    subtitle: "Roles, users & permissions"      },
+  { match: (p) => p.startsWith("/settings"),          title: "Settings",           subtitle: "App configuration"               },
+  { match: (p) => p.startsWith("/finance"),           title: "Finance Planning",   subtitle: "Financial overview"              },
+  { match: (p) => p.startsWith("/ledger"),            title: "Ledger",             subtitle: "Balance & entries"               },
+  { match: (p) => p.startsWith("/approvals"),         title: "Approvals",          subtitle: "Pending approvals"               },
+  { match: (p) => p.startsWith("/ground-staff"),      title: "Ground Staff",       subtitle: "Staff tracking"                  },
+];
+
+function getPageMeta(location: string) {
+  const match = ROUTE_META.find((r) => r.match(location));
+  return match ?? { title: "Portal", subtitle: "Jewellery Management System" };
+}
+
 export default function Topbar() {
   const [location] = useLocation();
-
-  if (
-    location.startsWith("/transactions") ||
-    location.startsWith("/gold") ||
-    location.startsWith("/silver") ||
-    location.startsWith("/karigar") ||
-    location.startsWith("/stock") ||
-    location.startsWith("/dashboard") ||
-    location.startsWith("/reports") ||
-    location.startsWith("/approvals") ||
-    location.startsWith("/harvest") ||
-    location.startsWith("/sales") ||
-    location.startsWith("/purchase") ||
-    location.startsWith("/diamond") ||
-    location.startsWith("/ledger") ||
-    location.startsWith("/finance") ||
-    location.startsWith("/team") ||
-    location.startsWith("/ground-staff") ||
-    location.startsWith("/accounts") ||
-    location.startsWith("/settings")
-  ) {
-    return null;
-  }
-
-  const getPageContext = () => {
-    return { title: "Dashboard", subtitle: "Overview" };
-  };
-
-  const { title, subtitle } = getPageContext();
+  const { title, subtitle } = getPageMeta(location);
 
   return (
-    <header className="h-20 bg-transparent border-b border-border flex items-center justify-between px-8 shrink-0" data-testid="topbar">
+    <header
+      className="h-16 bg-transparent border-b border-border flex items-center justify-between px-6 shrink-0"
+      data-testid="topbar"
+    >
       <div>
-        <h1 className="text-2xl font-semibold text-foreground tracking-tight mb-0.5">{title}</h1>
-        <p className="text-muted-foreground text-sm">{subtitle}</p>
+        <h1 className="text-xl font-semibold text-foreground tracking-tight leading-tight">{title}</h1>
+        <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
       </div>
 
-      <div className="flex items-center gap-4">
-        <button className="relative h-9 w-9 flex items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors shadow-sm" data-testid="btn-notifications">
-          <Bell className="h-4 w-4" />
-          <span className="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
+      <div className="flex items-center gap-3">
+        <button
+          className="relative h-8 w-8 flex items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors shadow-sm"
+          data-testid="btn-notifications"
+        >
+          <Bell className="h-3.5 w-3.5" />
+          <span className="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
         </button>
       </div>
     </header>
