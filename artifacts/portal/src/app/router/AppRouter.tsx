@@ -11,8 +11,14 @@ import SalesManagement from "../../modules/sales/pages/SalesManagement";
 import PurchaseManagement from "../../modules/purchase/pages/PurchaseManagement";
 import DiamondQualityTracking from "../../modules/diamond/pages/DiamondQualityTracking";
 import ComingSoon from "../../pages/ComingSoon";
-import SettingsPage from "../../modules/settings/pages/SettingsPage";
 import Accounts from "../../modules/accounts/pages/Accounts";
+
+import BranchesPage from "../../modules/settings/pages/BranchesPage";
+import ClientsPage from "../../modules/settings/pages/ClientsPage";
+import VendorsPage from "../../modules/settings/pages/VendorsPage";
+import KarigarPage from "../../modules/settings/pages/KarigarPage";
+import GeneralPage from "../../modules/settings/pages/GeneralPage";
+import TeamPage from "../../modules/settings/pages/TeamPage";
 
 export default function AppRouter() {
   return (
@@ -88,9 +94,44 @@ export default function AppRouter() {
           </MainLayout>
         </Route>
 
+        {/* Settings sub-routes */}
         <Route path="/settings">
+          <Redirect to="/settings/branches" />
+        </Route>
+
+        <Route path="/settings/branches">
           <MainLayout>
-            <SettingsPage />
+            <BranchesPage />
+          </MainLayout>
+        </Route>
+
+        <Route path="/settings/clients">
+          <MainLayout>
+            <ClientsPage />
+          </MainLayout>
+        </Route>
+
+        <Route path="/settings/vendors">
+          <MainLayout>
+            <VendorsPage />
+          </MainLayout>
+        </Route>
+
+        <Route path="/settings/karigar">
+          <MainLayout>
+            <KarigarPage />
+          </MainLayout>
+        </Route>
+
+        <Route path="/settings/general">
+          <MainLayout>
+            <GeneralPage />
+          </MainLayout>
+        </Route>
+
+        <Route path="/settings/team">
+          <MainLayout>
+            <TeamPage />
           </MainLayout>
         </Route>
 

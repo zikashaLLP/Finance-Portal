@@ -10,6 +10,7 @@ import {
   Medal,
   Hexagon,
   ChevronRight,
+  ChevronDown,
   LogOut,
   Settings,
   PanelLeftClose,
@@ -17,24 +18,39 @@ import {
   BarChart2,
   LayoutDashboard,
   Wallet,
+  Building2,
+  Users,
+  Truck,
+  Tag,
+  UserCog,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 type NavItem = { name: string; icon: React.ElementType; path: string };
 
+type SettingsSubItem = { name: string; icon: React.ElementType; path: string };
+
+const SETTINGS_SUB_ITEMS: SettingsSubItem[] = [
+  { name: "Branch Management",  icon: Building2, path: "/settings/branches" },
+  { name: "Client Management",  icon: Users,     path: "/settings/clients"  },
+  { name: "Vendor Management",  icon: Truck,     path: "/settings/vendors"  },
+  { name: "Karigar",            icon: Hammer,    path: "/settings/karigar"  },
+  { name: "General",            icon: Tag,       path: "/settings/general"  },
+  { name: "Team Management",    icon: UserCog,   path: "/settings/team"     },
+];
+
 const NAV_ITEMS: NavItem[] = [
-  { name: "Dashboard",        icon: LayoutDashboard, path: "/dashboard"  },
-  { name: "Gold Management",  icon: Gem,             path: "/gold"       },
-  { name: "Silver Management",icon: Medal,           path: "/silver"     },
-  { name: "Diamond Management",  icon: Diamond,         path: "/diamond"    },
-  { name: "Stock Management", icon: Package,         path: "/stock"      },
-  { name: "Purchase",         icon: ShoppingBag,     path: "/purchase"   },
-  { name: "Sales",            icon: ShoppingCart,    path: "/sales"      },
-  { name: "Karigar",          icon: Hammer,          path: "/karigar"    },
-  { name: "Reports",          icon: BarChart2,       path: "/reports"    },
-  { name: "Accounts",         icon: Wallet,          path: "/accounts"   },
-  { name: "Settings",         icon: Settings,        path: "/settings"   },
+  { name: "Dashboard",           icon: LayoutDashboard, path: "/dashboard" },
+  { name: "Gold Management",     icon: Gem,             path: "/gold"      },
+  { name: "Silver Management",   icon: Medal,           path: "/silver"    },
+  { name: "Diamond Management",  icon: Diamond,         path: "/diamond"   },
+  { name: "Stock Management",    icon: Package,         path: "/stock"     },
+  { name: "Purchase",            icon: ShoppingBag,     path: "/purchase"  },
+  { name: "Sales",               icon: ShoppingCart,    path: "/sales"     },
+  { name: "Karigar",             icon: Hammer,          path: "/karigar"   },
+  { name: "Reports",             icon: BarChart2,       path: "/reports"   },
+  { name: "Accounts",            icon: Wallet,          path: "/accounts"  },
 ];
 
 interface SidebarProps {
@@ -45,6 +61,9 @@ interface SidebarProps {
 export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
   const [location]  = useLocation();
   const [isHovered, setIsHovered] = useState(false);
+
+  const isInSettings = location.startsWith("/settings");
+  const [settingsOpen, setSettingsOpen] = useState(isInSettings);
 
   const isExpanded = isPinned || isHovered;
 
@@ -137,6 +156,59 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
               </Link>
             );
           })}
+
+          {/* Settings expandable group */}
+          <div>
+            {/* Settings group header */}
+            <button
+              onClick={() => setSettingsOpen((v) => !v)}
+              data-testid="nav-settings"
+              className={cn(
+                "w-full flex items-center px-3 py-2 rounded-lg transition-colors",
+                isExpanded ? "justify-start" : "justify-center",
+                isInSettings
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
+              )}
+            >
+              <Settings className={cn("h-4 w-4 shrink-0", isInSettings && "stroke-[2.5px]")} />
+              <span className={labelCls}>Settings</span>
+              {isExpanded && (
+                <span className="ml-auto shrink-0">
+                  {settingsOpen
+                    ? <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                    : <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                  }
+                </span>
+              )}
+            </button>
+
+            {/* Sub-items */}
+            {settingsOpen && isExpanded && (
+              <div className="mt-0.5 space-y-0.5 pl-3">
+                {SETTINGS_SUB_ITEMS.map((sub) => {
+                  const isSubActive = location === sub.path || location.startsWith(sub.path + "/");
+                  const SubIcon = sub.icon;
+                  return (
+                    <Link key={sub.path} href={sub.path} className="block w-full">
+                      <div
+                        data-testid={`nav-${sub.name.toLowerCase().replace(/\s+/g, "-")}`}
+                        className={cn(
+                          "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors text-[13px]",
+                          isSubActive
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                            : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
+                        )}
+                      >
+                        <SubIcon className={cn("h-3.5 w-3.5 shrink-0", isSubActive && "stroke-[2.5px]")} />
+                        <span className="whitespace-nowrap overflow-hidden">{sub.name}</span>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </nav>
       </div>
 
