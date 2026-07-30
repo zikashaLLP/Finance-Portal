@@ -92,7 +92,7 @@ export default function GeneralPage() {
   const [sub, setSub] = useState<GeneralSubTab>("categories");
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="w-full">
       <div className="bg-background border-b border-border px-6 py-5">
         {/* Sub-tabs */}
         <div className="flex items-end gap-0 overflow-x-auto no-scrollbar">

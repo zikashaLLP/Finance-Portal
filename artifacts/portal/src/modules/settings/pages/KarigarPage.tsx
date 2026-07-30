@@ -49,7 +49,7 @@ export default function KarigarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="w-full">
       <div className="px-6 py-6">
         <SettingsTable
           data={data}
