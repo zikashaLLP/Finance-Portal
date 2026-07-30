@@ -1,4 +1,5 @@
 import { useState } from "react";
+import NotificationBell from "@/shared/components/NotificationBell";
 import {
   BarChart2, TrendingUp, Truck, Users, Hammer,
   Package, Gem, ArrowLeftRight, BookOpen, FileText,
@@ -295,12 +296,15 @@ export default function Reports() {
     <div className="w-full flex flex-col h-full">
       {/* Header */}
       <div className="px-8 pt-6 pb-0 border-b border-border shrink-0">
-        <div className="mb-5">
-          <div className="flex items-center gap-2 mb-1">
-            <BarChart2 className="h-5 w-5 text-muted-foreground" />
-            <h1 className="text-2xl font-semibold text-foreground tracking-tight">Reports</h1>
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <BarChart2 className="h-5 w-5 text-muted-foreground" />
+              <h1 className="text-2xl font-semibold text-foreground tracking-tight">Reports</h1>
+            </div>
+            <p className="text-sm text-muted-foreground">Generate comprehensive business reports with one click</p>
           </div>
-          <p className="text-sm text-muted-foreground">Generate comprehensive business reports with one click</p>
+          <NotificationBell />
         </div>
 
         {/* Tab bar */}

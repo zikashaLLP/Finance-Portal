@@ -1,5 +1,5 @@
-import { Bell } from "lucide-react";
 import { useLocation } from "wouter";
+import NotificationBell from "./NotificationBell";
 
 const ROUTE_META: { match: (p: string) => boolean; title: string; subtitle: string }[] = [
   { match: (p) => p.startsWith("/dashboard"),         title: "Dashboard",          subtitle: "Overview"                        },
@@ -47,13 +47,7 @@ export default function Topbar() {
       </div>
 
       <div className="flex items-center gap-3">
-        <button
-          className="relative h-8 w-8 flex items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors shadow-sm"
-          data-testid="btn-notifications"
-        >
-          <Bell className="h-3.5 w-3.5" />
-          <span className="absolute top-1.5 right-1.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
-        </button>
+        <NotificationBell />
       </div>
     </header>
   );

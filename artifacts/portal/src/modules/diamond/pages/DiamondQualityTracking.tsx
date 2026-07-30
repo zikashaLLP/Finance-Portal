@@ -1,4 +1,5 @@
 import { useState } from "react";
+import NotificationBell from "@/shared/components/NotificationBell";
 import { Gem, RefreshCw, Plus, Edit, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import DiamondOrders from "./DiamondOrders";
@@ -265,6 +266,7 @@ export default function DiamondQualityTracking() {
           </div>
           {outerTab === "tracking" && (
             <div className="flex items-center gap-2 shrink-0 mt-0.5">
+              <NotificationBell />
               <div className="px-4 py-1.5 rounded-lg border border-border bg-card text-xs font-semibold text-muted-foreground">
                 Total Stock:{" "}
                 <span className="text-foreground">{totalStock.toFixed(3)} ct</span>

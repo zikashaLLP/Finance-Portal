@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Medal } from "lucide-react";
+import NotificationBell from "@/shared/components/NotificationBell";
 import PurchaseSaleTab from "../components/PurchaseSaleTab";
 import StockSummaryTab from "../components/StockSummaryTab";
 
@@ -27,31 +28,32 @@ export default function SilverManagement() {
           </div>
         </div>
 
-        {/* Tabs — segmented control */}
-        <div className="flex items-center gap-1 bg-zinc-200 rounded-xl p-1">
-          <button
-            onClick={() => setTab("purchase-sale")}
-            className={`px-5 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-              tab === "purchase-sale"
-                ? "bg-white text-foreground shadow-sm"
-                : "text-zinc-500 hover:text-foreground"
-            }`}
-          >
-            Purchase / Sale
-          </button>
-          <button
-            onClick={() => setTab("stock-summary")}
-            className={`px-5 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-              tab === "stock-summary"
-                ? "bg-white text-foreground shadow-sm"
-                : "text-zinc-500 hover:text-foreground"
-            }`}
-          >
-            Stock Summary
-          </button>
+        {/* Right: tabs + bell */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 bg-zinc-200 rounded-xl p-1">
+            <button
+              onClick={() => setTab("purchase-sale")}
+              className={`px-5 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                tab === "purchase-sale"
+                  ? "bg-white text-foreground shadow-sm"
+                  : "text-zinc-500 hover:text-foreground"
+              }`}
+            >
+              Purchase / Sale
+            </button>
+            <button
+              onClick={() => setTab("stock-summary")}
+              className={`px-5 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                tab === "stock-summary"
+                  ? "bg-white text-foreground shadow-sm"
+                  : "text-zinc-500 hover:text-foreground"
+              }`}
+            >
+              Stock Summary
+            </button>
+          </div>
+          <NotificationBell />
         </div>
-
-        <div className="w-[180px]" />
       </div>
 
       {/* Tab content */}

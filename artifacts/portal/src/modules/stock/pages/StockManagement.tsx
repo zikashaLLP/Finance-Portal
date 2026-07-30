@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import NotificationBell from "@/shared/components/NotificationBell";
 import {
   Download, Upload,
   Search, X, Plus, Pencil, Trash2, Package,
@@ -399,6 +400,7 @@ export default function StockManagement() {
             <p className="text-sm text-muted-foreground">Manage gold and diamond jewellery inventory</p>
           </div>
           <div className="flex items-center gap-2">
+            <NotificationBell />
             <button className={btnOutline}><Upload className="h-3.5 w-3.5" /> Import</button>
             <button className={btnOutline}><Download className="h-3.5 w-3.5" /> Export</button>
             {isStockTab && (

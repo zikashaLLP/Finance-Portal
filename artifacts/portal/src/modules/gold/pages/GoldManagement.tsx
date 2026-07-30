@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Bell, Scale } from "lucide-react";
+import { Scale } from "lucide-react";
+import NotificationBell from "@/shared/components/NotificationBell";
 import PureGoldTab from "../components/PureGoldTab";
 import OldGoldTab from "../components/OldGoldTab";
 import { GoldOpeningBalanceModal } from "../components/GoldOpeningBalanceModal";
@@ -59,11 +60,7 @@ export default function GoldManagement() {
             Opening Balance
           </button>
 
-          {/* Bell */}
-          <button className="relative h-9 w-9 flex items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors shadow-sm">
-            <Bell className="h-4 w-4" />
-            <span className="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
-          </button>
+          <NotificationBell />
         </div>
       </div>
       {/* Tab content */}

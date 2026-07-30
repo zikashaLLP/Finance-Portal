@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Diamond, CheckCircle2, Clock, Plus, Search, ChevronRight, SlidersHorizontal } from "lucide-react";
+import NotificationBell from "@/shared/components/NotificationBell";
 
 import BulkManagement from "./BulkManagement";
 import DiamondReturnWorkflow from "../../diamond/pages/DiamondReturnWorkflow";
@@ -511,11 +512,14 @@ export default function KarigarManagement() {
             <h1 className="text-2xl font-semibold text-foreground tracking-tight mb-0.5">Karigar</h1>
             <p className="text-sm text-muted-foreground">Job pipeline, diamond returns and bulk management</p>
           </div>
-          {tab === "workflow" && (
-            <button className="flex items-center gap-2 h-10 px-5 rounded-xl bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors shadow-sm shrink-0">
-              <Plus className="h-4 w-4" /> New Job
-            </button>
-          )}
+          <div className="flex items-center gap-2 shrink-0">
+            <NotificationBell />
+            {tab === "workflow" && (
+              <button className="flex items-center gap-2 h-10 px-5 rounded-xl bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors shadow-sm">
+                <Plus className="h-4 w-4" /> New Job
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-0 overflow-x-auto no-scrollbar">

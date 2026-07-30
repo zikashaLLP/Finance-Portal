@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { TrendingUp, TrendingDown, Landmark, Bell } from "lucide-react";
+import { TrendingUp, TrendingDown, Landmark } from "lucide-react";
+import NotificationBell from "@/shared/components/NotificationBell";
 import { cn } from "@/lib/utils";
 import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 import Transactions from "../../transactions/pages/Transactions";
@@ -41,10 +42,7 @@ export default function Accounts() {
           </div>
 
           <div className="flex items-center gap-2 mt-1 shrink-0">
-            <button className="relative h-9 w-9 flex items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors shadow-sm">
-              <Bell className="h-4 w-4" />
-              <span className="absolute top-2 right-2.5 flex h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
-            </button>
+            <NotificationBell />
           </div>
         </div>
 
