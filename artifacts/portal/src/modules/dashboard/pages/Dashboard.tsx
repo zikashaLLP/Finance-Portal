@@ -1,5 +1,4 @@
 import { useLocation } from "wouter";
-import NotificationBell from "@/shared/components/NotificationBell";
 import {
   Crown, TrendingUp, Users, Clock, Package,
   ShoppingCart, Layers, ShoppingBag,
@@ -75,20 +74,10 @@ export default function Dashboard() {
     <div className="w-full flex flex-col h-full">
 
       {/* ── HEADER ── */}
-      <div className="px-8 pt-5 pb-4 border-b border-border shrink-0 flex items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-0.5">
-            <Crown className="h-4.5 w-4.5 text-muted-foreground" />
-            <h1 className="text-xl font-semibold text-foreground tracking-tight">Business Command Center</h1>
-          </div>
-          <p className="text-xs text-muted-foreground">{today} • Your Daily Operations Hub</p>
-        </div>
-        <div className="flex items-center gap-4 shrink-0">
-          <div className="text-right">
-            <p className="text-2xl font-bold text-foreground tabular-nums tracking-tight">{PORTFOLIO_VALUE}</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5 uppercase tracking-wider">Total Portfolio Value</p>
-          </div>
-          <NotificationBell />
+      <div className="px-8 pt-4 pb-4 border-b border-border shrink-0 flex items-center justify-end gap-4">
+        <div className="text-right">
+          <p className="text-2xl font-bold text-foreground tabular-nums tracking-tight">{PORTFOLIO_VALUE}</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5 uppercase tracking-wider">Total Portfolio Value</p>
         </div>
       </div>
 

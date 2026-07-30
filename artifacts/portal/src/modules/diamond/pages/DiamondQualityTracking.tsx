@@ -1,5 +1,4 @@
 import { useState } from "react";
-import NotificationBell from "@/shared/components/NotificationBell";
 import { Gem, RefreshCw, Plus, Edit, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import DiamondOrders from "./DiamondOrders";
@@ -251,23 +250,9 @@ export default function DiamondQualityTracking() {
 
       {/* HEADER */}
       <div className="px-8 pt-6 pb-0 border-b border-border shrink-0">
-        {/* Title row */}
-        <div className="flex items-start justify-between pb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Gem className="h-5 w-5 text-muted-foreground" />
-              <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-                Diamond Management
-              </h1>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Track diamond purchases, issues &amp; sales by quality. Solitaires are tracked as single pieces.
-            </p>
-          </div>
-          {outerTab === "tracking" && (
-            <div className="flex items-center gap-2 shrink-0 mt-0.5">
-              <NotificationBell />
-              <div className="px-4 py-1.5 rounded-lg border border-border bg-card text-xs font-semibold text-muted-foreground">
+        {outerTab === "tracking" && (
+          <div className="flex items-center justify-end gap-2 shrink-0 py-3">
+            <div className="px-4 py-1.5 rounded-lg border border-border bg-card text-xs font-semibold text-muted-foreground">
                 Total Stock:{" "}
                 <span className="text-foreground">{totalStock.toFixed(3)} ct</span>
               </div>
@@ -279,9 +264,8 @@ export default function DiamondQualityTracking() {
                 <Plus className="h-3.5 w-3.5" />
                 Add Transaction
               </button>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Main tab bar */}
         <div className="flex items-center gap-0 overflow-x-auto no-scrollbar">

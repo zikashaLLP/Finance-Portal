@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { TrendingUp, TrendingDown, Landmark } from "lucide-react";
-import NotificationBell from "@/shared/components/NotificationBell";
 import { cn } from "@/lib/utils";
 import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 import Transactions from "../../transactions/pages/Transactions";
@@ -35,16 +34,6 @@ export default function Accounts() {
 
       {/* ── Page header ── */}
       <div className="px-8 pt-6 border-b border-border shrink-0">
-        <div className="flex items-start justify-between mb-5">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground tracking-tight mb-0.5">Accounts</h1>
-            <p className="text-sm text-muted-foreground">Cash, bank &amp; financial overview</p>
-          </div>
-
-          <div className="flex items-center gap-2 mt-1 shrink-0">
-            <NotificationBell />
-          </div>
-        </div>
 
         {/* Summary metric cards */}
         <div className="grid grid-cols-3 gap-4 mb-5">

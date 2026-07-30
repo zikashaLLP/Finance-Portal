@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Scale } from "lucide-react";
-import NotificationBell from "@/shared/components/NotificationBell";
 import PureGoldTab from "../components/PureGoldTab";
 import OldGoldTab from "../components/OldGoldTab";
 import { GoldOpeningBalanceModal } from "../components/GoldOpeningBalanceModal";
@@ -14,17 +13,7 @@ export default function GoldManagement() {
   return (
     <div className="w-full flex flex-col h-full">
       {/* Header */}
-      <div className="px-8 pt-6 pb-5 border-b border-border flex items-center justify-between shrink-0">
-        {/* Title */}
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground tracking-tight mb-0.5">
-            Gold Management
-          </h1>
-          <p className="text-muted-foreground text-[14px]">
-            Track gold stock, rates &amp; transactions
-          </p>
-        </div>
-
+      <div className="px-6 py-3 border-b border-border flex items-center justify-between shrink-0">
         {/* Tabs — segmented control */}
         <div className="flex items-center gap-1 bg-zinc-200 rounded-xl p-1">
           <button
@@ -60,7 +49,6 @@ export default function GoldManagement() {
             Opening Balance
           </button>
 
-          <NotificationBell />
         </div>
       </div>
       {/* Tab content */}
