@@ -187,17 +187,8 @@ export default function ProfilePage() {
   return (
     <div className="h-full bg-muted/30 flex flex-col">
 
-      {/* ── top header with avatar + tabs ── */}
-      <div className="bg-background border-b border-border px-6 py-5 shrink-0">
-        <div className="flex items-center gap-4 mb-5">
-          <div className="h-14 w-14 rounded-2xl bg-foreground flex items-center justify-center shrink-0">
-            <span className="text-xl font-bold text-background">{avatarInitials}</span>
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight leading-tight">{form.fullName}</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{form.role} · {form.branch}</p>
-          </div>
-        </div>
+      {/* ── tab bar only ── */}
+      <div className="bg-background border-b border-border px-6 shrink-0">
         <div className="flex items-end gap-0 overflow-x-auto no-scrollbar">
           {TABS.map((t) => (
             <button
