@@ -19,7 +19,7 @@ export default function GoldManagement() {
           <h1 className="text-2xl font-semibold text-foreground tracking-tight mb-0.5">
             Gold Management
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-[14px]">
             Track gold stock, rates &amp; transactions
           </p>
         </div>
@@ -66,13 +66,11 @@ export default function GoldManagement() {
           </button>
         </div>
       </div>
-
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto no-scrollbar p-8">
         {tab === "pure" && <PureGoldTab />}
         {tab === "old" && <OldGoldTab />}
       </div>
-
       <GoldOpeningBalanceModal
         open={openingOpen}
         onClose={() => setOpeningOpen(false)}
