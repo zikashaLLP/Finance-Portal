@@ -105,14 +105,11 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Logo + toggle */}
-      <div className={cn(
-        "h-16 flex items-center px-3 shrink-0",
-        isExpanded ? "justify-between" : "justify-center",
-      )}>
+      {/* Logo */}
+      <div className="h-16 flex items-center px-3 shrink-0 justify-center">
         <div className={cn(
           "flex items-center gap-2 text-foreground min-w-0 overflow-hidden transition-all duration-300",
-          isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0",
+          isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0 pointer-events-none",
         )}>
           <div className="h-8 w-8 bg-foreground rounded-lg flex items-center justify-center shrink-0">
             <Hexagon className="h-5 w-5 text-background fill-background" />
@@ -121,21 +118,11 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
             Portal
           </span>
         </div>
-
-        <button
-          onClick={handleToggle}
-          className={cn(
-            "shrink-0 h-6 w-6 flex items-center justify-center rounded-md",
-            "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50",
-            "transition-all duration-200",
-          )}
-          title={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
-        >
-          {isExpanded
-            ? <PanelLeftClose className="h-3.5 w-3.5" />
-            : <PanelLeftOpen  className="h-3.5 w-3.5" />
-          }
-        </button>
+        {!isExpanded && (
+          <div className="h-8 w-8 bg-foreground rounded-lg flex items-center justify-center shrink-0">
+            <Hexagon className="h-5 w-5 text-background fill-background" />
+          </div>
+        )}
       </div>
 
       {/* Scrollable nav */}
@@ -147,6 +134,22 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         }}
       >
         <nav className="space-y-0.5">
+          {/* Toggle button — top of nav body */}
+          <button
+            onClick={handleToggle}
+            title={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
+            className={cn(
+              "w-full flex items-center px-3 py-2 rounded-lg transition-colors",
+              "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50",
+              isExpanded ? "justify-start gap-3" : "justify-center",
+            )}
+          >
+            {isExpanded
+              ? <PanelLeftClose className="h-4 w-4 shrink-0" />
+              : <PanelLeftOpen  className="h-4 w-4 shrink-0" />
+            }
+            <span className={labelCls}>Collapse</span>
+          </button>
           {NAV_ITEMS.map((item) => {
             const isActive = location.startsWith(item.path);
             const Icon = item.icon;
