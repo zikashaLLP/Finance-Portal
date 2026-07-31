@@ -93,4 +93,32 @@ export const mockDiamondFilters: DiamondFilterItem[] = [
   { id: "df14", filter_type: "Cut",     filter_name: "Good",                   filter_value: "GD",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
 ];
 
-export type GeneralMasterType = "category" | "type" | "purity" | "diamond";
+// ── Diamond Quality ───────────────────────────────────────────────────────────
+export type DiamondQualityType = "Parcel" | "Solitaire";
+
+export interface DiamondQualityItem {
+  id: string;
+  quality_name: string;      // e.g. "VVS1", "SI2", "1D"
+  description: string;
+  type: DiamondQualityType;  // Parcel | Solitaire
+  status: "Active" | "Deactive";
+  created_at: string;
+  updated_at: string;
+}
+
+export const mockDiamondQualities: DiamondQualityItem[] = [
+  { id: "dq1",  quality_name: "VVS1", description: "Very Very Slightly Included 1 — near flawless",        type: "Solitaire", status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "dq2",  quality_name: "VVS2", description: "Very Very Slightly Included 2",                        type: "Solitaire", status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "dq3",  quality_name: "VS1",  description: "Very Slightly Included 1 — minor inclusions",         type: "Solitaire", status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "dq4",  quality_name: "VS2",  description: "Very Slightly Included 2",                             type: "Solitaire", status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "dq5",  quality_name: "SI1",  description: "Slightly Included 1 — inclusions visible under 10x",  type: "Parcel",    status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "dq6",  quality_name: "SI2",  description: "Slightly Included 2",                                  type: "Parcel",    status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "dq7",  quality_name: "1D",   description: "Top quality parcel diamonds — D colour flawless",      type: "Parcel",    status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "dq8",  quality_name: "2D",   description: "EF colour VVS parcel",                                 type: "Parcel",    status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "dq9",  quality_name: "3D",   description: "GH colour VS parcel",                                  type: "Parcel",    status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "dq10", quality_name: "4D",   description: "IJ colour SI parcel",                                  type: "Parcel",    status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "dq11", quality_name: "CVD",  description: "Chemical Vapour Deposition lab-grown diamond",         type: "Parcel",    status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "dq12", quality_name: "SHADE","description": "Tinted / off-colour parcel",                         type: "Parcel",    status: "Deactive", created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+];
+
+export type GeneralMasterType = "category" | "type" | "purity" | "diamond" | "quality";

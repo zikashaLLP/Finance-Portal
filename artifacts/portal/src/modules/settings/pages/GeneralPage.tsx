@@ -5,21 +5,25 @@ import { GeneralMasterModal } from "../components/GeneralMasterModal";
 import { JewelleryTypeModal } from "../components/JewelleryTypeModal";
 import { GoldPurityModal } from "../components/GoldPurityModal";
 import { DiamondFilterModal } from "../components/DiamondFilterModal";
+import { DiamondQualityModal } from "../components/DiamondQualityModal";
 import {
   CategoryViewModal,
   JewelleryTypeViewModal,
   GoldPurityViewModal,
   DiamondFilterViewModal,
+  DiamondQualityViewModal,
 } from "../components/GeneralViewModals";
 import {
   mockJewelleryCategories,
   mockJewelleryTypes,
   mockGoldPurity,
   mockDiamondFilters,
+  mockDiamondQualities,
   type JewelleryCategory,
   type JewelleryTypeItem,
   type GoldPurityItem,
   type DiamondFilterItem,
+  type DiamondQualityItem,
   type GeneralMasterItem,
 } from "../data/mockGeneralMasters";
 
@@ -38,13 +42,14 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-type GeneralSubTab = "categories" | "types" | "purity" | "diamond";
+type GeneralSubTab = "categories" | "types" | "purity" | "diamond" | "quality";
 
 const GENERAL_SUB_TABS: { id: GeneralSubTab; label: string }[] = [
   { id: "categories", label: "Jewellery Categories" },
   { id: "types",      label: "Jewellery Types"      },
   { id: "purity",     label: "Gold Purity"          },
   { id: "diamond",    label: "Diamond Filters"      },
+  { id: "quality",    label: "Diamond Quality"      },
 ];
 
 // ── Generic sub-table (purity / diamond / categories) ─────────────────────────
@@ -302,6 +307,78 @@ function DiamondFilterSubTable() {
   );
 }
 
+// ── Diamond Quality sub-table ─────────────────────────────────────────────────
+const QUALITY_TYPE_COLORS: Record<string, string> = {
+  Parcel:    "bg-amber-50 text-amber-700 border-amber-200",
+  Solitaire: "bg-violet-50 text-violet-700 border-violet-200",
+};
+
+function DiamondQualitySubTable() {
+  const [data, setData]       = useState<DiamondQualityItem[]>(mockDiamondQualities);
+  const [open, setOpen]       = useState(false);
+  const [editing, setEditing] = useState<DiamondQualityItem | null>(null);
+  const [viewing, setViewing] = useState<DiamondQualityItem | null>(null);
+
+  function fmt(dateStr: string) {
+    return new Date(dateStr).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  }
+
+  const cols: ColumnDef<DiamondQualityItem>[] = [
+    { key: "quality_name", label: "Quality",     render: (r) => (
+      <span className="font-semibold font-mono text-sm text-foreground">{r.quality_name}</span>
+    )},
+    { key: "type",         label: "Type",        render: (r) => {
+      const cls = QUALITY_TYPE_COLORS[r.type] ?? "bg-muted text-muted-foreground border-border";
+      return (
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border ${cls}`}>
+          {r.type}
+        </span>
+      );
+    }},
+    { key: "description",  label: "Description", render: (r) => (
+      <span className="text-muted-foreground text-xs">{r.description || "—"}</span>
+    )},
+    { key: "status",       label: "Status",      render: (r) => <StatusBadge status={r.status} /> },
+    { key: "updated_at",   label: "Updated",     render: (r) => (
+      <span className="text-muted-foreground text-xs">{fmt(r.updated_at)}</span>
+    )},
+  ];
+
+  function handleSave(form: Omit<DiamondQualityItem, "id" | "created_at" | "updated_at">) {
+    const now = new Date().toISOString();
+    if (editing) {
+      setData((prev) => prev.map((d) =>
+        d.id === editing.id ? { ...form, id: editing.id, created_at: editing.created_at, updated_at: now } : d
+      ));
+    } else {
+      setData((prev) => [...prev, { ...form, id: crypto.randomUUID(), created_at: now, updated_at: now }]);
+    }
+    setOpen(false); setEditing(null);
+  }
+
+  return (
+    <>
+      <SettingsTable
+        data={data}
+        columns={cols}
+        searchKeys={["quality_name", "type", "description"]}
+        addLabel="Add Quality"
+        onAdd={() => { setEditing(null); setOpen(true); }}
+        onEdit={(r) => { setEditing(r); setOpen(true); }}
+        onDelete={(id) => setData((prev) => prev.filter((d) => d.id !== id))}
+        onView={(r) => setViewing(r)}
+      />
+      <DiamondQualityModal
+        open={open}
+        onClose={() => { setOpen(false); setEditing(null); }}
+        onSave={handleSave}
+        initial={editing}
+      />
+      <DiamondQualityViewModal open={viewing !== null} onClose={() => setViewing(null)} item={viewing} />
+    </>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function GeneralPage() {
   const [sub, setSub] = useState<GeneralSubTab>("categories");
@@ -343,7 +420,8 @@ export default function GeneralPage() {
           <JewelleryTypesTable categories={categories} />
         )}
         {sub === "purity" && <GoldPuritySubTable />}
-        {sub === "diamond" && <DiamondFilterSubTable />}
+        {sub === "diamond"  && <DiamondFilterSubTable />}
+        {sub === "quality"  && <DiamondQualitySubTable />}
       </div>
     </div>
   );

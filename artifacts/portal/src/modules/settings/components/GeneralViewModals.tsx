@@ -10,6 +10,7 @@ import {
   type JewelleryTypeItem,
   type GoldPurityItem,
   type DiamondFilterItem,
+  type DiamondQualityItem,
 } from "../data/mockGeneralMasters";
 
 // ── Shared primitives ──────────────────────────────────────────────────────────
@@ -160,6 +161,47 @@ export function DiamondFilterViewModal({ open, onClose, item }: { open: boolean;
     <ModalShell open={open} onClose={onClose} headerBg="bg-cyan-50" iconBg="bg-cyan-600"
       icon="💠" title={item.filter_name} badge={typeBadge}>
       <Row label="Filter Value" value={item.filter_value} mono />
+      <div className="border-t border-border" />
+      <div className="grid grid-cols-2 gap-4">
+        <Row label="Created" value={fmtDate(item.created_at)} />
+        <Row label="Updated" value={fmtDate(item.updated_at)} />
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── Diamond Quality View Modal ─────────────────────────────────────────────────
+const QUALITY_TYPE_COLORS: Record<string, string> = {
+  Parcel:    "bg-amber-100 text-amber-700 border border-amber-200",
+  Solitaire: "bg-violet-100 text-violet-700 border border-violet-200",
+};
+
+export function DiamondQualityViewModal({ open, onClose, item }: { open: boolean; onClose: () => void; item: DiamondQualityItem | null }) {
+  if (!item) return null;
+  const typeCls = QUALITY_TYPE_COLORS[item.type] ?? "bg-muted text-muted-foreground border border-border";
+  const typeBadge = (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold ${typeCls}`}>
+      {item.type}
+    </span>
+  );
+  const statusBadge = (
+    <span className={cn(
+      "inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold",
+      item.status === "Active"
+        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+        : "bg-muted text-muted-foreground border border-border",
+    )}>
+      {item.status}
+    </span>
+  );
+  return (
+    <ModalShell open={open} onClose={onClose} headerBg="bg-sky-50" iconBg="bg-sky-600"
+      icon="💎" title={item.quality_name} badge={typeBadge}>
+      {item.description && <Row label="Description" value={item.description} />}
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">Status</span>
+        {statusBadge}
+      </div>
       <div className="border-t border-border" />
       <div className="grid grid-cols-2 gap-4">
         <Row label="Created" value={fmtDate(item.created_at)} />
