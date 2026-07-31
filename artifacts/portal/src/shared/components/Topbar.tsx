@@ -1,4 +1,5 @@
 import { useLocation } from "wouter";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 
 const ROUTE_META: { match: (p: string) => boolean; title: string; subtitle: string }[] = [
@@ -32,7 +33,12 @@ function getPageMeta(location: string) {
   return match ?? { title: "Portal", subtitle: "Jewellery Management System" };
 }
 
-export default function Topbar() {
+interface TopbarProps {
+  isExpanded: boolean;
+  onToggle: () => void;
+}
+
+export default function Topbar({ isExpanded, onToggle }: TopbarProps) {
   const [location] = useLocation();
   const { title, subtitle } = getPageMeta(location);
 
@@ -41,9 +47,24 @@ export default function Topbar() {
       className="h-16 bg-transparent border-b border-border flex items-center justify-between px-6 shrink-0"
       data-testid="topbar"
     >
-      <div>
-        <h1 className="text-xl font-semibold text-foreground tracking-tight leading-tight">{title}</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+      <div className="flex items-center gap-4">
+        {/* Sidebar toggle */}
+        <button
+          onClick={onToggle}
+          title={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
+          className="h-8 w-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors shrink-0"
+        >
+          {isExpanded
+            ? <PanelLeftClose className="h-4 w-4" />
+            : <PanelLeftOpen  className="h-4 w-4" />
+          }
+        </button>
+
+        {/* Page title */}
+        <div>
+          <h1 className="text-xl font-semibold text-foreground tracking-tight leading-tight">{title}</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

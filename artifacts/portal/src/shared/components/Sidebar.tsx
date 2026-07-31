@@ -13,8 +13,6 @@ import {
   ChevronDown,
   LogOut,
   Settings,
-  PanelLeftClose,
-  PanelLeftOpen,
   BarChart2,
   LayoutDashboard,
   Wallet,
@@ -55,30 +53,18 @@ const NAV_ITEMS: NavItem[] = [
 
 interface SidebarProps {
   isPinned: boolean;
+  forceCollapsed: boolean;
   onPinnedChange: (pinned: boolean) => void;
 }
 
-export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
+export default function Sidebar({ isPinned, forceCollapsed, onPinnedChange }: SidebarProps) {
   const [location]  = useLocation();
   const [isHovered, setIsHovered] = useState(false);
-  const [forceCollapsed, setForceCollapsed] = useState(false);
 
   const isInSettings = location.startsWith("/settings");
   const [settingsOpen, setSettingsOpen] = useState(isInSettings);
 
   const isExpanded = !forceCollapsed && (isPinned || isHovered);
-
-  function handleToggle() {
-    if (isExpanded) {
-      // collapse and lock — disable hover expansion
-      setForceCollapsed(true);
-      onPinnedChange(false);
-    } else {
-      // expand and pin
-      setForceCollapsed(false);
-      onPinnedChange(true);
-    }
-  }
 
   const navScrollRef   = useRef<HTMLDivElement>(null);
   const savedScrollRef = useRef(0);
@@ -134,22 +120,6 @@ export default function Sidebar({ isPinned, onPinnedChange }: SidebarProps) {
         }}
       >
         <nav className="space-y-0.5">
-          {/* Toggle button — top of nav body */}
-          <button
-            onClick={handleToggle}
-            title={isExpanded ? "Collapse sidebar" : "Expand sidebar"}
-            className={cn(
-              "w-full flex items-center px-3 py-2 rounded-lg transition-colors",
-              "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50",
-              isExpanded ? "justify-start gap-3" : "justify-center",
-            )}
-          >
-            {isExpanded
-              ? <PanelLeftClose className="h-4 w-4 shrink-0" />
-              : <PanelLeftOpen  className="h-4 w-4 shrink-0" />
-            }
-            <span className={labelCls}>Collapse</span>
-          </button>
           {NAV_ITEMS.map((item) => {
             const isActive = location.startsWith(item.path);
             const Icon = item.icon;
