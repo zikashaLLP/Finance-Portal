@@ -93,6 +93,28 @@ export const mockDiamondFilters: DiamondFilterItem[] = [
   { id: "df14", filter_type: "Cut",     filter_name: "Good",                   filter_value: "GD",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
 ];
 
+// ── Gold Types ────────────────────────────────────────────────────────────────
+export type GoldPurityType = "Pure" | "Mixed";
+
+export interface GoldTypeItem {
+  id: string;
+  type_name: string;          // e.g. "Pure Gold", "Hallmark Gold"
+  purity_type: GoldPurityType;
+  gold_purity_ids: string[];  // references GoldPurityItem.id
+  status: "Active" | "Inactive";
+  created_at: string;
+  updated_at: string;
+}
+
+export const mockGoldTypes: GoldTypeItem[] = [
+  { id: "gt1", type_name: "Pure Gold",      purity_type: "Pure",  gold_purity_ids: ["gp1"],             status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "gt2", type_name: "Hallmark Gold",  purity_type: "Pure",  gold_purity_ids: ["gp2"],             status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "gt3", type_name: "Diamond Gold",   purity_type: "Pure",  gold_purity_ids: ["gp3"],             status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "gt4", type_name: "Mixed Alloy",    purity_type: "Mixed", gold_purity_ids: ["gp2", "gp3"],      status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "gt5", type_name: "Budget Range",   purity_type: "Mixed", gold_purity_ids: ["gp3", "gp4"],      status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "gt6", type_name: "Multi-Karat",    purity_type: "Mixed", gold_purity_ids: ["gp1","gp2","gp3"], status: "Inactive", created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+];
+
 // ── Diamond Quality ───────────────────────────────────────────────────────────
 export type DiamondQualityType = "Parcel" | "Solitaire";
 
@@ -119,6 +141,49 @@ export const mockDiamondQualities: DiamondQualityItem[] = [
   { id: "dq10", quality_name: "4D",   description: "IJ colour SI parcel",                                  type: "Parcel",    status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
   { id: "dq11", quality_name: "CVD",  description: "Chemical Vapour Deposition lab-grown diamond",         type: "Parcel",    status: "Active",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
   { id: "dq12", quality_name: "SHADE","description": "Tinted / off-colour parcel",                         type: "Parcel",    status: "Deactive", created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+];
+
+// ── Opening Stock ─────────────────────────────────────────────────────────────
+export interface GoldOpeningItem {
+  id: string;
+  gold_type_id: string;     // ref GoldTypeItem.id
+  opening_stock_g: number;  // grams
+  opening_set: boolean;
+  set_date: string | null;  // ISO date string
+  notes: string;
+}
+
+export interface DiamondOpeningItem {
+  id: string;
+  quality_id: string;        // ref DiamondQualityItem.id
+  opening_stock_ct: number;  // carats
+  opening_set: boolean;
+  set_date: string | null;
+  notes: string;
+}
+
+export const mockGoldOpenings: GoldOpeningItem[] = [
+  { id: "go1", gold_type_id: "gt1", opening_stock_g: 500.000, opening_set: true,  set_date: "2026-04-01", notes: "Opening stock from previous year"        },
+  { id: "go2", gold_type_id: "gt2", opening_stock_g: 820.500, opening_set: true,  set_date: "2026-04-01", notes: "Hallmark inventory carry-forward"         },
+  { id: "go3", gold_type_id: "gt3", opening_stock_g: 315.750, opening_set: true,  set_date: "2026-04-01", notes: "18K base gold for diamond jewellery"      },
+  { id: "go4", gold_type_id: "gt4", opening_stock_g: 0,       opening_set: false, set_date: null,         notes: ""                                         },
+  { id: "go5", gold_type_id: "gt5", opening_stock_g: 0,       opening_set: false, set_date: null,         notes: ""                                         },
+  { id: "go6", gold_type_id: "gt6", opening_stock_g: 0,       opening_set: false, set_date: null,         notes: ""                                         },
+];
+
+export const mockDiamondOpenings: DiamondOpeningItem[] = [
+  { id: "do1",  quality_id: "dq1",  opening_stock_ct: 25.50, opening_set: true,  set_date: "2026-04-01", notes: "VVS1 solitaires carried from FY25"  },
+  { id: "do2",  quality_id: "dq2",  opening_stock_ct: 18.25, opening_set: true,  set_date: "2026-04-01", notes: ""                                   },
+  { id: "do3",  quality_id: "dq3",  opening_stock_ct: 42.00, opening_set: true,  set_date: "2026-04-01", notes: "VS1 stock from supplier consignment" },
+  { id: "do4",  quality_id: "dq4",  opening_stock_ct: 0,     opening_set: false, set_date: null,         notes: ""                                   },
+  { id: "do5",  quality_id: "dq5",  opening_stock_ct: 0,     opening_set: false, set_date: null,         notes: ""                                   },
+  { id: "do6",  quality_id: "dq6",  opening_stock_ct: 0,     opening_set: false, set_date: null,         notes: ""                                   },
+  { id: "do7",  quality_id: "dq7",  opening_stock_ct: 0,     opening_set: false, set_date: null,         notes: ""                                   },
+  { id: "do8",  quality_id: "dq8",  opening_stock_ct: 0,     opening_set: false, set_date: null,         notes: ""                                   },
+  { id: "do9",  quality_id: "dq9",  opening_stock_ct: 0,     opening_set: false, set_date: null,         notes: ""                                   },
+  { id: "do10", quality_id: "dq10", opening_stock_ct: 0,     opening_set: false, set_date: null,         notes: ""                                   },
+  { id: "do11", quality_id: "dq11", opening_stock_ct: 0,     opening_set: false, set_date: null,         notes: ""                                   },
+  { id: "do12", quality_id: "dq12", opening_stock_ct: 0,     opening_set: false, set_date: null,         notes: ""                                   },
 ];
 
 export type GeneralMasterType = "category" | "type" | "purity" | "diamond" | "quality";

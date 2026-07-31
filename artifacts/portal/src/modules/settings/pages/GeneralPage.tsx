@@ -6,10 +6,13 @@ import { JewelleryTypeModal } from "../components/JewelleryTypeModal";
 import { GoldPurityModal } from "../components/GoldPurityModal";
 import { DiamondFilterModal } from "../components/DiamondFilterModal";
 import { DiamondQualityModal } from "../components/DiamondQualityModal";
+import { GoldTypeModal } from "../components/GoldTypeModal";
+import { OpeningsSection } from "../components/OpeningsSection";
 import {
   CategoryViewModal,
   JewelleryTypeViewModal,
   GoldPurityViewModal,
+  GoldTypeViewModal,
   DiamondFilterViewModal,
   DiamondQualityViewModal,
 } from "../components/GeneralViewModals";
@@ -19,9 +22,11 @@ import {
   mockGoldPurity,
   mockDiamondFilters,
   mockDiamondQualities,
+  mockGoldTypes,
   type JewelleryCategory,
   type JewelleryTypeItem,
   type GoldPurityItem,
+  type GoldTypeItem,
   type DiamondFilterItem,
   type DiamondQualityItem,
   type GeneralMasterItem,
@@ -42,14 +47,15 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-type GeneralSubTab = "categories" | "types" | "purity" | "diamond" | "quality";
+type GeneralSubTab = "categories" | "types" | "purity" | "diamond" | "quality" | "openings";
 
 const GENERAL_SUB_TABS: { id: GeneralSubTab; label: string }[] = [
   { id: "categories", label: "Jewellery Categories" },
   { id: "types",      label: "Jewellery Types"      },
-  { id: "purity",     label: "Gold Purity"          },
+  { id: "purity",     label: "Gold Purity & Types"  },
   { id: "diamond",    label: "Diamond Filters"      },
   { id: "quality",    label: "Diamond Quality"      },
+  { id: "openings",   label: "Openings"             },
 ];
 
 // ── Generic sub-table (purity / diamond / categories) ─────────────────────────
@@ -169,9 +175,13 @@ function JewelleryTypesTable({ categories }: JewelleryTypesTableProps) {
   );
 }
 
-// ── Gold Purity sub-table ─────────────────────────────────────────────────────
-function GoldPuritySubTable() {
-  const [data, setData]       = useState<GoldPurityItem[]>(mockGoldPurity);
+// ── Gold Purity inner table (receives lifted state) ───────────────────────────
+interface GoldPurityInnerTableProps {
+  purityData:    GoldPurityItem[];
+  setPurityData: React.Dispatch<React.SetStateAction<GoldPurityItem[]>>;
+}
+
+function GoldPurityInnerTable({ purityData, setPurityData }: GoldPurityInnerTableProps) {
   const [open, setOpen]       = useState(false);
   const [editing, setEditing] = useState<GoldPurityItem | null>(null);
   const [viewing, setViewing] = useState<GoldPurityItem | null>(null);
@@ -204,6 +214,85 @@ function GoldPuritySubTable() {
   function handleSave(form: Omit<GoldPurityItem, "id" | "created_at" | "updated_at">) {
     const now = new Date().toISOString();
     if (editing) {
+      setPurityData((prev) => prev.map((g) =>
+        g.id === editing.id ? { ...form, id: editing.id, created_at: editing.created_at, updated_at: now } : g
+      ));
+    } else {
+      setPurityData((prev) => [...prev, { ...form, id: crypto.randomUUID(), created_at: now, updated_at: now }]);
+    }
+    setOpen(false); setEditing(null);
+  }
+
+  return (
+    <>
+      <SettingsTable
+        data={purityData}
+        columns={cols}
+        searchKeys={["karat"]}
+        addLabel="Add Purity"
+        onAdd={() => { setEditing(null); setOpen(true); }}
+        onEdit={(r) => { setEditing(r); setOpen(true); }}
+        onDelete={(id) => setPurityData((prev) => prev.filter((g) => g.id !== id))}
+        onView={(r) => setViewing(r)}
+      />
+      <GoldPurityModal
+        open={open}
+        onClose={() => { setOpen(false); setEditing(null); }}
+        onSave={handleSave}
+        initial={editing}
+      />
+      <GoldPurityViewModal open={viewing !== null} onClose={() => setViewing(null)} item={viewing} />
+    </>
+  );
+}
+
+// ── Gold Type inner table ──────────────────────────────────────────────────────
+function GoldTypeInnerTable({ purityOptions }: { purityOptions: GoldPurityItem[] }) {
+  const [data, setData]       = useState<GoldTypeItem[]>(mockGoldTypes);
+  const [open, setOpen]       = useState(false);
+  const [editing, setEditing] = useState<GoldTypeItem | null>(null);
+  const [viewing, setViewing] = useState<GoldTypeItem | null>(null);
+
+  function fmt(dateStr: string) {
+    return new Date(dateStr).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  }
+
+  function getPurityLabel(ids: string[]) {
+    return ids.map((id) => purityOptions.find((p) => p.id === id)?.karat ?? id);
+  }
+
+  const cols: ColumnDef<GoldTypeItem>[] = [
+    { key: "type_name",    label: "Type Name",    render: (r) => (
+      <span className="font-semibold text-foreground">{r.type_name}</span>
+    )},
+    { key: "purity_type",  label: "Purity Type",  render: (r) => (
+      <span className={cn(
+        "inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border",
+        r.purity_type === "Pure"
+          ? "bg-amber-50 text-amber-700 border-amber-200"
+          : "bg-slate-100 text-slate-600 border-slate-200",
+      )}>
+        {r.purity_type}
+      </span>
+    )},
+    { key: "gold_purity_ids", label: "Assigned Purities", render: (r) => (
+      <div className="flex flex-wrap gap-1">
+        {getPurityLabel(r.gold_purity_ids).map((k) => (
+          <span key={k} className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-yellow-50 text-yellow-700 border border-yellow-200">
+            {k}
+          </span>
+        ))}
+      </div>
+    )},
+    { key: "status",       label: "Status",       render: (r) => <StatusBadge status={r.status} /> },
+    { key: "updated_at",   label: "Updated",      render: (r) => (
+      <span className="text-muted-foreground text-xs">{fmt(r.updated_at)}</span>
+    )},
+  ];
+
+  function handleSave(form: Omit<GoldTypeItem, "id" | "created_at" | "updated_at">) {
+    const now = new Date().toISOString();
+    if (editing) {
       setData((prev) => prev.map((g) =>
         g.id === editing.id ? { ...form, id: editing.id, created_at: editing.created_at, updated_at: now } : g
       ));
@@ -218,21 +307,69 @@ function GoldPuritySubTable() {
       <SettingsTable
         data={data}
         columns={cols}
-        searchKeys={["karat"]}
-        addLabel="Add Purity"
+        searchKeys={["type_name", "purity_type"]}
+        addLabel="Add Gold Type"
         onAdd={() => { setEditing(null); setOpen(true); }}
         onEdit={(r) => { setEditing(r); setOpen(true); }}
         onDelete={(id) => setData((prev) => prev.filter((g) => g.id !== id))}
         onView={(r) => setViewing(r)}
       />
-      <GoldPurityModal
+      <GoldTypeModal
         open={open}
         onClose={() => { setOpen(false); setEditing(null); }}
         onSave={handleSave}
         initial={editing}
+        purityOptions={purityOptions}
       />
-      <GoldPurityViewModal open={viewing !== null} onClose={() => setViewing(null)} item={viewing} />
+      <GoldTypeViewModal
+        open={viewing !== null}
+        onClose={() => setViewing(null)}
+        item={viewing}
+        getPurityLabel={getPurityLabel}
+      />
     </>
+  );
+}
+
+// ── Gold Purity & Types section (nested tabs + lifted purity state) ────────────
+type PurityInnerTab = "purity" | "type";
+
+function GoldPurityAndTypesSection() {
+  const [innerTab, setInnerTab] = useState<PurityInnerTab>("purity");
+  const [purityData, setPurityData] = useState<GoldPurityItem[]>(mockGoldPurity);
+
+  const INNER_TABS: { id: PurityInnerTab; label: string }[] = [
+    { id: "purity", label: "Gold Purity" },
+    { id: "type",   label: "Gold Type"   },
+  ];
+
+  return (
+    <div className="space-y-5">
+      {/* Inner tab bar */}
+      <div className="flex items-center gap-1 border-b border-border">
+        {INNER_TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setInnerTab(t.id)}
+            className={cn(
+              "px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
+              innerTab === t.id
+                ? "border-yellow-500 text-yellow-700"
+                : "border-transparent text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {innerTab === "purity" && (
+        <GoldPurityInnerTable purityData={purityData} setPurityData={setPurityData} />
+      )}
+      {innerTab === "type" && (
+        <GoldTypeInnerTable purityOptions={purityData} />
+      )}
+    </div>
   );
 }
 
@@ -419,9 +556,10 @@ export default function GeneralPage() {
         {sub === "types" && (
           <JewelleryTypesTable categories={categories} />
         )}
-        {sub === "purity" && <GoldPuritySubTable />}
-        {sub === "diamond"  && <DiamondFilterSubTable />}
-        {sub === "quality"  && <DiamondQualitySubTable />}
+        {sub === "purity" && <GoldPurityAndTypesSection />}
+        {sub === "diamond"   && <DiamondFilterSubTable />}
+        {sub === "quality"   && <DiamondQualitySubTable />}
+        {sub === "openings"  && <OpeningsSection />}
       </div>
     </div>
   );

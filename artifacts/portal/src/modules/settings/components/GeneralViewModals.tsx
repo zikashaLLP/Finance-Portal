@@ -9,6 +9,7 @@ import {
   type JewelleryCategory,
   type JewelleryTypeItem,
   type GoldPurityItem,
+  type GoldTypeItem,
   type DiamondFilterItem,
   type DiamondQualityItem,
 } from "../data/mockGeneralMasters";
@@ -161,6 +162,52 @@ export function DiamondFilterViewModal({ open, onClose, item }: { open: boolean;
     <ModalShell open={open} onClose={onClose} headerBg="bg-cyan-50" iconBg="bg-cyan-600"
       icon="💠" title={item.filter_name} badge={typeBadge}>
       <Row label="Filter Value" value={item.filter_value} mono />
+      <div className="border-t border-border" />
+      <div className="grid grid-cols-2 gap-4">
+        <Row label="Created" value={fmtDate(item.created_at)} />
+        <Row label="Updated" value={fmtDate(item.updated_at)} />
+      </div>
+    </ModalShell>
+  );
+}
+
+// ── Gold Type View Modal ───────────────────────────────────────────────────────
+export function GoldTypeViewModal({
+  open, onClose, item, getPurityLabel,
+}: {
+  open: boolean;
+  onClose: () => void;
+  item: GoldTypeItem | null;
+  getPurityLabel: (ids: string[]) => string[];
+}) {
+  if (!item) return null;
+  const isPure = item.purity_type === "Pure";
+  const typeBadge = (
+    <span className={cn(
+      "inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border",
+      isPure
+        ? "bg-amber-50 text-amber-700 border-amber-200"
+        : "bg-slate-100 text-slate-600 border-slate-200",
+    )}>
+      {item.purity_type}
+    </span>
+  );
+  const purities = getPurityLabel(item.gold_purity_ids);
+  return (
+    <ModalShell open={open} onClose={onClose} headerBg="bg-yellow-50" iconBg="bg-yellow-500"
+      icon="🔶" title={item.type_name} badge={typeBadge}>
+      <div>
+        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-2">Assigned Purities</p>
+        <div className="flex flex-wrap gap-1.5">
+          {purities.length > 0
+            ? purities.map((p) => (
+                <span key={p} className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-yellow-50 text-yellow-700 border border-yellow-200">{p}</span>
+              ))
+            : <span className="text-xs text-muted-foreground">—</span>
+          }
+        </div>
+      </div>
+      <StatusBadge status={item.status} />
       <div className="border-t border-border" />
       <div className="grid grid-cols-2 gap-4">
         <Row label="Created" value={fmtDate(item.created_at)} />
