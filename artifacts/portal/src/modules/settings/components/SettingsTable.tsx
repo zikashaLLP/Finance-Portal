@@ -141,15 +141,13 @@ export function SettingsTable<T extends { id: string }>({
       )}
 
       {/* Pagination */}
-      {filtered.length > PAGE_SIZE && (
-        <Pagination
-          page={safePage}
-          totalPages={totalPages}
-          onPageChange={setPage}
-          totalItems={filtered.length}
-          pageSize={PAGE_SIZE}
-        />
-      )}
+      <Pagination
+        page={safePage}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        totalItems={filtered.length}
+        pageSize={PAGE_SIZE}
+      />
     </div>
   );
 }
