@@ -92,23 +92,18 @@ export default function Sidebar({ isPinned, forceCollapsed, onPinnedChange }: Si
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center px-3 shrink-0 justify-center">
+      <div className="h-16 flex items-center px-3 shrink-0">
+        <div className="h-8 w-8 bg-foreground rounded-lg flex items-center justify-center shrink-0">
+          <Hexagon className="h-5 w-5 text-background fill-background" />
+        </div>
         <div className={cn(
-          "flex items-center gap-2 text-foreground min-w-0 overflow-hidden transition-all duration-300",
-          isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0 pointer-events-none",
+          "flex items-center min-w-0 overflow-hidden transition-all duration-300",
+          isExpanded ? "opacity-100 max-w-[160px] ml-2" : "opacity-0 max-w-0 ml-0",
         )}>
-          <div className="h-8 w-8 bg-foreground rounded-lg flex items-center justify-center shrink-0">
-            <Hexagon className="h-5 w-5 text-background fill-background" />
-          </div>
-          <span className="font-semibold text-lg tracking-tight whitespace-nowrap">
-            Portal
+          <span className="font-semibold text-[15px] tracking-tight whitespace-nowrap text-foreground">
+            Accounting Portal
           </span>
         </div>
-        {!isExpanded && (
-          <div className="h-8 w-8 bg-foreground rounded-lg flex items-center justify-center shrink-0">
-            <Hexagon className="h-5 w-5 text-background fill-background" />
-          </div>
-        )}
       </div>
 
       {/* Scrollable nav */}
