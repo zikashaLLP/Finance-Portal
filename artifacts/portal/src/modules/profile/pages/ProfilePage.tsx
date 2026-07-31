@@ -188,7 +188,7 @@ export default function ProfilePage() {
     <div className="h-full flex flex-col bg-white">
 
       {/* ── tab bar only ── */}
-      <div className="bg-white px-6 shrink-0">
+      <div className="bg-white border-b border-border px-6 shrink-0">
         <div className="flex items-end gap-0 overflow-x-auto no-scrollbar">
           {TABS.map((t) => (
             <button
