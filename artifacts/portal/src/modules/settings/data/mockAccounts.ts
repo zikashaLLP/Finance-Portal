@@ -6,7 +6,8 @@ export interface Account {
   account_name: string;
   type: AccountType;
   opening_balance: number;
-  current_balance: number;
+  opening_balance_set: boolean;   // true = locked, cannot be changed again
+  current_balance: number;        // driven by transactions, never edited from form
   // Bank-only fields
   bank_name?: string;
   ifsc_code?: string;
@@ -22,6 +23,7 @@ export const mockAccounts: Account[] = [
     account_name: "Main Cash Counter",
     type: "Cash",
     opening_balance: 50000,
+    opening_balance_set: true,
     current_balance: 72400,
     status: "Active",
     created_at: "2024-01-01T09:00:00Z",
@@ -32,6 +34,7 @@ export const mockAccounts: Account[] = [
     account_name: "HDFC Current Account",
     type: "Bank Account",
     opening_balance: 200000,
+    opening_balance_set: true,
     current_balance: 485300,
     bank_name: "HDFC Bank",
     ifsc_code: "HDFC0001234",
@@ -45,6 +48,7 @@ export const mockAccounts: Account[] = [
     account_name: "SBI Savings",
     type: "Bank Account",
     opening_balance: 100000,
+    opening_balance_set: true,
     current_balance: 138750,
     bank_name: "State Bank of India",
     ifsc_code: "SBIN0005678",
@@ -58,6 +62,7 @@ export const mockAccounts: Account[] = [
     account_name: "Petty Cash",
     type: "Cash",
     opening_balance: 10000,
+    opening_balance_set: true,
     current_balance: 4250,
     status: "Active",
     created_at: "2024-03-01T09:00:00Z",
@@ -68,6 +73,7 @@ export const mockAccounts: Account[] = [
     account_name: "ICICI Business Account",
     type: "Bank Account",
     opening_balance: 500000,
+    opening_balance_set: true,
     current_balance: 0,
     bank_name: "ICICI Bank",
     ifsc_code: "ICIC0009012",

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Landmark } from "lucide-react";
+import { Landmark, Lock } from "lucide-react";
 import { AppModal } from "@/shared/components/AppModal";
 import { type Account, type AccountType, type AccountStatus } from "../data/mockAccounts";
 import {
@@ -16,13 +16,13 @@ const LABEL_CLS = "block text-xs font-medium text-muted-foreground mb-1";
 const SECTION_CLS = "space-y-3 rounded-xl border border-border bg-muted/20 px-4 py-3.5";
 const SECTION_TITLE_CLS = "text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-3";
 
-type FormData = Omit<Account, "id" | "created_at" | "updated_at">;
+// current_balance is never edited from the form; opening_balance_set is managed by the page
+type FormData = Omit<Account, "id" | "created_at" | "updated_at" | "current_balance" | "opening_balance_set">;
 
 const EMPTY: FormData = {
   account_name: "",
   type: "Cash",
   opening_balance: 0,
-  current_balance: 0,
   bank_name: "",
   ifsc_code: "",
   account_number: "",
@@ -44,14 +44,13 @@ export function AccountModal({ open, onClose, onSave, initial }: AccountModalPro
       setForm(
         initial
           ? {
-              account_name:    initial.account_name,
-              type:            initial.type,
+              account_name:   initial.account_name,
+              type:           initial.type,
               opening_balance: initial.opening_balance,
-              current_balance: initial.current_balance,
-              bank_name:       initial.bank_name    ?? "",
-              ifsc_code:       initial.ifsc_code    ?? "",
-              account_number:  initial.account_number ?? "",
-              status:          initial.status,
+              bank_name:      initial.bank_name      ?? "",
+              ifsc_code:      initial.ifsc_code      ?? "",
+              account_number: initial.account_number ?? "",
+              status:         initial.status,
             }
           : { ...EMPTY }
       );
@@ -66,7 +65,6 @@ export function AccountModal({ open, onClose, onSave, initial }: AccountModalPro
     setForm((prev) => ({
       ...prev,
       type: value,
-      // clear bank fields when switching to Cash
       ...(value === "Cash" ? { bank_name: "", ifsc_code: "", account_number: "" } : {}),
     }));
   }
@@ -77,8 +75,11 @@ export function AccountModal({ open, onClose, onSave, initial }: AccountModalPro
     onSave(form);
   }
 
-  const isEdit   = !!initial;
-  const isBank   = form.type === "Bank Account";
+  const isEdit            = !!initial;
+  const isBank            = form.type === "Bank Account";
+  const balanceLocked     = isEdit && initial?.opening_balance_set === true;
+  // Show balance section only in edit mode (add mode = no balance yet)
+  const showBalanceSection = isEdit;
 
   return (
     <AppModal
@@ -98,7 +99,7 @@ export function AccountModal({ open, onClose, onSave, initial }: AccountModalPro
     >
       <div className="px-6 pt-4 pb-5 space-y-4">
 
-        {/* Basic Info */}
+        {/* Account Info */}
         <div className={SECTION_CLS}>
           <p className={SECTION_TITLE_CLS}>Account Info</p>
           <div className="grid grid-cols-2 gap-3">
@@ -138,7 +139,7 @@ export function AccountModal({ open, onClose, onSave, initial }: AccountModalPro
           </div>
         </div>
 
-        {/* Bank Details — shown only when type = Bank Account */}
+        {/* Bank Details */}
         {isBank && (
           <div className={SECTION_CLS}>
             <p className={SECTION_TITLE_CLS}>Bank Details</p>
@@ -174,37 +175,49 @@ export function AccountModal({ open, onClose, onSave, initial }: AccountModalPro
           </div>
         )}
 
-        {/* Balances */}
-        <div className={SECTION_CLS}>
-          <p className={SECTION_TITLE_CLS}>Balance</p>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={LABEL_CLS}>Opening Balance (₹)</label>
-              <input
-                className={INPUT_CLS}
-                type="number"
-                min="0"
-                placeholder="0.00"
-                value={form.opening_balance === 0 ? "" : form.opening_balance}
-                onChange={(e) => set("opening_balance", parseFloat(e.target.value) || 0)}
-              />
-            </div>
-            <div>
-              <label className={LABEL_CLS}>Current Balance (₹)</label>
-              <input
-                className={INPUT_CLS}
-                type="number"
-                min="0"
-                placeholder="0.00"
-                value={form.current_balance === 0 ? "" : form.current_balance}
-                onChange={(e) => set("current_balance", parseFloat(e.target.value) || 0)}
-              />
-            </div>
+        {/* Opening Balance — only visible in edit mode */}
+        {showBalanceSection && (
+          <div className={SECTION_CLS}>
+            <p className={SECTION_TITLE_CLS}>Opening Balance</p>
+
+            {balanceLocked ? (
+              /* Already set — show locked read-only display */
+              <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 px-3 h-9">
+                <Lock className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <span className="text-sm font-medium text-foreground tabular-nums flex-1">
+                  ₹{form.opening_balance.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                </span>
+                <span className="text-[11px] text-muted-foreground">Locked</span>
+              </div>
+            ) : (
+              /* Not yet set — allow one-time entry */
+              <div>
+                <label className={LABEL_CLS}>Opening Balance (₹)</label>
+                <input
+                  className={INPUT_CLS}
+                  type="number"
+                  min="0"
+                  placeholder="0.00"
+                  value={form.opening_balance === 0 ? "" : form.opening_balance}
+                  onChange={(e) => set("opening_balance", parseFloat(e.target.value) || 0)}
+                />
+              </div>
+            )}
+
+            <p className="text-[11px] text-muted-foreground mt-1">
+              {balanceLocked
+                ? "Opening balance is locked and cannot be changed. Current balance is managed through transactions."
+                : "Set once — cannot be changed after saving. Current balance will be updated by transactions."}
+            </p>
           </div>
-          <p className="text-[11px] text-muted-foreground mt-2">
-            Opening balance is the amount at account creation. Current balance reflects all transactions.
+        )}
+
+        {/* Info note in Add mode */}
+        {!isEdit && (
+          <p className="text-[11px] text-muted-foreground px-1">
+            Opening balance can be set after the account is created by editing it.
           </p>
-        </div>
+        )}
 
       </div>
     </AppModal>

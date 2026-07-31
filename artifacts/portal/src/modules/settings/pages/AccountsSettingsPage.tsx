@@ -80,20 +80,44 @@ export default function AccountsSettingsPage() {
     { key: "status",          label: "Status",           render: (r) => <StatusBadge status={r.status} /> },
   ];
 
-  function handleSave(form: Omit<Account, "id" | "created_at" | "updated_at">) {
+  function handleSave(form: Omit<Account, "id" | "created_at" | "updated_at" | "current_balance" | "opening_balance_set">) {
     const now = new Date().toISOString();
     if (editing) {
+      const wasLocked = editing.opening_balance_set;
       setData((prev) =>
         prev.map((a) =>
           a.id === editing.id
-            ? { ...form, id: editing.id, created_at: editing.created_at, updated_at: now }
+            ? {
+                ...a,
+                account_name:        form.account_name,
+                type:                form.type,
+                bank_name:           form.bank_name,
+                ifsc_code:           form.ifsc_code,
+                account_number:      form.account_number,
+                status:              form.status,
+                // Opening balance: lock it on first save; never change again
+                opening_balance:     wasLocked ? a.opening_balance : form.opening_balance,
+                opening_balance_set: true,
+                // Current balance: seed from opening on first set; otherwise untouched
+                current_balance:     wasLocked ? a.current_balance : form.opening_balance,
+                updated_at:          now,
+              }
             : a
         )
       );
     } else {
+      // New account — balances always start at zero, not yet set
       setData((prev) => [
         ...prev,
-        { ...form, id: crypto.randomUUID(), created_at: now, updated_at: now },
+        {
+          ...form,
+          id:                  crypto.randomUUID(),
+          opening_balance:     0,
+          opening_balance_set: false,
+          current_balance:     0,
+          created_at:          now,
+          updated_at:          now,
+        },
       ]);
     }
     setOpen(false);
