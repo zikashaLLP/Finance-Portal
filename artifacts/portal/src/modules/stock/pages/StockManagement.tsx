@@ -201,10 +201,10 @@ function StockTable({ items, onView, onDelete }: {
   onView: (item: StockItem) => void;
   onDelete: (id: string) => void;
 }) {
-  const PAGE_SIZE = 12;
+  const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
-  const total = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
-  const slice = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const total = Math.max(1, Math.ceil(items.length / pageSize));
+  const slice = items.slice((page - 1) * pageSize, page * pageSize);
 
   const ImagePlaceholder = ({ item }: { item: StockItem }) => (
     <div className="h-10 w-10 rounded-xl bg-muted border border-border flex items-center justify-center shrink-0">
@@ -305,7 +305,7 @@ function StockTable({ items, onView, onDelete }: {
         </table>
       </div>
 
-      <Pagination page={page} totalPages={total} onPageChange={setPage} totalItems={items.length} pageSize={PAGE_SIZE} itemLabel="items" />
+      <Pagination page={page} totalPages={total} onPageChange={setPage} totalItems={items.length} pageSize={pageSize} onPageSizeChange={(s) => { setPageSize(s); setPage(1); }} itemLabel="items" />
     </div>
   );
 }

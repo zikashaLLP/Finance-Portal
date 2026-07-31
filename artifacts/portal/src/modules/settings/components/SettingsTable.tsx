@@ -21,8 +21,6 @@ interface SettingsTableProps<T extends { id: string }> {
   emptyMessage?: string;
 }
 
-const PAGE_SIZE = 8;
-
 export function SettingsTable<T extends { id: string }>({
   data,
   columns,
@@ -36,6 +34,7 @@ export function SettingsTable<T extends { id: string }>({
 }: SettingsTableProps<T>) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return data;
@@ -45,9 +44,9 @@ export function SettingsTable<T extends { id: string }>({
     );
   }, [data, search, searchKeys]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
-  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const paginated = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   function handleSearch(v: string) {
     setSearch(v);
@@ -87,6 +86,9 @@ export function SettingsTable<T extends { id: string }>({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/30">
+                <th className="px-5 py-3.5 text-left text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap w-12">
+                  Sr.
+                </th>
                 {columns.map((col) => (
                   <th
                     key={col.key}
@@ -109,6 +111,9 @@ export function SettingsTable<T extends { id: string }>({
                     i % 2 !== 0 && "bg-muted/10"
                   )}
                 >
+                  <td className="px-5 py-3.5 text-xs text-muted-foreground tabular-nums w-12">
+                    {(safePage - 1) * pageSize + i + 1}
+                  </td>
                   {columns.map((col) => (
                     <td key={col.key} className="px-5 py-3.5">
                       {col.render
@@ -157,7 +162,8 @@ export function SettingsTable<T extends { id: string }>({
         totalPages={totalPages}
         onPageChange={setPage}
         totalItems={filtered.length}
-        pageSize={PAGE_SIZE}
+        onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
+        pageSize={pageSize}
       />
     </div>
   );

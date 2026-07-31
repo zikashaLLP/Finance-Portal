@@ -2,32 +2,20 @@ import { useState, useEffect } from "react";
 import { Truck } from "lucide-react";
 import { AppModal } from "@/shared/components/AppModal";
 import { type Vendor, type VendorStatus } from "../data/mockVendors";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const INPUT_CLS =
   "w-full h-9 px-3 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/30 transition";
 const LABEL_CLS = "block text-xs font-medium text-muted-foreground mb-1";
+const SECTION_CLS = "text-[11px] font-semibold text-muted-foreground uppercase tracking-wider pt-1 pb-0.5 border-b border-border";
 
-type FormData = Omit<Vendor, "id">;
+type FormData = Omit<Vendor, "id" | "created_at" | "updated_at">;
 
 const EMPTY: FormData = {
-  vendor_code: "",
-  name: "",
-  phone: "",
-  email: "",
-  gst_no: "",
-  pan_no: "",
-  address: "",
-  city: "",
-  state: "",
-  pincode: "",
-  status: "Active",
+  vendor_code: "", name: "", phone: "", email: "",
+  gst_no: "", pan_no: "",
+  address: "", city: "", state: "", country: "India", pincode: "",
+  vendor_logo_url: "", status: "Active",
 };
 
 interface VendorModalProps {
@@ -41,7 +29,13 @@ export function VendorModal({ open, onClose, onSave, initial }: VendorModalProps
   const [form, setForm] = useState<FormData>(EMPTY);
 
   useEffect(() => {
-    if (open) setForm(initial ? { ...initial } : { ...EMPTY });
+    if (open) setForm(initial ? {
+      vendor_code: initial.vendor_code, name: initial.name, phone: initial.phone,
+      email: initial.email, gst_no: initial.gst_no, pan_no: initial.pan_no,
+      address: initial.address, city: initial.city, state: initial.state,
+      country: initial.country, pincode: initial.pincode,
+      vendor_logo_url: initial.vendor_logo_url, status: initial.status,
+    } : { ...EMPTY });
   }, [open, initial]);
 
   function set(key: keyof FormData, value: string) {
@@ -57,21 +51,18 @@ export function VendorModal({ open, onClose, onSave, initial }: VendorModalProps
 
   return (
     <AppModal
-      open={open}
-      onClose={onClose}
-      maxWidth="sm:max-w-[560px]"
+      open={open} onClose={onClose} maxWidth="sm:max-w-[600px]"
       headerBg="bg-orange-50"
-      icon={
-        <div className="h-9 w-9 rounded-full bg-orange-600 flex items-center justify-center shrink-0">
-          <Truck className="h-4 w-4 text-white" />
-        </div>
-      }
+      icon={<div className="h-9 w-9 rounded-full bg-orange-600 flex items-center justify-center shrink-0"><Truck className="h-4 w-4 text-white" /></div>}
       title={isEdit ? "Edit Vendor" : "Add Vendor"}
       subtitle={isEdit ? `Editing ${initial?.name}` : "Create a new vendor profile"}
       primaryLabel={isEdit ? "Save Changes" : "Add Vendor"}
       onPrimary={handleSave}
     >
-      <div className="px-6 pt-4 pb-5 space-y-4">
+      <div className="px-6 pt-4 pb-5 space-y-4 max-h-[65vh] overflow-y-auto">
+
+        {/* Basic */}
+        <p className={SECTION_CLS}>Basic Info</p>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className={LABEL_CLS}>Vendor Code <span className="text-red-500">*</span></label>
@@ -96,6 +87,19 @@ export function VendorModal({ open, onClose, onSave, initial }: VendorModalProps
               onChange={(e) => set("email", e.target.value)} />
           </div>
         </div>
+        <div>
+          <label className={LABEL_CLS}>Status</label>
+          <Select value={form.status} onValueChange={(v) => set("status", v as VendorStatus)}>
+            <SelectTrigger className="h-9 rounded-lg border-border text-sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Active">Active</SelectItem>
+              <SelectItem value="Deactive">Deactive</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Identity */}
+        <p className={SECTION_CLS}>Identity</p>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className={LABEL_CLS}>GST No.</label>
@@ -108,12 +112,15 @@ export function VendorModal({ open, onClose, onSave, initial }: VendorModalProps
               onChange={(e) => set("pan_no", e.target.value)} />
           </div>
         </div>
+
+        {/* Address */}
+        <p className={SECTION_CLS}>Address</p>
         <div>
-          <label className={LABEL_CLS}>Address</label>
-          <input className={INPUT_CLS} placeholder="Street / Building" value={form.address}
+          <label className={LABEL_CLS}>Street Address</label>
+          <input className={INPUT_CLS} placeholder="Street / Building / Area" value={form.address}
             onChange={(e) => set("address", e.target.value)} />
         </div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div>
             <label className={LABEL_CLS}>City</label>
             <input className={INPUT_CLS} placeholder="City" value={form.city}
@@ -124,24 +131,28 @@ export function VendorModal({ open, onClose, onSave, initial }: VendorModalProps
             <input className={INPUT_CLS} placeholder="State" value={form.state}
               onChange={(e) => set("state", e.target.value)} />
           </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className={LABEL_CLS}>Country</label>
+            <input className={INPUT_CLS} placeholder="Country" value={form.country}
+              onChange={(e) => set("country", e.target.value)} />
+          </div>
           <div>
             <label className={LABEL_CLS}>Pincode</label>
             <input className={INPUT_CLS} placeholder="Pincode" value={form.pincode}
               onChange={(e) => set("pincode", e.target.value)} />
           </div>
         </div>
+
+        {/* Other */}
+        <p className={SECTION_CLS}>Other</p>
         <div>
-          <label className={LABEL_CLS}>Status</label>
-          <Select value={form.status} onValueChange={(v) => set("status", v as VendorStatus)}>
-            <SelectTrigger className="h-9 rounded-lg border-border text-sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Active">Active</SelectItem>
-              <SelectItem value="Inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
+          <label className={LABEL_CLS}>Vendor Logo URL</label>
+          <input className={INPUT_CLS} type="url" placeholder="https://…" value={form.vendor_logo_url}
+            onChange={(e) => set("vendor_logo_url", e.target.value)} />
         </div>
+
       </div>
     </AppModal>
   );

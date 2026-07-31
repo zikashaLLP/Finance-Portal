@@ -5,8 +5,6 @@ import { AppModal } from "@/shared/components/AppModal";
 import Pagination from "@/shared/components/Pagination";
 import { mockSilverTransactions, SilverTransaction, SilverType, SilverCategory, PaymentMode } from "../data/mockSilver";
 
-const PAGE_SIZE = 10;
-
 const fmt = (n: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
 
@@ -53,8 +51,9 @@ const EMPTY_FORM: FormState = {
 
 function TransactionHistoryTable({ rows }: { rows: SilverTransaction[] }) {
   const [page, setPage] = useState(1);
-  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
-  const paged = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const [pageSize, setPageSize] = useState(10);
+  const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+  const paged = rows.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div>
@@ -109,7 +108,7 @@ function TransactionHistoryTable({ rows }: { rows: SilverTransaction[] }) {
         </div>
       </div>
 
-      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} totalItems={rows.length} pageSize={PAGE_SIZE} itemLabel="transactions" />
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} totalItems={rows.length} pageSize={pageSize} onPageSizeChange={(s) => { setPageSize(s); setPage(1); }} itemLabel="transactions" />
     </div>
   );
 }

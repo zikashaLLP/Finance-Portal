@@ -3,6 +3,14 @@ import { cn } from "@/lib/utils";
 import { SettingsTable, type ColumnDef } from "../components/SettingsTable";
 import { GeneralMasterModal } from "../components/GeneralMasterModal";
 import { JewelleryTypeModal } from "../components/JewelleryTypeModal";
+import { GoldPurityModal } from "../components/GoldPurityModal";
+import { DiamondFilterModal } from "../components/DiamondFilterModal";
+import {
+  CategoryViewModal,
+  JewelleryTypeViewModal,
+  GoldPurityViewModal,
+  DiamondFilterViewModal,
+} from "../components/GeneralViewModals";
 import {
   mockJewelleryCategories,
   mockJewelleryTypes,
@@ -10,6 +18,8 @@ import {
   mockDiamondFilters,
   type JewelleryCategory,
   type JewelleryTypeItem,
+  type GoldPurityItem,
+  type DiamondFilterItem,
   type GeneralMasterItem,
 } from "../data/mockGeneralMasters";
 
@@ -99,6 +109,7 @@ function JewelleryTypesTable({ categories }: JewelleryTypesTableProps) {
   const [data, setData]       = useState<JewelleryTypeItem[]>(mockJewelleryTypes);
   const [open, setOpen]       = useState(false);
   const [editing, setEditing] = useState<JewelleryTypeItem | null>(null);
+  const [viewing, setViewing] = useState<JewelleryTypeItem | null>(null);
 
   const getCategoryName = (id: string) =>
     categories.find((c) => c.id === id)?.name ?? "—";
@@ -134,6 +145,7 @@ function JewelleryTypesTable({ categories }: JewelleryTypesTableProps) {
         onAdd={() => { setEditing(null); setOpen(true); }}
         onEdit={(r) => { setEditing(r); setOpen(true); }}
         onDelete={(id) => setData((prev) => prev.filter((t) => t.id !== id))}
+        onView={(r) => setViewing(r)}
       />
       <JewelleryTypeModal
         open={open}
@@ -142,6 +154,150 @@ function JewelleryTypesTable({ categories }: JewelleryTypesTableProps) {
         initial={editing}
         categories={categories}
       />
+      <JewelleryTypeViewModal
+        open={viewing !== null}
+        onClose={() => setViewing(null)}
+        item={viewing}
+        categoryName={viewing ? getCategoryName(viewing.category_id) : ""}
+      />
+    </>
+  );
+}
+
+// ── Gold Purity sub-table ─────────────────────────────────────────────────────
+function GoldPuritySubTable() {
+  const [data, setData]       = useState<GoldPurityItem[]>(mockGoldPurity);
+  const [open, setOpen]       = useState(false);
+  const [editing, setEditing] = useState<GoldPurityItem | null>(null);
+  const [viewing, setViewing] = useState<GoldPurityItem | null>(null);
+
+  function fmt(dateStr: string) {
+    return new Date(dateStr).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  }
+
+  const cols: ColumnDef<GoldPurityItem>[] = [
+    { key: "karat", label: "Karat", render: (r) => (
+      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-yellow-50 text-yellow-700 border border-yellow-200">
+        {r.karat}
+      </span>
+    )},
+    { key: "purity", label: "Purity", render: (r) => (
+      <span className="font-semibold text-foreground">{r.purity.toFixed(1)}%</span>
+    )},
+    { key: "rate_per_gram", label: "Rate / gram", render: (r) => (
+      <span className="font-medium text-emerald-700">₹{r.rate_per_gram.toLocaleString("en-IN")}</span>
+    )},
+    { key: "description", label: "Description", render: (r) => (
+      <span className="text-muted-foreground text-xs">{r.description || "—"}</span>
+    )},
+    { key: "status", label: "Status", render: (r) => <StatusBadge status={r.status} /> },
+    { key: "updated_at", label: "Updated", render: (r) => (
+      <span className="text-muted-foreground text-xs">{fmt(r.updated_at)}</span>
+    )},
+  ];
+
+  function handleSave(form: Omit<GoldPurityItem, "id" | "created_at" | "updated_at">) {
+    const now = new Date().toISOString();
+    if (editing) {
+      setData((prev) => prev.map((g) =>
+        g.id === editing.id ? { ...form, id: editing.id, created_at: editing.created_at, updated_at: now } : g
+      ));
+    } else {
+      setData((prev) => [...prev, { ...form, id: crypto.randomUUID(), created_at: now, updated_at: now }]);
+    }
+    setOpen(false); setEditing(null);
+  }
+
+  return (
+    <>
+      <SettingsTable
+        data={data}
+        columns={cols}
+        searchKeys={["karat"]}
+        addLabel="Add Purity"
+        onAdd={() => { setEditing(null); setOpen(true); }}
+        onEdit={(r) => { setEditing(r); setOpen(true); }}
+        onDelete={(id) => setData((prev) => prev.filter((g) => g.id !== id))}
+        onView={(r) => setViewing(r)}
+      />
+      <GoldPurityModal
+        open={open}
+        onClose={() => { setOpen(false); setEditing(null); }}
+        onSave={handleSave}
+        initial={editing}
+      />
+      <GoldPurityViewModal open={viewing !== null} onClose={() => setViewing(null)} item={viewing} />
+    </>
+  );
+}
+
+// ── Diamond Filters sub-table ─────────────────────────────────────────────────
+const FILTER_TYPE_COLORS: Record<string, string> = {
+  Shape:   "bg-cyan-50 text-cyan-700 border-cyan-200",
+  Color:   "bg-violet-50 text-violet-700 border-violet-200",
+  Clarity: "bg-blue-50 text-blue-700 border-blue-200",
+  Cut:     "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
+};
+
+function DiamondFilterSubTable() {
+  const [data, setData]       = useState<DiamondFilterItem[]>(mockDiamondFilters);
+  const [open, setOpen]       = useState(false);
+  const [editing, setEditing] = useState<DiamondFilterItem | null>(null);
+  const [viewing, setViewing] = useState<DiamondFilterItem | null>(null);
+
+  function fmt(dateStr: string) {
+    return new Date(dateStr).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  }
+
+  const cols: ColumnDef<DiamondFilterItem>[] = [
+    { key: "filter_type", label: "Filter Type", render: (r) => {
+      const cls = FILTER_TYPE_COLORS[r.filter_type] ?? "bg-muted text-muted-foreground border-border";
+      return (
+        <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border ${cls}`}>
+          {r.filter_type}
+        </span>
+      );
+    }},
+    { key: "filter_name",  label: "Filter Name",  render: (r) => <span className="font-medium text-foreground">{r.filter_name}</span> },
+    { key: "filter_value", label: "Filter Value", render: (r) => (
+      <span className="font-mono text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded">{r.filter_value || "—"}</span>
+    )},
+    { key: "updated_at", label: "Updated", render: (r) => (
+      <span className="text-muted-foreground text-xs">{fmt(r.updated_at)}</span>
+    )},
+  ];
+
+  function handleSave(form: Omit<DiamondFilterItem, "id" | "created_at" | "updated_at">) {
+    const now = new Date().toISOString();
+    if (editing) {
+      setData((prev) => prev.map((d) =>
+        d.id === editing.id ? { ...form, id: editing.id, created_at: editing.created_at, updated_at: now } : d
+      ));
+    } else {
+      setData((prev) => [...prev, { ...form, id: crypto.randomUUID(), created_at: now, updated_at: now }]);
+    }
+    setOpen(false); setEditing(null);
+  }
+
+  return (
+    <>
+      <SettingsTable
+        data={data}
+        columns={cols}
+        searchKeys={["filter_name", "filter_value", "filter_type"]}
+        addLabel="Add Filter"
+        onAdd={() => { setEditing(null); setOpen(true); }}
+        onEdit={(r) => { setEditing(r); setOpen(true); }}
+        onDelete={(id) => setData((prev) => prev.filter((d) => d.id !== id))}
+        onView={(r) => setViewing(r)}
+      />
+      <DiamondFilterModal
+        open={open}
+        onClose={() => { setOpen(false); setEditing(null); }}
+        onSave={handleSave}
+        initial={editing}
+      />
+      <DiamondFilterViewModal open={viewing !== null} onClose={() => setViewing(null)} item={viewing} />
     </>
   );
 }
@@ -186,22 +342,8 @@ export default function GeneralPage() {
         {sub === "types" && (
           <JewelleryTypesTable categories={categories} />
         )}
-        {sub === "purity" && (
-          <GeneralSubTable
-            initialData={mockGoldPurity}
-            entityLabel="Gold Purity"
-            headerBg="bg-yellow-50"
-            iconBg="bg-yellow-600"
-          />
-        )}
-        {sub === "diamond" && (
-          <GeneralSubTable
-            initialData={mockDiamondFilters}
-            entityLabel="Diamond Filter"
-            headerBg="bg-cyan-50"
-            iconBg="bg-cyan-600"
-          />
-        )}
+        {sub === "purity" && <GoldPuritySubTable />}
+        {sub === "diamond" && <DiamondFilterSubTable />}
       </div>
     </div>
   );
@@ -216,6 +358,7 @@ interface CategoriesSubTableProps {
 function CategoriesSubTable({ categories, setCategories }: CategoriesSubTableProps) {
   const [open, setOpen]       = useState(false);
   const [editing, setEditing] = useState<JewelleryCategory | null>(null);
+  const [viewing, setViewing] = useState<JewelleryCategory | null>(null);
 
   const cols: ColumnDef<JewelleryCategory>[] = [
     { key: "code",        label: "Code",        render: (r) => <span className="font-mono text-xs text-muted-foreground">{r.code || "—"}</span> },
@@ -243,6 +386,7 @@ function CategoriesSubTable({ categories, setCategories }: CategoriesSubTablePro
         onAdd={() => { setEditing(null); setOpen(true); }}
         onEdit={(r) => { setEditing(r); setOpen(true); }}
         onDelete={(id) => setCategories((prev) => prev.filter((c) => c.id !== id))}
+        onView={(r) => setViewing(r)}
       />
       <GeneralMasterModal
         open={open}
@@ -253,6 +397,7 @@ function CategoriesSubTable({ categories, setCategories }: CategoriesSubTablePro
         headerBg="bg-violet-50"
         iconBg="bg-violet-600"
       />
+      <CategoryViewModal open={viewing !== null} onClose={() => setViewing(null)} item={viewing} />
     </>
   );
 }

@@ -17,7 +17,6 @@ type AmountSort = "high-to-low" | "low-to-high";
 type TimelineFilter = "all" | "overdue" | "upcoming" | "unset";
 type TypeFilter = "all" | FinanceType;
 
-const PAGE_SIZE = 15;
 
 const fmtAmt = (n: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
@@ -41,6 +40,7 @@ export default function FinancePlanning() {
   const [timelineFilter, setTimelineFilter] = useState<TimelineFilter>("all");
   const [typeFilter, setTypeFilter]     = useState<TypeFilter>("all");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const allReceive = mockFinanceEntries.filter((e) => e.direction === "receive");
   const allPay     = mockFinanceEntries.filter((e) => e.direction === "pay");
@@ -68,8 +68,8 @@ export default function FinancePlanning() {
     return applyFilters(base);
   }, [subTab, amountSort, timelineFilter, typeFilter]);
 
-  const totalPages = Math.max(1, Math.ceil(displayEntries.length / PAGE_SIZE));
-  const paginated  = displayEntries.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(displayEntries.length / pageSize));
+  const paginated  = displayEntries.slice((page - 1) * pageSize, page * pageSize);
 
   function handleSubTab(t: SubTab) {
     setSubTab(t);
@@ -316,7 +316,7 @@ export default function FinancePlanning() {
               </div>
             </div>
 
-            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} totalItems={displayEntries.length} pageSize={PAGE_SIZE} itemLabel="entries" />
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} totalItems={displayEntries.length} pageSize={pageSize} onPageSizeChange={(s) => { setPageSize(s); setPage(1); }} itemLabel="entries" />
           </>
         )}
       </div>

@@ -36,7 +36,7 @@ export const mockJewelleryTypes: JewelleryTypeItem[] = [
   { id: "jt11", name: "Bracelet",         code: "DBR",  category_id: "jc2", description: "Diamond bracelets",            status: "Inactive" },
 ];
 
-// ── Shared master (Gold Purity, Diamond Filters) ──────────────────────────────
+// ── Shared master (Diamond Filters) ───────────────────────────────────────────
 export interface GeneralMasterItem {
   id: string;
   name: string;
@@ -45,19 +45,52 @@ export interface GeneralMasterItem {
   status: "Active" | "Inactive";
 }
 
-export const mockGoldPurity: GeneralMasterItem[] = [
-  { id: "gp1", name: "24K (999)", code: "24K", description: "99.9% pure gold",  status: "Active" },
-  { id: "gp2", name: "22K (916)", code: "22K", description: "91.6% pure gold",  status: "Active" },
-  { id: "gp3", name: "18K (750)", code: "18K", description: "75% pure gold",    status: "Active" },
-  { id: "gp4", name: "14K (585)", code: "14K", description: "58.5% pure gold",  status: "Active" },
+// ── Gold Purity ───────────────────────────────────────────────────────────────
+export interface GoldPurityItem {
+  id: string;
+  karat: string;          // e.g. "24K"
+  purity: number;         // percentage e.g. 99.9
+  rate_per_gram: number;  // current day rate in ₹
+  description: string;
+  status: "Active" | "Inactive";
+  created_at: string;     // ISO date string
+  updated_at: string;     // ISO date string
+}
+
+export const mockGoldPurity: GoldPurityItem[] = [
+  { id: "gp1", karat: "24K", purity: 99.9, rate_per_gram: 7280, description: "Purest form of gold, 999 fineness",      status: "Active", created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "gp2", karat: "22K", purity: 91.6, rate_per_gram: 6670, description: "Standard jewellery gold, 916 fineness",  status: "Active", created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "gp3", karat: "18K", purity: 75.0, rate_per_gram: 5460, description: "Diamond jewellery base, 750 fineness",   status: "Active", created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "gp4", karat: "14K", purity: 58.5, rate_per_gram: 4260, description: "Budget jewellery option, 585 fineness",  status: "Active", created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
 ];
 
-export const mockDiamondFilters: GeneralMasterItem[] = [
-  { id: "df1", name: "Round Brilliant", code: "RB", description: "Classic round cut",         status: "Active"   },
-  { id: "df2", name: "Princess Cut",    code: "PC", description: "Square princess cut",        status: "Active"   },
-  { id: "df3", name: "Emerald Cut",     code: "EC", description: "Step-cut emerald shape",     status: "Active"   },
-  { id: "df4", name: "Oval Cut",        code: "OV", description: "Elongated oval shape",       status: "Active"   },
-  { id: "df5", name: "Pear Shape",      code: "PS", description: "Teardrop shape",             status: "Inactive" },
+// ── Diamond Filters ───────────────────────────────────────────────────────────
+export interface DiamondFilterItem {
+  id: string;
+  filter_type: string;   // e.g. "Shape", "Color", "Clarity", "Cut"
+  filter_name: string;   // e.g. "Round Brilliant"
+  filter_value: string;  // short code e.g. "RB"
+  created_at: string;
+  updated_at: string;
+}
+
+export const DIAMOND_FILTER_TYPES = ["Shape", "Color", "Clarity", "Cut"] as const;
+
+export const mockDiamondFilters: DiamondFilterItem[] = [
+  { id: "df1",  filter_type: "Shape",   filter_name: "Round Brilliant",        filter_value: "RB",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df2",  filter_type: "Shape",   filter_name: "Princess Cut",           filter_value: "PC",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df3",  filter_type: "Shape",   filter_name: "Emerald Cut",            filter_value: "EC",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df4",  filter_type: "Shape",   filter_name: "Oval Cut",               filter_value: "OV",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df5",  filter_type: "Shape",   filter_name: "Pear Shape",             filter_value: "PS",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df6",  filter_type: "Color",   filter_name: "Colorless D",            filter_value: "D",    created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df7",  filter_type: "Color",   filter_name: "Colorless E",            filter_value: "E",    created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df8",  filter_type: "Color",   filter_name: "Near Colorless G",       filter_value: "G",    created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df9",  filter_type: "Clarity", filter_name: "Internally Flawless",    filter_value: "IF",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df10", filter_type: "Clarity", filter_name: "Very Very Slight Incl 1",filter_value: "VVS1", created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df11", filter_type: "Clarity", filter_name: "Very Slight Included 1", filter_value: "VS1",  created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df12", filter_type: "Cut",     filter_name: "Excellent",              filter_value: "EX",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df13", filter_type: "Cut",     filter_name: "Very Good",              filter_value: "VG",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
+  { id: "df14", filter_type: "Cut",     filter_name: "Good",                   filter_value: "GD",   created_at: "2024-01-01T00:00:00Z", updated_at: "2026-07-31T00:00:00Z" },
 ];
 
 export type GeneralMasterType = "category" | "type" | "purity" | "diamond";

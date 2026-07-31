@@ -32,7 +32,6 @@ const VENDORS: Vendor[] = [
   { id:258, name:"DTC NEW (ARPIT SIR)",                registrationDate:"28/5/2026", category:"Diamond"   },
 ];
 
-const PAGE_SIZE = 8;
 
 /* ── VENDOR ICON ── */
 function VendorIcon({ name }: { name: string }) {
@@ -53,15 +52,16 @@ const CAT_COLORS: Record<string, string> = {
 export default function VendorManagement() {
   const [search, setSearch] = useState("");
   const [page,   setPage]   = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = VENDORS.filter(v => {
     const q = search.toLowerCase();
     return !q || v.name.toLowerCase().includes(q) || String(v.id).includes(q);
   });
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage   = Math.min(page, totalPages);
-  const paged      = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const paged      = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   function handleSearch(q: string) { setSearch(q); setPage(1); }
 
@@ -213,7 +213,8 @@ export default function VendorManagement() {
             totalPages={totalPages}
             onPageChange={setPage}
             totalItems={filtered.length}
-            pageSize={PAGE_SIZE}
+            pageSize={pageSize}
+            onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
             itemLabel="vendors"
           />
         </div>

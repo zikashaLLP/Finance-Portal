@@ -15,7 +15,6 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "karigar",  label: "Karigar"     },
 ];
 
-const PAGE_SIZE = 5;
 
 const fmtAmt = (n: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
@@ -26,6 +25,7 @@ export default function Ledger() {
   const [tab, setTab]       = useState<Tab>("all");
   const [search, setSearch] = useState("");
   const [page, setPage]     = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = useMemo(() => {
     const byTab = getFilteredParties(tab as LedgerFilter);
@@ -34,8 +34,8 @@ export default function Ledger() {
     return byTab.filter((p) => p.name.toLowerCase().includes(q) || p.phone.includes(q));
   }, [tab, search]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginated  = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   const summary = useMemo(() => getSummary(filtered), [filtered]);
 
@@ -125,7 +125,7 @@ export default function Ledger() {
           </div>
         )}
 
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} totalItems={filtered.length} pageSize={PAGE_SIZE} itemLabel="parties" />
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} totalItems={filtered.length} pageSize={pageSize} onPageSizeChange={(s) => { setPageSize(s); setPage(1); }} itemLabel="parties" />
 
       </div>
     </div>

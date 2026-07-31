@@ -21,7 +21,7 @@ interface CashBookTableProps {
 export default function CashBookTable({ transactions: initialTransactions }: CashBookTableProps) {
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [editingTx, setEditingTx] = useState<Transaction | null>(null);
 
   const totalPages = Math.ceil(transactions.length / itemsPerPage);
@@ -144,9 +144,10 @@ export default function CashBookTable({ transactions: initialTransactions }: Cas
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="8">8</SelectItem>
+                <SelectItem value="10">10</SelectItem>
                 <SelectItem value="20">20</SelectItem>
                 <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
               </SelectContent>
             </Select>
             <span>per page</span>

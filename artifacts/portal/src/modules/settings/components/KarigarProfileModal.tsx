@@ -1,33 +1,19 @@
 import { useState, useEffect } from "react";
 import { Hammer } from "lucide-react";
 import { AppModal } from "@/shared/components/AppModal";
-import {
-  type KarigarProfile,
-  type LabourType,
-  type KarigarStatus,
-  LABOUR_TYPES,
-} from "../data/mockKarigarProfiles";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { type KarigarProfile, type LabourType, type KarigarStatus, LABOUR_TYPES } from "../data/mockKarigarProfiles";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const INPUT_CLS =
   "w-full h-9 px-3 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 focus:border-foreground/30 transition";
 const LABEL_CLS = "block text-xs font-medium text-muted-foreground mb-1";
+const SECTION_CLS = "text-[11px] font-semibold text-muted-foreground uppercase tracking-wider pt-1 pb-0.5 border-b border-border";
 
-type FormData = Omit<KarigarProfile, "id">;
+type FormData = Omit<KarigarProfile, "id" | "created_at" | "updated_at">;
 
 const EMPTY: FormData = {
-  karigar_code: "",
-  name: "",
-  phone: "",
-  address: "",
-  labour_type: "Per Gram",
-  status: "Active",
+  karigar_code: "", name: "", phone: "", address: "",
+  labour_type: "Per Gram", image_url: "", status: "Active",
 };
 
 interface KarigarProfileModalProps {
@@ -41,7 +27,11 @@ export function KarigarProfileModal({ open, onClose, onSave, initial }: KarigarP
   const [form, setForm] = useState<FormData>(EMPTY);
 
   useEffect(() => {
-    if (open) setForm(initial ? { ...initial } : { ...EMPTY });
+    if (open) setForm(initial ? {
+      karigar_code: initial.karigar_code, name: initial.name, phone: initial.phone,
+      address: initial.address, labour_type: initial.labour_type,
+      image_url: initial.image_url, status: initial.status,
+    } : { ...EMPTY });
   }, [open, initial]);
 
   function set(key: keyof FormData, value: string) {
@@ -57,21 +47,18 @@ export function KarigarProfileModal({ open, onClose, onSave, initial }: KarigarP
 
   return (
     <AppModal
-      open={open}
-      onClose={onClose}
-      maxWidth="sm:max-w-[500px]"
+      open={open} onClose={onClose} maxWidth="sm:max-w-[520px]"
       headerBg="bg-amber-50"
-      icon={
-        <div className="h-9 w-9 rounded-full bg-amber-600 flex items-center justify-center shrink-0">
-          <Hammer className="h-4 w-4 text-white" />
-        </div>
-      }
+      icon={<div className="h-9 w-9 rounded-full bg-amber-600 flex items-center justify-center shrink-0"><Hammer className="h-4 w-4 text-white" /></div>}
       title={isEdit ? "Edit Karigar Profile" : "Add Karigar Profile"}
       subtitle={isEdit ? `Editing ${initial?.name}` : "Create a karigar profile record"}
       primaryLabel={isEdit ? "Save Changes" : "Add Karigar"}
       onPrimary={handleSave}
     >
-      <div className="px-6 pt-4 pb-5 space-y-4">
+      <div className="px-6 pt-4 pb-5 space-y-4 max-h-[65vh] overflow-y-auto">
+
+        {/* Basic */}
+        <p className={SECTION_CLS}>Basic Info</p>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className={LABEL_CLS}>Karigar Code <span className="text-red-500">*</span></label>
@@ -89,38 +76,47 @@ export function KarigarProfileModal({ open, onClose, onSave, initial }: KarigarP
           <input className={INPUT_CLS} type="tel" placeholder="Phone number" value={form.phone}
             onChange={(e) => set("phone", e.target.value)} />
         </div>
-        <div>
-          <label className={LABEL_CLS}>Address</label>
-          <input className={INPUT_CLS} placeholder="Full address" value={form.address}
-            onChange={(e) => set("address", e.target.value)} />
-        </div>
+
+        {/* Work */}
+        <p className={SECTION_CLS}>Work Details</p>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className={LABEL_CLS}>Labour Type</label>
             <Select value={form.labour_type} onValueChange={(v) => set("labour_type", v as LabourType)}>
-              <SelectTrigger className="h-9 rounded-lg border-border text-sm">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger className="h-9 rounded-lg border-border text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
-                {LABOUR_TYPES.map((t) => (
-                  <SelectItem key={t} value={t}>{t}</SelectItem>
-                ))}
+                {LABOUR_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div>
             <label className={LABEL_CLS}>Status</label>
             <Select value={form.status} onValueChange={(v) => set("status", v as KarigarStatus)}>
-              <SelectTrigger className="h-9 rounded-lg border-border text-sm">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger className="h-9 rounded-lg border-border text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Active">Active</SelectItem>
-                <SelectItem value="Inactive">Inactive</SelectItem>
+                <SelectItem value="Deactive">Deactive</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
+
+        {/* Address */}
+        <p className={SECTION_CLS}>Address</p>
+        <div>
+          <label className={LABEL_CLS}>Full Address</label>
+          <input className={INPUT_CLS} placeholder="Street, Area, City" value={form.address}
+            onChange={(e) => set("address", e.target.value)} />
+        </div>
+
+        {/* Other */}
+        <p className={SECTION_CLS}>Other</p>
+        <div>
+          <label className={LABEL_CLS}>Photo URL</label>
+          <input className={INPUT_CLS} type="url" placeholder="https://…" value={form.image_url}
+            onChange={(e) => set("image_url", e.target.value)} />
+        </div>
+
       </div>
     </AppModal>
   );

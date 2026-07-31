@@ -35,7 +35,6 @@ const PURCHASES: Purchase[] = [
   { id:"p12", lotNo:"CVD-AUTO-515", date:"12/6/2026", seller:"Sunny DTC",                itemType:"Loose Diamond",     itemName:"Loose Diamond", goldWeight:null,      totalAmount:4280.00   },
 ];
 
-const PAGE_SIZE = 8;
 const ITEM_TYPES = ["All Types", "Loose Diamond", "Gold Jewellery", "Diamond Jewellery", "Pure Gold"];
 
 const fmtINR = (n: number) =>
@@ -56,6 +55,7 @@ export default function PurchaseManagement() {
   const [search,   setSearch]   = useState("");
   const [typeFilter, setType]   = useState("All Types");
   const [page,     setPage]     = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = PURCHASES.filter(p => {
     const q = search.toLowerCase();
@@ -64,9 +64,9 @@ export default function PurchaseManagement() {
     return matchQ && matchT;
   });
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage   = Math.min(page, totalPages);
-  const paged      = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const paged      = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   function handleSearch(q: string) { setSearch(q); setPage(1); }
   function handleType(t: string)   { setType(t);   setPage(1); }
@@ -199,7 +199,8 @@ export default function PurchaseManagement() {
               totalPages={totalPages}
               onPageChange={setPage}
               totalItems={filtered.length}
-              pageSize={PAGE_SIZE}
+              pageSize={pageSize}
+              onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
               itemLabel="records"
             />
           </div>

@@ -40,7 +40,6 @@ const PLANS: Plan[] = [
   { id:"P015", name:"Diamond Harvest Plan", client:"PRIYA MEHTA",               type:"diamond", group:"Group 19", card:"Card #5",  totalValue:120000, monthly:10000, duration:"12 months", totalPaid:50000,  status:"active"   },
 ];
 
-const PAGE_SIZE = 8;
 
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { maximumFractionDigits:0 }).format(n);
@@ -53,15 +52,16 @@ const totalValue    = PLANS.reduce((s, p) => s + p.totalValue, 0);
 export default function HarvestManagement() {
   const [search, setSearch] = useState("");
   const [page,   setPage]   = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = PLANS.filter(p => {
     const q = search.toLowerCase();
     return !q || p.client.toLowerCase().includes(q) || p.name.toLowerCase().includes(q) || (p.group ?? "").toLowerCase().includes(q);
   });
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage   = Math.min(page, totalPages);
-  const paged      = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const paged      = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   function handleSearch(q: string) {
     setSearch(q);
@@ -233,7 +233,8 @@ export default function HarvestManagement() {
             totalPages={totalPages}
             onPageChange={setPage}
             totalItems={filtered.length}
-            pageSize={PAGE_SIZE}
+            pageSize={pageSize}
+            onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
             itemLabel="plans"
           />
         </div>

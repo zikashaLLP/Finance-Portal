@@ -42,7 +42,6 @@ const CLIENTS: Client[] = [
   { id:804, name:"BHASKAR KANERI CNEXTKRAFT",         registrationDate:"28/5/2026"              },
 ];
 
-const PAGE_SIZE = 10;
 
 /* ── AVATAR ── */
 function Avatar({ name, isVip }: { name: string; isVip?: boolean }) {
@@ -63,15 +62,16 @@ function Avatar({ name, isVip }: { name: string; isVip?: boolean }) {
 export default function ClientManagement() {
   const [search, setSearch] = useState("");
   const [page,   setPage]   = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = CLIENTS.filter(c => {
     const q = search.toLowerCase();
     return !q || c.name.toLowerCase().includes(q) || String(c.id).includes(q);
   });
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage   = Math.min(page, totalPages);
-  const paged      = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const paged      = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   function handleSearch(q: string) { setSearch(q); setPage(1); }
 
@@ -221,7 +221,8 @@ export default function ClientManagement() {
             totalPages={totalPages}
             onPageChange={setPage}
             totalItems={filtered.length}
-            pageSize={PAGE_SIZE}
+            pageSize={pageSize}
+            onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
             itemLabel="clients"
           />
         </div>

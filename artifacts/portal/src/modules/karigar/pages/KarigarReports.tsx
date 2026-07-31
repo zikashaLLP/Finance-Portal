@@ -159,14 +159,14 @@ function KarigarAvatar({ name }: { name: string }) {
 ═══════════════════════════════════════════════ */
 function OrdersTable({ rows }: { rows: ReportRow[] }) {
   const [page, setPage] = useState(1);
-  const PAGE_SIZE = 10;
-  const total = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
-  const slice = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const [pageSize, setPageSize] = useState(10);
+  const total = Math.max(1, Math.ceil(rows.length / pageSize));
+  const slice = rows.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <TableCard title="Order Details"
       headers={["Order #","Karigar","Client","Item Type","Gold (g)","Labour Quoted","Total Budget","Status","Order Date","Actions"]}
-      footer={<Pagination page={page} totalPages={total} onPageChange={setPage} totalItems={rows.length} pageSize={PAGE_SIZE} itemLabel="orders" />}>
+      footer={<Pagination page={page} totalPages={total} onPageChange={setPage} totalItems={rows.length} pageSize={pageSize} onPageSizeChange={(s) => { setPageSize(s); setPage(1); }} itemLabel="orders" />}>
       {slice.map((r, i) => (
         <tr key={r.id} className={cn(
           "border-b border-border last:border-0 hover:bg-muted/20 transition-colors group",

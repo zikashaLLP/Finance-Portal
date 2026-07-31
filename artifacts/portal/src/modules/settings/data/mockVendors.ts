@@ -1,4 +1,4 @@
-export type VendorStatus = "Active" | "Inactive";
+export type VendorStatus = "Active" | "Deactive";
 
 export interface Vendor {
   id: string;
@@ -11,8 +11,12 @@ export interface Vendor {
   address: string;
   city: string;
   state: string;
+  country: string;
   pincode: string;
+  vendor_logo_url: string;
   status: VendorStatus;
+  created_at: string;
+  updated_at: string;
 }
 
 export const mockVendors: Vendor[] = [
@@ -27,8 +31,12 @@ export const mockVendors: Vendor[] = [
     address: "14, Zaveri Bazar",
     city: "Mumbai",
     state: "Maharashtra",
+    country: "India",
     pincode: "400002",
+    vendor_logo_url: "",
     status: "Active",
+    created_at: "2022-09-01T09:00:00Z",
+    updated_at: "2024-05-10T12:00:00Z",
   },
   {
     id: "v2",
@@ -41,8 +49,12 @@ export const mockVendors: Vendor[] = [
     address: "8, Surat Diamond Bourse",
     city: "Surat",
     state: "Gujarat",
+    country: "India",
     pincode: "395010",
+    vendor_logo_url: "",
     status: "Active",
+    created_at: "2022-10-15T10:00:00Z",
+    updated_at: "2024-03-22T14:30:00Z",
   },
   {
     id: "v3",
@@ -55,8 +67,12 @@ export const mockVendors: Vendor[] = [
     address: "99, Industrial Area",
     city: "Bangalore",
     state: "Karnataka",
+    country: "India",
     pincode: "560058",
+    vendor_logo_url: "",
     status: "Active",
+    created_at: "2023-01-20T08:00:00Z",
+    updated_at: "2024-06-05T10:00:00Z",
   },
   {
     id: "v4",
@@ -69,7 +85,11 @@ export const mockVendors: Vendor[] = [
     address: "22, Rajpur Road",
     city: "Jaipur",
     state: "Rajasthan",
+    country: "India",
     pincode: "302001",
-    status: "Inactive",
+    vendor_logo_url: "",
+    status: "Deactive",
+    created_at: "2023-04-08T11:00:00Z",
+    updated_at: "2023-12-18T09:00:00Z",
   },
 ];

@@ -13,19 +13,29 @@ import {
 
 type SubTab = "box" | "melting" | "balance" | "audit";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
 
 const fmtW = (n: number) => `${n.toFixed(2)} g`;
 
 function Pagination({
-  page, total, onChange,
-}: { page: number; total: number; onChange: (p: number) => void }) {
-  if (total <= 1) return null;
+  page, total, onChange, pageSize, onPageSizeChange,
+}: {
+  page: number; total: number; onChange: (p: number) => void;
+  pageSize: number; onPageSizeChange: (s: number) => void;
+}) {
   return (
-    <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-      <span className="text-xs text-muted-foreground">
-        Page {page} of {total}
-      </span>
+    <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-border">
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs text-muted-foreground whitespace-nowrap">Rows per page:</span>
+        <select
+          value={pageSize}
+          onChange={(e) => { onPageSizeChange(Number(e.target.value)); onChange(1); }}
+          className="h-7 pl-2 pr-6 rounded-md border border-border bg-background text-xs text-foreground focus:outline-none cursor-pointer appearance-none"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 6px center" }}
+        >
+          {PAGE_SIZE_OPTIONS.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+      </div>
       <div className="flex items-center gap-1">
         <button
           onClick={() => onChange(Math.max(1, page - 1))}
@@ -93,6 +103,7 @@ function MetricCard({
 /* ── OLD GOLD BOX TABLE ── */
 function OldGoldBoxTable({ search }: { search: string }) {
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -105,9 +116,9 @@ function OldGoldBoxTable({ search }: { search: string }) {
   // Reset to page 1 whenever the search query changes
   useEffect(() => { setPage(1); }, [search]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const clampedPage = Math.min(page, Math.max(1, totalPages));
-  const rows = filtered.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE);
+  const rows = filtered.slice((clampedPage - 1) * pageSize, clampedPage * pageSize);
 
   return (
     <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
@@ -178,7 +189,7 @@ function OldGoldBoxTable({ search }: { search: string }) {
           </tbody>
         </table>
       </div>
-      <Pagination page={clampedPage} total={totalPages} onChange={setPage} />
+      <Pagination page={clampedPage} total={totalPages} onChange={setPage} pageSize={pageSize} onPageSizeChange={setPageSize} />
     </div>
   );
 }
@@ -186,8 +197,9 @@ function OldGoldBoxTable({ search }: { search: string }) {
 /* ── MELTING RECORDS TABLE ── */
 function MeltingRecordsTable() {
   const [page, setPage] = useState(1);
-  const totalPages = Math.max(1, Math.ceil(mockMeltingRecords.length / PAGE_SIZE));
-  const rows = mockMeltingRecords.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const [pageSize, setPageSize] = useState(10);
+  const totalPages = Math.max(1, Math.ceil(mockMeltingRecords.length / pageSize));
+  const rows = mockMeltingRecords.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
@@ -229,7 +241,7 @@ function MeltingRecordsTable() {
           </tbody>
         </table>
       </div>
-      <Pagination page={page} total={totalPages} onChange={setPage} />
+      <Pagination page={page} total={totalPages} onChange={setPage} pageSize={pageSize} onPageSizeChange={setPageSize} />
     </div>
   );
 }
@@ -237,8 +249,9 @@ function MeltingRecordsTable() {
 /* ── BALANCE BY DATE TABLE ── */
 function BalanceByDateTable() {
   const [page, setPage] = useState(1);
-  const totalPages = Math.max(1, Math.ceil(mockBalanceByDate.length / PAGE_SIZE));
-  const rows = mockBalanceByDate.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const [pageSize, setPageSize] = useState(10);
+  const totalPages = Math.max(1, Math.ceil(mockBalanceByDate.length / pageSize));
+  const rows = mockBalanceByDate.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
@@ -276,7 +289,7 @@ function BalanceByDateTable() {
           </tbody>
         </table>
       </div>
-      <Pagination page={page} total={totalPages} onChange={setPage} />
+      <Pagination page={page} total={totalPages} onChange={setPage} pageSize={pageSize} onPageSizeChange={setPageSize} />
     </div>
   );
 }
@@ -284,8 +297,9 @@ function BalanceByDateTable() {
 /* ── DELETION AUDIT TABLE ── */
 function DeletionAuditTable() {
   const [page, setPage] = useState(1);
-  const totalPages = Math.max(1, Math.ceil(mockDeletionAudit.length / PAGE_SIZE));
-  const rows = mockDeletionAudit.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const [pageSize, setPageSize] = useState(10);
+  const totalPages = Math.max(1, Math.ceil(mockDeletionAudit.length / pageSize));
+  const rows = mockDeletionAudit.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
@@ -315,7 +329,7 @@ function DeletionAuditTable() {
           </tbody>
         </table>
       </div>
-      <Pagination page={page} total={totalPages} onChange={setPage} />
+      <Pagination page={page} total={totalPages} onChange={setPage} pageSize={pageSize} onPageSizeChange={setPageSize} />
     </div>
   );
 }

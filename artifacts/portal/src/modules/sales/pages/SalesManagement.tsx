@@ -31,7 +31,6 @@ const SALES: Sale[] = [
   { id:"s12", billNo:"D01/07/13",       date:"7/7/2026",  customer:"HEENA KHATRI",                      totalAmount:28900.00,  payment:0 },
 ];
 
-const PAGE_SIZE = 8;
 
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
@@ -42,15 +41,16 @@ const totalPending = SALES.reduce((s, r) => s + (r.totalAmount - r.payment), 0);
 export default function SalesManagement() {
   const [search, setSearch] = useState("");
   const [page,   setPage]   = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = SALES.filter(s => {
     const q = search.toLowerCase();
     return !q || s.customer.toLowerCase().includes(q) || s.billNo.toLowerCase().includes(q);
   });
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage   = Math.min(page, totalPages);
-  const paged      = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const paged      = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   function handleSearch(q: string) { setSearch(q); setPage(1); }
 
@@ -183,7 +183,8 @@ export default function SalesManagement() {
               totalPages={totalPages}
               onPageChange={setPage}
               totalItems={filtered.length}
-              pageSize={PAGE_SIZE}
+              pageSize={pageSize}
+              onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
               itemLabel="records"
             />
           </div>
