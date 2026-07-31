@@ -10,6 +10,10 @@ export interface OldGoldItem {
   pureGold: number;
   status: OldGoldStatus;
   receivedDate: string;
+  // Extended fields (captured at box-in time)
+  purchasePrice?: number;
+  client?: string;
+  notes?: string;
 }
 
 export interface MeltingRecord {

@@ -10,6 +10,7 @@ import {
   getOldGoldStats,
   type OldGoldItem,
 } from "../data/mockOldGold";
+import { AddOldGoldModal } from "./AddOldGoldModal";
 
 type SubTab = "box" | "melting" | "balance" | "audit";
 
@@ -101,17 +102,17 @@ function MetricCard({
 }
 
 /* ── OLD GOLD BOX TABLE ── */
-function OldGoldBoxTable({ search }: { search: string }) {
+function OldGoldBoxTable({ search, items, onDelete }: { search: string; items: OldGoldItem[]; onDelete: (id: string) => void }) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    if (!q) return mockOldGoldItems;
-    return mockOldGoldItems.filter(
+    if (!q) return items;
+    return items.filter(
       (i) => i.lotNumber.toLowerCase().includes(q) || i.description.toLowerCase().includes(q),
     );
-  }, [search]);
+  }, [search, items]);
 
   // Reset to page 1 whenever the search query changes
   useEffect(() => { setPage(1); }, [search]);
@@ -178,7 +179,10 @@ function OldGoldBoxTable({ search }: { search: string }) {
                           </button>
                         </>
                       )}
-                      <button className="h-7 w-7 flex items-center justify-center rounded-md border border-red-200 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                      <button
+                        onClick={() => onDelete(row.id)}
+                        className="h-7 w-7 flex items-center justify-center rounded-md border border-red-200 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                      >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
@@ -338,18 +342,32 @@ function DeletionAuditTable() {
    MAIN EXPORT
 ══════════════════════════════════════ */
 export default function OldGoldTab() {
-  const [subTab, setSubTab] = useState<SubTab>("box");
-  const [search, setSearch]  = useState("");
+  const [subTab, setSubTab]   = useState<SubTab>("box");
+  const [search, setSearch]   = useState("");
+  const [addOpen, setAddOpen] = useState(false);
+  const [items, setItems]     = useState<OldGoldItem[]>(mockOldGoldItems);
 
   const stats = useMemo(() => getOldGoldStats(), []);
 
-  const inBoxCount   = mockOldGoldItems.filter((i) => i.status === "In Box").length;
+  function handleAddSave(newItem: Omit<OldGoldItem, "id">) {
+    setItems((prev) => [{ ...newItem, id: crypto.randomUUID() }, ...prev]);
+    setAddOpen(false);
+  }
+
+  function handleDelete(id: string) {
+    setItems((prev) => prev.filter((i) => i.id !== id));
+  }
+
+  // Auto-generate next lot number based on current item count
+  const nextLotNumber = `OG-${new Date().getFullYear()}-${String(items.length + 1).padStart(3, "0")}`;
+
+  const inBoxCount   = items.filter((i) => i.status === "In Box").length;
   const meltingCount = mockMeltingRecords.length;
   const balanceCount = mockBalanceByDate.length;
   const auditCount   = mockDeletionAudit.length;
 
   const SUB_TABS: { key: SubTab; label: string; count: number }[] = [
-    { key: "box",     label: "Old Gold Box",     count: mockOldGoldItems.length },
+    { key: "box",     label: "Old Gold Box",     count: items.length },
     { key: "melting", label: "Melting Records",  count: meltingCount },
     { key: "balance", label: "Balance by Date",  count: balanceCount },
     { key: "audit",   label: "Deletion Audit",   count: auditCount   },
@@ -448,7 +466,10 @@ export default function OldGoldTab() {
               className="w-full h-9 pl-9 pr-3 rounded-lg border border-border bg-card text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/10 transition"
             />
           </div>
-          <button className="flex items-center gap-2 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
+          <button
+            onClick={() => setAddOpen(true)}
+            className="flex items-center gap-2 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors"
+          >
             <Plus className="h-3.5 w-3.5" />
             Add Old Gold Item
           </button>
@@ -456,7 +477,13 @@ export default function OldGoldTab() {
       )}
 
       {/* Table content */}
-      {subTab === "box"     && <OldGoldBoxTable search={search} />}
+      {subTab === "box"     && <OldGoldBoxTable search={search} items={items} onDelete={handleDelete} />}
+      <AddOldGoldModal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        onSave={handleAddSave}
+        nextLotNumber={nextLotNumber}
+      />
       {subTab === "melting" && <MeltingRecordsTable />}
       {subTab === "balance" && <BalanceByDateTable />}
       {subTab === "audit"   && <DeletionAuditTable />}
