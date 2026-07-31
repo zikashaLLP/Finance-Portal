@@ -21,6 +21,7 @@ const ROUTE_META: { match: (p: string) => boolean; title: string; subtitle: stri
   { match: (p) => p.startsWith("/settings/karigar"),  title: "Karigar Management", subtitle: "Karigar types & rates"           },
   { match: (p) => p.startsWith("/settings/general"),  title: "Jwellery Settings",  subtitle: "App preferences & configuration" },
   { match: (p) => p.startsWith("/settings/team"),     title: "Team Management",    subtitle: "Roles, users & permissions"      },
+  { match: (p) => p.startsWith("/settings/accounts"), title: "Account Settings",   subtitle: "Cash & bank accounts"            },
   { match: (p) => p.startsWith("/settings"),          title: "Settings",           subtitle: "App configuration"               },
   { match: (p) => p.startsWith("/finance"),           title: "Finance Planning",   subtitle: "Financial overview"              },
   { match: (p) => p.startsWith("/ledger"),            title: "Ledger",             subtitle: "Balance & entries"               },

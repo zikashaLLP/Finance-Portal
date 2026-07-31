@@ -21,6 +21,7 @@ import {
   Truck,
   Tag,
   UserCog,
+  Landmark,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,7 @@ const SETTINGS_SUB_ITEMS: SettingsSubItem[] = [
   { name: "Team Management",    icon: UserCog,   path: "/settings/team"     },
   { name: "Karigar Management", icon: Hammer,    path: "/settings/karigar"  },
   { name: "Jwellery Settings",  icon: Tag,       path: "/settings/general"  },
+  { name: "Account Settings",   icon: Landmark,  path: "/settings/accounts" },
 ];
 
 const NAV_ITEMS: NavItem[] = [

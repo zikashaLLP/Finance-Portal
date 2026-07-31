@@ -20,6 +20,7 @@ import VendorsPage from "../../modules/settings/pages/VendorsPage";
 import KarigarPage from "../../modules/settings/pages/KarigarPage";
 import GeneralPage from "../../modules/settings/pages/GeneralPage";
 import TeamPage from "../../modules/settings/pages/TeamPage";
+import AccountsSettingsPage from "../../modules/settings/pages/AccountsSettingsPage";
 
 export default function AppRouter() {
   return (
@@ -139,6 +140,12 @@ export default function AppRouter() {
         <Route path="/settings/team">
           <MainLayout>
             <TeamPage />
+          </MainLayout>
+        </Route>
+
+        <Route path="/settings/accounts">
+          <MainLayout>
+            <AccountsSettingsPage />
           </MainLayout>
         </Route>
 
