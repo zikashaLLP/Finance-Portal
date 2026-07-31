@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Search, Plus, Pencil, Trash2 } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Pagination from "@/shared/components/Pagination";
 
@@ -17,6 +17,7 @@ interface SettingsTableProps<T extends { id: string }> {
   onAdd: () => void;
   onEdit: (row: T) => void;
   onDelete: (id: string) => void;
+  onView?: (row: T) => void;
   emptyMessage?: string;
 }
 
@@ -30,6 +31,7 @@ export function SettingsTable<T extends { id: string }>({
   onAdd,
   onEdit,
   onDelete,
+  onView,
   emptyMessage = "No records found.",
 }: SettingsTableProps<T>) {
   const [search, setSearch] = useState("");
@@ -117,6 +119,15 @@ export function SettingsTable<T extends { id: string }>({
                   ))}
                   <td className="px-5 py-3.5">
                     <div className="flex items-center justify-end gap-1.5">
+                      {onView && (
+                        <button
+                          onClick={() => onView(row)}
+                          className="h-7 w-7 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-colors"
+                          title="View"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                        </button>
+                      )}
                       <button
                         onClick={() => onEdit(row)}
                         className="h-7 w-7 rounded-lg border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"

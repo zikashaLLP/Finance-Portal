@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Building2 } from "lucide-react";
 import { SettingsTable, type ColumnDef } from "../components/SettingsTable";
 import { BranchModal } from "../components/BranchModal";
+import { BranchViewModal } from "../components/BranchViewModal";
 import { mockBranches, type Branch } from "../data/mockBranches";
 import { cn } from "@/lib/utils";
 
@@ -22,9 +23,10 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function BranchesPage() {
-  const [data, setData]       = useState<Branch[]>(mockBranches);
-  const [open, setOpen]       = useState(false);
-  const [editing, setEditing] = useState<Branch | null>(null);
+  const [data, setData]         = useState<Branch[]>(mockBranches);
+  const [open, setOpen]         = useState(false);
+  const [editing, setEditing]   = useState<Branch | null>(null);
+  const [viewing, setViewing]   = useState<Branch | null>(null);
 
   const cols: ColumnDef<Branch>[] = [
     { key: "code",   label: "Code",   render: (r) => <span className="font-mono text-xs text-muted-foreground">{r.code}</span> },
@@ -56,12 +58,18 @@ export default function BranchesPage() {
           onAdd={() => { setEditing(null); setOpen(true); }}
           onEdit={(r) => { setEditing(r); setOpen(true); }}
           onDelete={(id) => setData((prev) => prev.filter((b) => b.id !== id))}
+          onView={(r) => setViewing(r)}
         />
         <BranchModal
           open={open}
           onClose={() => { setOpen(false); setEditing(null); }}
           onSave={handleSave}
           initial={editing}
+        />
+        <BranchViewModal
+          open={!!viewing}
+          onClose={() => setViewing(null)}
+          branch={viewing}
         />
       </div>
     </div>
