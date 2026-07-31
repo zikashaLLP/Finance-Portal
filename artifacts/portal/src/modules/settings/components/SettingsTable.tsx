@@ -9,6 +9,14 @@ export interface ColumnDef<T> {
   render?: (row: T) => React.ReactNode;
 }
 
+export interface ExtraAction<T> {
+  icon: React.ReactNode;
+  label: string;
+  onClick: (row: T) => void;
+  show?: (row: T) => boolean;
+  className?: string;
+}
+
 interface SettingsTableProps<T extends { id: string }> {
   data: T[];
   columns: ColumnDef<T>[];
@@ -18,6 +26,7 @@ interface SettingsTableProps<T extends { id: string }> {
   onEdit: (row: T) => void;
   onDelete: (id: string) => void;
   onView?: (row: T) => void;
+  extraActions?: ExtraAction<T>[];
   emptyMessage?: string;
 }
 
@@ -30,6 +39,7 @@ export function SettingsTable<T extends { id: string }>({
   onEdit,
   onDelete,
   onView,
+  extraActions,
   emptyMessage = "No records found.",
 }: SettingsTableProps<T>) {
   const [search, setSearch] = useState("");
@@ -124,6 +134,20 @@ export function SettingsTable<T extends { id: string }>({
                   ))}
                   <td className="px-5 py-3.5">
                     <div className="flex items-center justify-end gap-1.5">
+                      {extraActions?.map((action, ai) => {
+                        if (action.show && !action.show(row)) return null;
+                        return (
+                          <button
+                            key={ai}
+                            onClick={() => action.onClick(row)}
+                            title={action.label}
+                            className={action.className ?? "h-7 px-2 rounded-lg border border-border flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"}
+                          >
+                            {action.icon}
+                            <span>{action.label}</span>
+                          </button>
+                        );
+                      })}
                       {onView && (
                         <button
                           onClick={() => onView(row)}

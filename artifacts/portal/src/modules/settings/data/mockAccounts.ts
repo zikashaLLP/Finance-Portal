@@ -82,4 +82,18 @@ export const mockAccounts: Account[] = [
     created_at: "2023-06-01T09:00:00Z",
     updated_at: "2024-01-12T09:00:00Z",
   },
+  {
+    id: "acc6",
+    account_name: "Kotak Savings Account",
+    type: "Bank Account",
+    opening_balance: 0,
+    opening_balance_set: false,
+    current_balance: 0,
+    bank_name: "Kotak Mahindra Bank",
+    ifsc_code: "KKBK0001234",
+    account_number: "9876543210",
+    status: "Active",
+    created_at: "2026-07-31T09:00:00Z",
+    updated_at: "2026-07-31T09:00:00Z",
+  },
 ];

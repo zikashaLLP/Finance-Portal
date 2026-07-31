@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Landmark, Banknote } from "lucide-react";
-import { SettingsTable, type ColumnDef } from "../components/SettingsTable";
+import { Landmark, Banknote, IndianRupee } from "lucide-react";
+import { SettingsTable, type ColumnDef, type ExtraAction } from "../components/SettingsTable";
 import { AccountModal } from "../components/AccountModal";
 import { AccountViewModal } from "../components/AccountViewModal";
 import { mockAccounts, type Account } from "../data/mockAccounts";
@@ -136,6 +136,16 @@ export default function AccountsSettingsPage() {
           onEdit={(r) => { setEditing(r); setOpen(true); }}
           onDelete={(id) => setData((prev) => prev.filter((a) => a.id !== id))}
           onView={(r) => setViewing(r)}
+          extraActions={[
+            {
+              icon: <IndianRupee className="h-3 w-3" />,
+              label: "Set Opening Balance",
+              show: (r) => !r.opening_balance_set,
+              onClick: (r) => { setEditing(r); setOpen(true); },
+              className:
+                "h-7 px-2 rounded-lg border border-violet-200 bg-violet-50 flex items-center gap-1 text-xs font-medium text-violet-700 hover:bg-violet-100 hover:border-violet-300 transition-colors whitespace-nowrap",
+            } as ExtraAction<Account>,
+          ]}
         />
 
         <AccountModal
