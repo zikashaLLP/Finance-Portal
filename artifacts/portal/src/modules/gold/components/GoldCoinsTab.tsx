@@ -1,0 +1,308 @@
+import { useState, useMemo } from "react";
+import { motion } from "framer-motion";
+import {
+  Coins, Hash, Scale, TrendingDown, CalendarDays,
+  Pencil, Trash2, X,
+} from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
+import { Calendar } from "../../../components/ui/calendar";
+import { format } from "date-fns";
+import { mockGoldTransactions, mockGoldDailyBalance, GoldTransaction } from "../data/mockPureGold";
+import { EditGoldTransactionModal } from "./EditGoldTransactionModal";
+
+type SubTab = "transactions" | "daily";
+
+const fmt = (n: number) =>
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
+const fmtW = (n: number) => `${n.toFixed(2)} g`;
+
+const CAT_BADGE: Record<string, string> = {
+  Purchase: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  Sale:     "bg-red-50 text-red-600 border border-red-200",
+};
+
+function MetricCard({
+  title, value, sub, icon, accent, index,
+}: {
+  title: string; value: string; sub: string;
+  icon: React.ReactNode; accent: string; index: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay: index * 0.08, ease: "easeOut" }}
+      className="bg-card border border-border rounded-[18px] p-6 shadow-sm hover:shadow-md transition-shadow"
+    >
+      <div className="mb-4">
+        <div
+          className="p-2.5 rounded-full inline-flex items-center justify-center"
+          style={{ backgroundColor: accent + "20", color: accent }}
+        >
+          {icon}
+        </div>
+      </div>
+      <p className="text-[13px] font-medium text-muted-foreground mb-1">{title}</p>
+      <h3 className="text-[28px] font-semibold text-foreground tracking-tight mb-1">{value}</h3>
+      <span
+        className="text-xs font-medium px-2 py-0.5 rounded-full"
+        style={{ backgroundColor: accent + "15", color: accent }}
+      >
+        {sub}
+      </span>
+    </motion.div>
+  );
+}
+
+// Coin transactions only
+const coinTxns = mockGoldTransactions.filter((r) => r.type === "Coins");
+const coinDaily = mockGoldDailyBalance.filter((r) => r.type === "Coins");
+
+export default function GoldCoinsTab() {
+  const [subTab, setSubTab] = useState<SubTab>("transactions");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [calOpen, setCalOpen] = useState(false);
+  const [transactions, setTransactions] = useState(coinTxns);
+  const [editingRow, setEditingRow] = useState<GoldTransaction | null>(null);
+
+  const latestDate = useMemo(() => {
+    const dates = [...new Set(coinTxns.map((r) => r.date))].sort((a, b) => b.localeCompare(a));
+    return dates[0];
+  }, []);
+
+  const selectedDateStr = selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined;
+
+  const filteredTx = useMemo(
+    () => selectedDateStr ? transactions.filter((r) => r.date === selectedDateStr) : transactions,
+    [selectedDateStr, transactions],
+  );
+
+  function handleSave(updated: GoldTransaction) {
+    setTransactions((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
+  }
+
+  const { opening, closing } = useMemo(() => {
+    const dateKey = selectedDateStr ?? latestDate;
+    const rows = coinDaily.filter((r) => r.date === dateKey);
+    return {
+      opening: rows.reduce((s, r) => s + r.openingWeight, 0),
+      closing: rows.reduce((s, r) => s + r.closingWeight, 0),
+    };
+  }, [selectedDateStr, latestDate]);
+
+  const latestCoin = coinDaily.find((r) => r.date === "2026-06-25");
+
+  const metrics = [
+    {
+      title: "Current Stock",
+      value: fmtW(latestCoin?.closingWeight ?? 0),
+      sub: "24K minted coins",
+      icon: <Coins className="h-4 w-4" />,
+      accent: "#CA8A04",
+    },
+    {
+      title: "Total Purchased",
+      value: fmtW(coinTxns.filter((r) => r.category === "Purchase").reduce((s, r) => s + r.weight, 0)),
+      sub: "All time",
+      icon: <Scale className="h-4 w-4" />,
+      accent: "#16A34A",
+    },
+    {
+      title: "Total Sold",
+      value: fmtW(coinTxns.filter((r) => r.category === "Sale").reduce((s, r) => s + r.weight, 0)),
+      sub: "All time",
+      icon: <TrendingDown className="h-4 w-4" />,
+      accent: "#DC2626",
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {metrics.map((m, i) => (
+          <MetricCard key={m.title} {...m} index={i} />
+        ))}
+      </div>
+
+      {/* Sub-tab bar */}
+      <div className="flex items-center gap-0 border-b border-border">
+        {(["transactions", "daily"] as SubTab[]).map((t) => (
+          <button
+            key={t}
+            onClick={() => setSubTab(t)}
+            className={`px-5 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              subTab === t
+                ? "border-foreground text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t === "transactions" ? "Transactions" : "Daily Balance"}
+          </button>
+        ))}
+      </div>
+
+      {/* Transactions filter bar */}
+      {subTab === "transactions" && (
+        <div className="flex items-center gap-3 flex-wrap">
+          <Popover open={calOpen} onOpenChange={setCalOpen}>
+            <PopoverTrigger asChild>
+              <button className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm hover:bg-muted/40 transition-colors">
+                <CalendarDays className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <span className="text-sm font-medium text-foreground">
+                  {selectedDate ? format(selectedDate, "dd MMM yyyy") : "Select Date"}
+                </span>
+                {selectedDate && (
+                  <span
+                    role="button"
+                    onClick={(e) => { e.stopPropagation(); setSelectedDate(undefined); }}
+                    className="ml-1 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                  </span>
+                )}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 z-[200] border-0 shadow-lg rounded-2xl overflow-hidden" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(d) => { setSelectedDate(d); setCalOpen(false); }}
+              />
+            </PopoverContent>
+          </Popover>
+
+          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+            <Scale className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+            <span className="text-xs text-muted-foreground">Opening</span>
+            <span className="text-sm font-semibold text-foreground">{fmtW(opening)}</span>
+          </div>
+
+          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+            <TrendingDown className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+            <span className="text-xs text-muted-foreground">Closing</span>
+            <span className="text-sm font-semibold text-foreground">{fmtW(closing)}</span>
+          </div>
+
+          <div className="flex items-center gap-2 h-9 px-3.5 rounded-lg border border-border bg-card shadow-sm">
+            <Hash className="h-3.5 w-3.5 text-violet-500 shrink-0" />
+            <span className="text-xs text-muted-foreground">Transactions</span>
+            <span className="text-sm font-semibold text-foreground">{filteredTx.length}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Transactions table */}
+      {subTab === "transactions" && (
+        <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-muted/40">
+                  {["Date", "Category", "Name", "Weight", "Purity", "Rate (₹/g)", "Amount", "Description", "Actions"].map((h) => (
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTx.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                      No coin transactions found for the selected date.
+                    </td>
+                  </tr>
+                ) : filteredTx.map((row, i) => (
+                  <tr
+                    key={row.id}
+                    className={`border-b border-border last:border-0 hover:bg-muted/20 transition-colors ${i % 2 === 0 ? "" : "bg-muted/10"}`}
+                  >
+                    <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">{row.date}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${CAT_BADGE[row.category]}`}>{row.category}</span>
+                    </td>
+                    <td className="px-4 py-3 font-medium text-foreground whitespace-nowrap">{row.name}</td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums">{fmtW(row.weight)}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="text-xs font-semibold bg-zinc-100 text-zinc-700 px-2 py-0.5 rounded">{row.purity}</span>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums text-muted-foreground">₹{row.rate.toLocaleString("en-IN")}</td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums font-semibold text-foreground">{fmt(row.amount)}</td>
+                    <td className="px-4 py-3 text-muted-foreground max-w-[180px] truncate">{row.description}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          className="h-7 w-7 flex items-center justify-center rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          onClick={() => setEditingRow(row)}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button className="h-7 w-7 flex items-center justify-center rounded-md border border-red-200 text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Daily balance table */}
+      {subTab === "daily" && (
+        <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-muted/40">
+                  {["Date", "Opening Weight", "Purchases", "Sales", "Issues", "Closing Weight"].map((h) => (
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {coinDaily.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                      No daily balance data available.
+                    </td>
+                  </tr>
+                ) : coinDaily.map((row, i) => (
+                  <tr
+                    key={row.id}
+                    className={`border-b border-border last:border-0 hover:bg-muted/20 transition-colors ${i % 2 === 0 ? "" : "bg-muted/10"}`}
+                  >
+                    <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">{row.date}</td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums font-medium text-foreground">{fmtW(row.openingWeight)}</td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums text-emerald-600 font-medium">
+                      {row.purchases > 0 ? `+${fmtW(row.purchases)}` : "—"}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums text-red-500 font-medium">
+                      {row.sales > 0 ? `-${fmtW(row.sales)}` : "—"}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums text-orange-500 font-medium">
+                      {row.issues > 0 ? `-${fmtW(row.issues)}` : "—"}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap tabular-nums font-semibold text-foreground">{fmtW(row.closingWeight)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      <EditGoldTransactionModal
+        transaction={editingRow}
+        open={editingRow !== null}
+        onClose={() => setEditingRow(null)}
+        onSave={handleSave}
+      />
+    </div>
+  );
+}
