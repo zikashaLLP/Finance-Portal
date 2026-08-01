@@ -17,7 +17,7 @@ export default function GoldManagement() {
   return (
     <div className="w-full flex flex-col h-full">
       {/* Header */}
-      <div className="px-6 py-3 border-b border-border flex items-center shrink-0">
+      <div className="px-6 py-3 border-b border-border flex items-center justify-center shrink-0">
         {/* Tabs — segmented control */}
         <div className="flex items-center gap-1 bg-zinc-200 rounded-xl p-1">
           {TABS.map((t) => (
