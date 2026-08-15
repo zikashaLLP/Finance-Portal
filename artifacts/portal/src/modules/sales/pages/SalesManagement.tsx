@@ -6,12 +6,15 @@ import {
 import { cn } from "@/lib/utils";
 import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 import Pagination from "@/shared/components/Pagination";
+import SaleModal, { type SaleFormValues, type SaleType } from "../components/SaleModal";
 
 type Sale = {
   id: string;
   billNo: string;
   date: string;
   customer: string;
+  type?: SaleType;
+  item?: string;
   totalAmount: number;
   payment: number;
 };
@@ -35,15 +38,14 @@ const SALES: Sale[] = [
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
 
-const totalRevenue = SALES.reduce((s, r) => s + r.totalAmount, 0);
-const totalPending = SALES.reduce((s, r) => s + (r.totalAmount - r.payment), 0);
-
 export default function SalesManagement() {
+  const [sales, setSales] = useState<Sale[]>(SALES);
   const [search, setSearch] = useState("");
   const [page,   setPage]   = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [saleModalOpen, setSaleModalOpen] = useState(false);
 
-  const filtered = SALES.filter(s => {
+  const filtered = sales.filter(s => {
     const q = search.toLowerCase();
     return !q || s.customer.toLowerCase().includes(q) || s.billNo.toLowerCase().includes(q);
   });
@@ -53,6 +55,23 @@ export default function SalesManagement() {
   const paged      = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
   function handleSearch(q: string) { setSearch(q); setPage(1); }
+
+  function handleSaveSale(form: SaleFormValues) {
+    setSales((current) => [{
+      id: `s-${Date.now()}`,
+      billNo: form.billNo,
+      date: new Intl.DateTimeFormat("en-GB").format(new Date()),
+      customer: form.customerName,
+      type: form.saleType,
+      item: form.stockItem || form.diamondQuality || form.comment || form.saleType,
+      totalAmount: form.salePrice + form.gstAmount,
+      payment: form.paymentReceived,
+    }, ...current]);
+    setPage(1);
+  }
+
+  const totalRevenue = sales.reduce((s, r) => s + r.totalAmount, 0);
+  const totalPending = sales.reduce((s, r) => s + (r.totalAmount - r.payment), 0);
 
   return (
     <div className="w-full flex flex-col h-full">
@@ -71,7 +90,7 @@ export default function SalesManagement() {
                   className="h-9 pl-9 pr-4 rounded-lg border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-foreground/20 transition-colors w-64"
                 />
               </div>
-              <button className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
+              <button onClick={() => setSaleModalOpen(true)} className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
                 <Plus className="h-3.5 w-3.5" />
                 New Sale
               </button>
@@ -85,7 +104,7 @@ export default function SalesManagement() {
 
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label:"Total Bills",   value: String(SALES.length),    sub:"All records"       },
+              { label:"Total Bills",   value: String(sales.length),    sub:"All records"       },
               { label:"Total Revenue", value: fmtINR(totalRevenue),    sub:"Gross sales value" },
               { label:"Pending",       value: fmtINR(totalPending),    sub:"Unpaid amount"     },
             ].map(({ label, value, sub }, i) => (
@@ -103,7 +122,7 @@ export default function SalesManagement() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-muted/30">
-                    {["Bill Number", "Date", "Customer", "Total Amount", "Payment", "Actions"].map(h => (
+                    {["Bill Number", "Date", "Customer", "Sale Type", "Item", "Total Amount", "Payment", "Actions"].map(h => (
                       <th key={h} className="text-left px-5 py-3.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">
                         {h}
                       </th>
@@ -123,6 +142,12 @@ export default function SalesManagement() {
                         </td>
                         <td className="px-5 py-3.5">
                           <span className="text-sm text-foreground font-medium">{sale.customer}</span>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span className="inline-flex items-center rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-semibold text-sky-700">{sale.type ?? "—"}</span>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span className="text-xs text-muted-foreground">{sale.item ?? "—"}</span>
                         </td>
                         <td className="px-5 py-3.5">
                           <span className="text-sm font-semibold text-foreground tabular-nums">{fmtINR(sale.totalAmount)}</span>
@@ -169,7 +194,7 @@ export default function SalesManagement() {
                   })}
                   {paged.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-6 py-10 text-center text-sm text-muted-foreground">
+                      <td colSpan={8} className="px-6 py-10 text-center text-sm text-muted-foreground">
                         No sales records match the search.
                       </td>
                     </tr>
@@ -190,6 +215,12 @@ export default function SalesManagement() {
           </div>
 
       </div>
+
+      <SaleModal
+        open={saleModalOpen}
+        onClose={() => setSaleModalOpen(false)}
+        onSave={handleSaveSale}
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Diamond, Plus, Edit, Trash2, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
+import DiamondOrderModal, { type DiamondOrderFormValues } from "../components/DiamondOrderModal";
 
 /* ── DATA ── */
 type OrderStatus = "pending" | "confirmed" | "in-progress" | "ready" | "delivered" | "completed";
@@ -59,21 +60,40 @@ type Tab = "all" | "pending" | "confirmed" | "in-progress" | "ready" | "delivere
 
 export default function DiamondOrders() {
   const [tab, setTab] = useState<Tab>("all");
+  const [orders, setOrders] = useState<Order[]>(ORDERS);
+  const [newOrderOpen, setNewOrderOpen] = useState(false);
 
   const counts: Record<Tab, number> = {
-    all:         ORDERS.length,
-    pending:     ORDERS.filter(o => o.status === "pending").length,
-    confirmed:   ORDERS.filter(o => o.status === "confirmed").length,
-    "in-progress": ORDERS.filter(o => o.status === "in-progress").length,
-    ready:       ORDERS.filter(o => o.status === "ready").length,
-    delivered:   ORDERS.filter(o => o.status === "delivered" || o.status === "completed").length,
+    all:         orders.length,
+    pending:     orders.filter(o => o.status === "pending").length,
+    confirmed:   orders.filter(o => o.status === "confirmed").length,
+    "in-progress": orders.filter(o => o.status === "in-progress").length,
+    ready:       orders.filter(o => o.status === "ready").length,
+    delivered:   orders.filter(o => o.status === "delivered" || o.status === "completed").length,
   };
 
   const visible = tab === "all"
-    ? ORDERS
+    ? orders
     : tab === "delivered"
-    ? ORDERS.filter(o => o.status === "delivered" || o.status === "completed")
-    : ORDERS.filter(o => o.status === tab);
+    ? orders.filter(o => o.status === "delivered" || o.status === "completed")
+    : orders.filter(o => o.status === tab);
+
+  function handleSaveOrder(form: DiamondOrderFormValues) {
+    const nextOrderNo = Math.max(...orders.map((order) => order.orderNo), 2000) + 1;
+    setOrders((current) => [{
+      id: `o-${Date.now()}`,
+      orderNo: nextOrderNo,
+      client: form.clientName,
+      quality: form.quality,
+      weightCt: form.weightCt,
+      soldCt: 0,
+      estimatedPrice: form.estimatedPrice,
+      orderDate: form.orderDate,
+      targetDelivery: form.targetDelivery,
+      status: form.status,
+    }, ...current]);
+    setTab(form.status === "delivered" || form.status === "completed" ? "delivered" : form.status);
+  }
 
   return (
     <div className="w-full flex flex-col h-full">
@@ -87,7 +107,7 @@ export default function DiamondOrders() {
           </div>
           <p className="text-sm text-muted-foreground">Manage client diamond orders and track their progress</p>
         </div>
-        <button className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
+        <button onClick={() => setNewOrderOpen(true)} className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
           <Plus className="h-3.5 w-3.5" />
           New Order
         </button>
@@ -237,6 +257,12 @@ export default function DiamondOrders() {
         </div>
 
       </div>
+
+      <DiamondOrderModal
+        open={newOrderOpen}
+        onClose={() => setNewOrderOpen(false)}
+        onSave={handleSaveOrder}
+      />
     </div>
   );
 }

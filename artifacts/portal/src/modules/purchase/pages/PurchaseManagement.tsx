@@ -6,8 +6,9 @@ import {
 import { cn } from "@/lib/utils";
 import AnimatedMetricCard from "@/shared/components/AnimatedMetricCard";
 import Pagination from "@/shared/components/Pagination";
+import PurchaseModal, { type PurchaseFormValues, type PurchaseItemType } from "../components/PurchaseModal";
 
-type ItemType = "Loose Diamond" | "Gold Jewellery" | "Diamond Jewellery" | "Pure Gold";
+type ItemType = PurchaseItemType;
 
 type Purchase = {
   id: string;
@@ -20,7 +21,7 @@ type Purchase = {
   totalAmount: number;
 };
 
-const PURCHASES: Purchase[] = [
+const INITIAL_PURCHASES: Purchase[] = [
   { id:"p1",  lotNo:"CVD-AUTO-569", date:"13/7/2026", seller:"ANJALI LABTECH LIMITED",   itemType:"Loose Diamond",     itemName:"Loose Diamond", goldWeight:null,      totalAmount:32619.72  },
   { id:"p2",  lotNo:"CVD-AUTO-565", date:"10/7/2026", seller:"Sunny DTC",                itemType:"Loose Diamond",     itemName:"Loose Diamond", goldWeight:null,      totalAmount:1512.00   },
   { id:"p3",  lotNo:"CVD-AUTO-564", date:"10/7/2026", seller:"Sunny DTC",                itemType:"Loose Diamond",     itemName:"Loose Diamond", goldWeight:null,      totalAmount:57.60     },
@@ -35,7 +36,7 @@ const PURCHASES: Purchase[] = [
   { id:"p12", lotNo:"CVD-AUTO-515", date:"12/6/2026", seller:"Sunny DTC",                itemType:"Loose Diamond",     itemName:"Loose Diamond", goldWeight:null,      totalAmount:4280.00   },
 ];
 
-const ITEM_TYPES = ["All Types", "Loose Diamond", "Gold Jewellery", "Diamond Jewellery", "Pure Gold"];
+const ITEM_TYPES = ["All Types", "Loose Diamond", "Gold Jewellery", "Diamond Jewellery", "Pure Gold", "Old Gold", "Gold Coins"];
 
 const fmtINR = (n: number) =>
   "₹" + new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
@@ -45,19 +46,19 @@ const TYPE_COLORS: Record<ItemType, string> = {
   "Gold Jewellery":    "bg-amber-100 text-amber-700",
   "Diamond Jewellery": "bg-purple-100 text-purple-700",
   "Pure Gold":         "bg-yellow-100 text-yellow-700",
+  "Old Gold":          "bg-orange-100 text-orange-700",
+  "Gold Coins":        "bg-lime-100 text-lime-700",
 };
 
-const totalSpend   = PURCHASES.reduce((s, p) => s + p.totalAmount, 0);
-const diamondCount = PURCHASES.filter(p => p.itemType === "Loose Diamond" || p.itemType === "Diamond Jewellery").length;
-const goldCount    = PURCHASES.filter(p => p.itemType === "Gold Jewellery" || p.itemType === "Pure Gold").length;
-
 export default function PurchaseManagement() {
+  const [purchases, setPurchases] = useState<Purchase[]>(INITIAL_PURCHASES);
   const [search,   setSearch]   = useState("");
   const [typeFilter, setType]   = useState("All Types");
   const [page,     setPage]     = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [purchaseModalOpen, setPurchaseModalOpen] = useState(false);
 
-  const filtered = PURCHASES.filter(p => {
+  const filtered = purchases.filter(p => {
     const q = search.toLowerCase();
     const matchQ = !q || p.seller.toLowerCase().includes(q) || p.lotNo.toLowerCase().includes(q) || p.itemName.toLowerCase().includes(q);
     const matchT = typeFilter === "All Types" || p.itemType === typeFilter;
@@ -70,6 +71,26 @@ export default function PurchaseManagement() {
 
   function handleSearch(q: string) { setSearch(q); setPage(1); }
   function handleType(t: string)   { setType(t);   setPage(1); }
+
+  function handleSavePurchase(form: PurchaseFormValues) {
+    setPurchases((current) => [{
+      id: `p-${Date.now()}`,
+      lotNo: form.lotNumber,
+      date: new Intl.DateTimeFormat("en-GB").format(new Date()),
+      seller: form.sellerName,
+      itemType: form.itemType,
+      itemName: form.itemName,
+      goldWeight: form.netWeight > 0 ? `${form.netWeight.toFixed(2)}g` : null,
+      totalAmount: form.totalAmount,
+    }, ...current]);
+    setPage(1);
+  }
+
+  const totalSpend = purchases.reduce((s, p) => s + p.totalAmount, 0);
+  const diamondCount = purchases.filter((p) => p.itemType === "Loose Diamond" || p.itemType === "Diamond Jewellery").length;
+  const goldCount = purchases.filter((p) =>
+    p.itemType === "Gold Jewellery" || p.itemType === "Pure Gold" || p.itemType === "Old Gold" || p.itemType === "Gold Coins"
+  ).length;
 
   return (
     <div className="w-full flex flex-col h-full">
@@ -102,7 +123,7 @@ export default function PurchaseManagement() {
                 <RefreshCw className="h-3.5 w-3.5" />
                 Sync Gold Ledgers
               </button>
-              <button className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
+              <button onClick={() => setPurchaseModalOpen(true)} className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-foreground text-background text-sm font-medium hover:bg-foreground/90 transition-colors">
                 <Plus className="h-3.5 w-3.5" />
                 Record Purchase
               </button>
@@ -116,7 +137,7 @@ export default function PurchaseManagement() {
 
           <div className="grid grid-cols-4 gap-4">
             {[
-              { label:"Total Purchases", value: String(PURCHASES.length), sub:"All records"          },
+              { label:"Total Purchases", value: String(purchases.length), sub:"All records"          },
               { label:"Total Spend",     value: fmtINR(totalSpend),       sub:"Gross purchase value" },
               { label:"Diamond Orders",  value: String(diamondCount),     sub:"Diamond items"        },
               { label:"Gold Orders",     value: String(goldCount),        sub:"Gold & jewellery"     },
@@ -206,6 +227,12 @@ export default function PurchaseManagement() {
           </div>
 
       </div>
+
+      <PurchaseModal
+        open={purchaseModalOpen}
+        onClose={() => setPurchaseModalOpen(false)}
+        onSave={handleSavePurchase}
+      />
     </div>
   );
 }
